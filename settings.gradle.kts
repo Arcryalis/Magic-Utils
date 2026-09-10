@@ -25,5 +25,8 @@ dependencyResolutionManagement {
     }
 }
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 rootProject.name = "GwenTest"
 include(":app")
+include(":ui:core")

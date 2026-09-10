@@ -13,6 +13,7 @@ ksp = "2.3.10"
 appcompat = "1.6.1"
 material = "1.10.0"
 androidxComposeCompiler = "1.5.15"
+kotlinCollectionsImmutable = "0.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -35,6 +36,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 android-gradlePlugin = {group = "com.android.tools.build", name = "gradle", version.ref = "agp"}
 kotlin-gradlePlugin = {group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin"}
+kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version = "kotlinCollectionsImmutable"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -43,6 +45,11 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin"}
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
-gwentest-android-application-compose = { id = "gwentest.application.compose" }
 gwentest-android-application = { id = "gwentest.application" }
-gwentest-kotlin-hilt = { id = "gwentest.kotlin.hilt"}
+gwentest-android-application-compose = { id = "gwentest.application.compose" }
+gwentest-android-library = { id = "gwentest.library" }
+gwentest-android-library-compose = { id = "gwentest.library.compose" }
+gwentest-android-hilt = { id = "gwentest.android.hilt"}
+
+#gwentest-kotlin-library = { id = "gwentest.kotlin.library"}
+#gwentest-kotlin-hilt = { id = "gwentest.kotlin.hilt"}

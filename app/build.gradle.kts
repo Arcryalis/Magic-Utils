@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.gwentest.android.application)
     alias(libs.plugins.gwentest.android.application.compose)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.gwentest.kotlin.hilt)
+    alias(libs.plugins.gwentest.android.hilt)
 }
 
 android {
@@ -16,27 +16,12 @@ android {
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled = true
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            optimization {
-                enable = false
-            }
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildFeatures {
-        compose = true
     }
 }
 
 dependencies {
+    implementation(projects.ui.core)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.ui.theme
+package com.arcryalis.gwentest.core.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
