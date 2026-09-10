@@ -1,7 +1,7 @@
-package com.example.gwentest.di
+package com.arcryalis.gwentest.di
 
-import com.example.gwentest.TestRepository
-import com.example.gwentest.TestRepositoryImpl
+import com.arcryalis.gwentest.TestRepository
+import com.arcryalis.gwentest.TestRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

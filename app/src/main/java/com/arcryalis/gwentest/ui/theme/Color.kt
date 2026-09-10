@@ -1,4 +1,4 @@
-package com.example.gwentest.ui.theme
+package com.arcryalis.gwentest.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

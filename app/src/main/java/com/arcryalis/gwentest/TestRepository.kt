@@ -1,4 +1,4 @@
-package com.example.gwentest
+package com.arcryalis.gwentest
 
 interface TestRepository {
     fun someProcess()
