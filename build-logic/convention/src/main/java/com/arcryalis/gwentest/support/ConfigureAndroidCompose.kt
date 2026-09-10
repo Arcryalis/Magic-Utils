@@ -9,16 +9,13 @@ import org.gradle.kotlin.dsl.getByType
 internal fun Project.configureAndroidCompose(
     commonExtension: CommonExtension,
 ) {
-    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+    pluginManager.apply("org.jetbrain.kotlin.plugin.compose")
 
+    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
     commonExtension.apply {
         buildFeatures.compose = true
 
-        compileOptions.sourceCompatibility = AppConfig.sourceCompatibility
-        compileOptions.targetCompatibility = AppConfig.targetCompatibility
-
-        composeOptions.kotlinCompilerExtensionVersion =
-            libs.findVersion("androidxComposeCompiler").get().toString()
+        composeOptions.kotlinCompilerExtensionVersion = libs.findVersion("androidxComposeCompiler").get().toString()
 
         dependencies {
             val bom = libs.findLibrary("androidx-compose-bom").get()
