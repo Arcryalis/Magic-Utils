@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.gwentest.android.application.compose)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.gwentest.android.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -30,6 +31,10 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
