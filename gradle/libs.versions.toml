@@ -43,5 +43,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin"}
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
-
+gwentest-android-application-compose = { id = "gwentest.application.compose" }
 gwentest-kotlin-hilt = { id = "gwentest.kotlin.hilt"}

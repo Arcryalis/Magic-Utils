@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+//    alias(libs.plugins.gwentest.android.application.compose)
+    alias(libs.plugins.gwentest.kotlin.hilt)
 }
 
 android {
@@ -12,9 +14,9 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.gwentest"
-        minSdk = 24
-        targetSdk = 37
+        applicationId = "com.arcryalis.gwentest"
+//        minSdk = 24
+//        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
