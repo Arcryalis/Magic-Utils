@@ -21,7 +21,7 @@ class AndroidHiltConventionPlugin : Plugin<Project> {
             pluginManager.withPlugin("com.android.application") {
                 val extension = extensions.getByType<ApplicationExtension>()
                 configureKotlinAndroid(extension)
-                extension.defaultConfig.targetSdk = AppConfig.targetSdk
+                extension.defaultConfig.targetSdk = AppConfig.TARGET_SDK
             }
 
             pluginManager.withPlugin("com.android.library") {

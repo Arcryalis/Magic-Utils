@@ -4,7 +4,6 @@ import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.kotlin
@@ -17,9 +16,9 @@ val Project.libs
 
 internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension) {
     commonExtension.apply {
-        compileSdk = AppConfig.compileSdk
+        compileSdk = AppConfig.COMPILE_SDK
 
-        defaultConfig.minSdk = AppConfig.minSdk
+        defaultConfig.minSdk = AppConfig.MIN_SDK
         compileOptions.sourceCompatibility = AppConfig.sourceCompatibility
         compileOptions.targetCompatibility = AppConfig.targetCompatibility
 
