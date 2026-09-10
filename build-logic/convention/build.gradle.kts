@@ -20,6 +20,10 @@ gradlePlugin {
             id = "gwentest.application.compose"
             implementationClass = "com.arcryalis.gwentest.convention.AndroidApplicationComposeConventionPlugin"
         }
+        create("androidApplication") {
+            id = "gwentest.application"
+            implementationClass = "com.arcryalis.gwentest.convention.AndroidApplicationConventionPlugin"
+        }
 
         create("androidHilt") {
             id = "gwentest.kotlin.hilt"

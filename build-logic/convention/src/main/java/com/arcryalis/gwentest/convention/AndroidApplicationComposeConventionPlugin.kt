@@ -10,7 +10,7 @@ class AndroidApplicationComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
-                apply("com.droidstarter.convention.application")
+                apply("gwentest.application")
                 apply("org.jetbrains.kotlin.plugin.compose")
             }
 

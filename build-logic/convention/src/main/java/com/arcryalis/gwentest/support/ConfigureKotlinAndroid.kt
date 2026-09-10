@@ -1,7 +1,6 @@
 package com.arcryalis.gwentest.support
 
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.gradle.BaseExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
@@ -16,24 +15,16 @@ val Project.libs
     get(): VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 
-internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*, *, *, *>) {
-//    extensions.configure<BaseExtension> {
+internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension) {
     commonExtension.apply {
         compileSdk = AppConfig.compileSdk
-//        compileSdkVersion(AppConfig.compileSdk)
-        defaultConfig {
-            minSdk = AppConfig.minSdk
-//            targetSdk = AppConfig.minSdk
-        }
 
-        compileOptions {
-            sourceCompatibility = AppConfig.sourceCompatibility
-            targetCompatibility = AppConfig.targetCompatibility
+        defaultConfig.minSdk = AppConfig.minSdk
+        compileOptions.sourceCompatibility = AppConfig.sourceCompatibility
+        compileOptions.targetCompatibility = AppConfig.targetCompatibility
 
-        }
+        configureKotlin()
     }
-
-    configureKotlin()
 }
 
 private fun Project.configureKotlin() {

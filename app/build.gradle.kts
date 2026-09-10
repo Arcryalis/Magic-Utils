@@ -3,22 +3,22 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+//    alias(libs.plugins.gwentest.android.application)
 //    alias(libs.plugins.gwentest.android.application.compose)
     alias(libs.plugins.gwentest.kotlin.hilt)
 }
 
 android {
-    namespace = "com.example.gwentest"
+    namespace = "com.arcryalis.gwentest"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
         applicationId = "com.arcryalis.gwentest"
-//        minSdk = 24
-//        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
+        multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -31,8 +31,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
