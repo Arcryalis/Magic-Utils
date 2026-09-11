@@ -12,5 +12,5 @@ import dagger.hilt.components.SingletonComponent
 interface AppModule {
 
     @Binds
-    fun bindGetNotificationsUseCase(testRepository: TestRepositoryImpl): TestRepository
+    fun bindGetTestUseCase(testRepository: TestRepositoryImpl): TestRepository
 }

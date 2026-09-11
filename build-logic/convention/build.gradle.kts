@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     `kotlin-dsl`
 }
@@ -9,9 +11,16 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
 dependencies {
     implementation(libs.android.gradlePlugin)
     implementation(libs.kotlin.gradlePlugin)
+    implementation(libs.room.gradlePlugin)
 }
 
 gradlePlugin {
@@ -49,6 +58,11 @@ gradlePlugin {
         create("kotlinHilt") {
             id = "gwentest.kotlin.hilt"
             implementationClass = "com.arcryalis.gwentest.convention.KotlinHiltConventionPlugin"
+        }
+
+        create("androidRoom") {
+            id = "gwentest.room"
+            implementationClass = "com.arcryalis.gwentest.convention.AndroidRoomConventionPlugin"
         }
     }
 }

@@ -15,6 +15,12 @@ material = "1.10.0"
 androidxComposeCompiler = "1.5.15"
 kotlinCollectionsImmutable = "0.4.0"
 hiltNavigationCompose = "1.4.0"
+androidNavigation3 = "1.0.0"
+androidNavigation3ViewModel = "2.10.0-rc01"
+kotlinxSerialization = "1.7.3"
+kotlinxCouroutines = "1.11.0"
+retrofit = "3.0.0"
+room = "2.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,10 +46,16 @@ material = { group = "com.google.android.material", name = "material", version.r
 android-gradlePlugin = {group = "com.android.tools.build", name = "gradle", version.ref = "agp"}
 kotlin-gradlePlugin = {group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin"}
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version = "kotlinCollectionsImmutable"}
-androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version = "1.0.0" }
-androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version = "1.0.0" }
-androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0-rc01" }
-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.7.3" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "androidNavigation3" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "androidNavigation3" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidNavigation3ViewModel" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlinx-couroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCouroutines" }
+retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+room = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-gradlePlugin = { group = "andoridx.room", name = "room-gradle-plugin", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -52,12 +64,14 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin"}
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+room = { id = "androidx.room", version.ref = "room" }
 
 gwentest-android-application = { id = "gwentest.application" }
 gwentest-android-application-compose = { id = "gwentest.application.compose" }
 gwentest-android-library = { id = "gwentest.library" }
 gwentest-android-library-compose = { id = "gwentest.library.compose" }
 gwentest-android-hilt = { id = "gwentest.android.hilt"}
-
-#gwentest-kotlin-library = { id = "gwentest.kotlin.library"}
-#gwentest-kotlin-hilt = { id = "gwentest.kotlin.hilt"}
+gwentest-kotlin-library = { id = "gwentest.kotlin.library"}
+gwentest-kotlin-hilt = { id = "gwentest.kotlin.hilt"}
+gwentest-room = { id = "gwentest.room"}

@@ -30,3 +30,5 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "GwenTest"
 include(":app")
 include(":ui:core")
+include(":domain:home:api")
+include(":domain:home:impl")

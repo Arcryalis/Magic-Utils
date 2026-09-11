@@ -10,7 +10,7 @@ import com.arcryalis.gwentest.core.theme.GwenTestTheme
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = hiltViewModel()){
     Greeting(
-        name = "Android",
+        name = viewModel.name,
         modifier = modifier
     )
 }

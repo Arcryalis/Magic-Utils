@@ -7,7 +7,7 @@ import org.gradle.internal.Actions.with
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.kotlin
 
-class KotlinLibraryComposeConventionPlugin : Plugin<Project> {
+class KotlinLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
