@@ -1,16 +1,16 @@
 plugins {
     alias(libs.plugins.gwentest.kotlin.library)
     alias(libs.plugins.gwentest.kotlin.hilt)
+    alias(libs.plugins.gwentest.room)
 }
 
-//android {
-//    compileSdk = 36
-//}
+android {
+    namespace = "com.arcryalis.gwentest.home.impl"
+}
 
 dependencies {
     implementation(projects.domain.home.api)
 
     implementation(libs.kotlinx.couroutines.core)
     implementation(libs.retrofit.core)
-//    implementation(libs.plugins.gwentest.room)
 }

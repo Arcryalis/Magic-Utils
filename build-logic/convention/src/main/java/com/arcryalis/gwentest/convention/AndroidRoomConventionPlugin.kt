@@ -1,10 +1,9 @@
 package com.arcryalis.gwentest.convention
 
-import com.android.build.api.dsl.LibraryExtension
+import androidx.room.gradle.RoomExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
-import org.gradle.internal.Actions.with
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
@@ -17,7 +16,7 @@ class AndroidRoomConventionPlugin : Plugin<Project> {
                 apply("com.google.devtools.ksp")
             }
 
-            extensions.configure<RoomExtention> {
+            extensions.configure<RoomExtension> {
                 schemaDirectory("$projectDir/schemas")
             }
 

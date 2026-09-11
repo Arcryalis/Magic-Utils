@@ -3,13 +3,9 @@ plugins {
     alias(libs.plugins.gwentest.kotlin.hilt)
 }
 
-//android {
-//    compileSdk = 36
-//kotlin {
-//    compilerOptions {
-//        jvmTarget.set(JvmTarget.JVM_17)
-//    }
-//}
+android {
+    namespace = "com.arcryalis.gwentest.home"
+}
 
 dependencies {
     implementation(libs.kotlinx.couroutines.core)

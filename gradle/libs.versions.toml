@@ -55,7 +55,7 @@ retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.r
 room = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-room-gradlePlugin = { group = "andoridx.room", name = "room-gradle-plugin", version.ref = "room" }
+room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

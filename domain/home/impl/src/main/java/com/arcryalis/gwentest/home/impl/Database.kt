@@ -1,5 +1,8 @@
 package com.arcryalis.gwentest.home.impl
 
+import androidx.room.Database
+import androidx.room.RoomDatabase
+
 @Database(
     entities = [
         CardInfo::class
