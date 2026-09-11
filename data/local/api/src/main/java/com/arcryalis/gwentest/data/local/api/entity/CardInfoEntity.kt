@@ -1,10 +1,10 @@
-package com.arcryalis.gwentest.home.impl
+package com.arcryalis.gwentest.data.local.api.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "cards")
-data class CardInfo(
+data class CardInfoEntity(
     @PrimaryKey val id: String,
     val setId: String,
 )

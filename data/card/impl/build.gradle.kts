@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.arcryalis.gwentest.home.impl"
+    namespace = "com.arcryalis.gwentest.data.card.impl"
 }
 
 dependencies {
-    implementation(projects.domain.home.api)
-
     implementation(libs.kotlinx.couroutines.core)
+
+    implementation(projects.data.card.api)
 }

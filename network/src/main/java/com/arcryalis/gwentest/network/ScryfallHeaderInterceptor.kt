@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.home.impl
+package com.arcryalis.gwentest.network
 
 import android.util.Log
 import okhttp3.Interceptor

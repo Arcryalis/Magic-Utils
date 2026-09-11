@@ -1,6 +1,4 @@
-package com.arcryalis.gwentest.home.impl
-
-import kotlinx.coroutines.flow.Flow
+package com.arcryalis.gwentest.card.impl
 
 class CardRepositoryImpl(
     private val db: CardDataStore,
@@ -23,5 +21,5 @@ class CardRepositoryImpl(
     }
 
     override fun getSet(setId: String): Flow<List<CardInfo>> = db.getSet(setId)
-    
+
 }

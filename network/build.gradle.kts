@@ -8,7 +8,5 @@ android {
 }
 
 dependencies {
-    implementation(projects.domain.home.api)
-
-    implementation(libs.kotlinx.couroutines.core)
+    implementation(libs.retrofit.core)
 }

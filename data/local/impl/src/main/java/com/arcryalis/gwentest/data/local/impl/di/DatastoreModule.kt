@@ -1,14 +1,14 @@
-package com.arcryalis.gwentest.home.impl
+package com.arcryalis.gwentest.data.local.impl.di
 
-import android.content.Context
+import com.arcryalis.gwentest.data.local.api.CardDataStore
+import com.arcryalis.gwentest.data.local.impl.dao.CardDao
+import com.arcryalis.gwentest.data.local.impl.datastore.CardDataStoreImpl
+import com.arcryalis.gwentest.home.impl.Database
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
-import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module

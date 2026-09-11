@@ -1,6 +1,7 @@
-package com.arcryalis.gwentest.home.impl
+package com.arcryalis.gwentest.network.di
 
 import android.content.Context
+import com.arcryalis.gwentest.network.ScryfallHeaderInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
