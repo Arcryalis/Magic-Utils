@@ -7,5 +7,9 @@ import javax.inject.Inject
 class TestUseCaseImpl @Inject constructor(
     private val cardRepository: CardRepository
 ): TestUseCase {
-    override suspend fun invoke(): String = "Android"
+    override suspend fun invoke(): String {
+        cardRepository.downloadSet("oe01")
+
+        return "Android"
+    }
 }

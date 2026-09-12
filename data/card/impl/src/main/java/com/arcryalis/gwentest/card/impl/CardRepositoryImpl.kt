@@ -16,12 +16,12 @@ class CardRepositoryImpl @Inject constructor(
 ) : CardRepository {
 
     override suspend fun downloadSet(setId: String) {
-        when (val result = dataSource.getCards(setId)) {
+        when (val result = dataSource.getCards("s=${setId}")) {
             is RemoteResponse.Success -> {
                 db.insertCards(result.data.map { it.toEntity(setId) })
             }
             is RemoteResponse.Error -> {
-                // TODO handle error
+                // Do nothing
             }
         }
     }

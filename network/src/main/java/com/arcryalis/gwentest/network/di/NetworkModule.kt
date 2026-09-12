@@ -29,10 +29,5 @@ object NetworkModule {
         Retrofit.Builder()
             .baseUrl("https://api.scryfall.com/")
             .client(client)
-            .addConverterFactory(
-                ScryfallJson.asConverterFactory("application/json".toMediaType())
-            )
             .build()
-
-    private val ScryfallJson = Json { ignoreUnknownKeys = true }
 }
