@@ -14,4 +14,6 @@ dependencies {
     api(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+
+    implementation(projects.domain.home.api)
 }

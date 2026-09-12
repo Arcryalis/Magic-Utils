@@ -1,9 +1,9 @@
-package com.arcryalis.gwentest.home.impl
+package com.arcryalis.gwentest.data.local.impl
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
-import com.arcryalis.gwentest.data.local.impl.CardDao
+import com.arcryalis.gwentest.data.local.impl.dao.CardDao
 
 @Database(
     entities = [

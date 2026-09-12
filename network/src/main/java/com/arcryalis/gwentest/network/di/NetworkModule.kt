@@ -1,25 +1,38 @@
 package com.arcryalis.gwentest.network.di
 
-import android.content.Context
 import com.arcryalis.gwentest.network.ScryfallHeaderInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class NetworkModule {
+object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(
-        scryfallInterceptor: ScryfallHeaderInterceptor,
-        @ApplicationContext context: Context
-    ): OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(scryfallInterceptor)
-        .build()
+    fun provideOkHttpClient(scryfallInterceptor: ScryfallHeaderInterceptor): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(scryfallInterceptor)
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(client: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("https://api.scryfall.com/")
+            .client(client)
+            .addConverterFactory(
+                ScryfallJson.asConverterFactory("application/json".toMediaType())
+            )
+            .build()
+
+    private val ScryfallJson = Json { ignoreUnknownKeys = true }
 }

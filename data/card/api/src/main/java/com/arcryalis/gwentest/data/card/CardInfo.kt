@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.home.impl
+package com.arcryalis.gwentest.data.card
 
 data class CardInfo(
     val id: String,

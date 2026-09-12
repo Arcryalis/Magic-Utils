@@ -23,8 +23,15 @@ android {
 dependencies {
     implementation(projects.ui.core)
 
-//    implementation(projects.domain.home.api)
-//    implementation(projects.domain.home.impl)
+    implementation(projects.domain.home.api)
+    implementation(projects.domain.home.impl)
+    implementation(projects.data.card.api)
+    implementation(projects.data.card.impl)
+    implementation(projects.data.local.api)
+    implementation(projects.data.local.impl)
+    implementation(projects.data.remote.api)
+    implementation(projects.data.remote.impl)
+    implementation(projects.network)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

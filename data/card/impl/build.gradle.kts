@@ -11,4 +11,6 @@ dependencies {
     implementation(libs.kotlinx.couroutines.core)
 
     implementation(projects.data.card.api)
+    implementation(projects.data.local.api)
+    implementation(projects.data.remote.api)
 }

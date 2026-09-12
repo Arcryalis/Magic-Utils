@@ -1,9 +1,9 @@
 package com.arcryalis.gwentest.data.local.impl.di
 
 import com.arcryalis.gwentest.data.local.api.CardDataStore
+import com.arcryalis.gwentest.data.local.impl.Database
 import com.arcryalis.gwentest.data.local.impl.dao.CardDao
 import com.arcryalis.gwentest.data.local.impl.datastore.CardDataStoreImpl
-import com.arcryalis.gwentest.home.impl.Database
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

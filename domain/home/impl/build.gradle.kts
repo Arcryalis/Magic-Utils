@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(projects.domain.home.api)
+    implementation(projects.data.card.api)
 
     implementation(libs.kotlinx.couroutines.core)
 }

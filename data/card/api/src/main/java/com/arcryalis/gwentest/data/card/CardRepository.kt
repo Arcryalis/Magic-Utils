@@ -1,12 +1,12 @@
-package com.arcryalis.gwentest.home.impl
+package com.arcryalis.gwentest.data.card
 
 import kotlinx.coroutines.flow.Flow
 
 interface CardRepository {
 
-    suspend fun downloadSet(id: String)
+    suspend fun downloadSet(setId: String)
 
-    fun isSetAvailable(id: String): Flow<Boolean>
+    fun isSetAvailable(setId: String): Flow<Boolean>
 
     fun getSet(setId: String): Flow<List<CardInfo>>
 
