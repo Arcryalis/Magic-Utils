@@ -19,7 +19,7 @@ androidNavigation3 = "1.0.0"
 androidNavigation3ViewModel = "2.10.0-rc01"
 kotlinxSerialization = "1.7.3"
 kotlinxCouroutines = "1.11.0"
-retrofit = "3.0.0"
+retrofit = "2.11.0"
 room = "2.7.0"
 networkResponseAdapter = "5.0.0"
 
@@ -53,6 +53,7 @@ androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecy
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinx-couroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCouroutines" }
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-scalars = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref = "retrofit" }
 retrofit-converter-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
 room = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }

@@ -1,8 +1,10 @@
 package com.arcryalis.gwentest.api.scryfall
 
 import com.arcryalis.gwentest.api.RemoteResponse
-import com.arcryalis.gwentest.api.scryfall.dto.ScryfallCardDto
+import com.arcryalis.gwentest.api.scryfall.dto.ScryfallSearchDto
+import kotlinx.serialization.InternalSerializationApi
 
 interface ScryfallDataSource {
-    suspend fun getCards(query: String): RemoteResponse<List<ScryfallCardDto>>
+    @OptIn(InternalSerializationApi::class)
+    suspend fun getCards(query: String): RemoteResponse<ScryfallSearchDto>
 }

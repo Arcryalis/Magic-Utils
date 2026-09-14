@@ -1,7 +1,9 @@
 package com.arcryalis.gwentest.home.impl.di
 
+import com.arcryalis.gwentest.home.GetCardInfoListUseCase
 import com.arcryalis.gwentest.home.IsSetAvailableUseCase
 import com.arcryalis.gwentest.home.TestUseCase
+import com.arcryalis.gwentest.home.impl.GetCardInfoListUseCaseImpl
 import com.arcryalis.gwentest.home.impl.IsSetAvailableUseCaseImpl
 import com.arcryalis.gwentest.home.impl.TestUseCaseImpl
 import dagger.Binds
@@ -18,4 +20,7 @@ interface HomeUseCaseModule {
 
     @Binds
     fun bindIsSetAvailableUseCase(isSetAvailableUseCase: IsSetAvailableUseCaseImpl): IsSetAvailableUseCase
+
+    @Binds
+    fun bindGetCardInfoUseCase(getCardInfoListUseCase: GetCardInfoListUseCaseImpl): GetCardInfoListUseCase
 }

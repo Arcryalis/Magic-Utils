@@ -8,15 +8,14 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_playing_cards"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_playing_cards"
         android:supportsRtl="true"
         android:theme="@style/Theme.GwenTest">
         <activity
             android:name="com.arcryalis.gwentest.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.GwenTest"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

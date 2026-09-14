@@ -14,8 +14,8 @@ interface CardDao {
     @Query("SELECT EXISTS(SELECT * FROM cards WHERE id = :id)")
     fun getSetExists(id: String): Flow<Boolean>
 
-    @Query("SELECT * FROM cards WHERE id = :id")
-    fun getSet(id: String): Flow<List<CardInfoEntity>>
+    @Query("SELECT * FROM cards WHERE setId = :setId")
+    fun getSet(setId: String): Flow<List<CardInfoEntity>>
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -1,5 +1,6 @@
 package com.arcryalis.gwentest.card.impl
 
+import android.util.Log
 import com.arcryalis.gwentest.api.RemoteResponse
 import com.arcryalis.gwentest.api.scryfall.ScryfallDataSource
 import com.arcryalis.gwentest.card.impl.mapper.toEntity
@@ -12,13 +13,22 @@ import javax.inject.Inject
 
 class CardRepositoryImpl @Inject constructor(
     private val db: CardDataStore,
-    private val dataSource: ScryfallDataSource,
+    private val dataSource: ScryfallDataSource
 ) : CardRepository {
 
+    companion object {
+        const val LOG_TAG = "CardRepositoryImpl"
+    }
+
     override suspend fun downloadSet(setId: String) {
-        when (val result = dataSource.getCards("s=${setId}")) {
+        Log.i(LOG_TAG, "Downloading set $setId")
+        val result = dataSource.getCards("s=${setId}")
+        Log.i(LOG_TAG, "Download result $result")
+
+        when (result) {
             is RemoteResponse.Success -> {
-                db.insertCards(result.data.map { it.toEntity(setId) })
+                //TODO handle pagination
+                db.insertCards(result.data.data.map { it.toEntity(setId) })
             }
             is RemoteResponse.Error -> {
                 // Do nothing
@@ -30,6 +40,13 @@ class CardRepositoryImpl @Inject constructor(
 
     override fun getSet(setId: String): Flow<List<CardInfo>> =
         db.getSet(setId).map { entities ->
-            entities.map { CardInfo(it.id, it.setId) }
+            Log.i(LOG_TAG, "Found ${entities.size} entities with id $setId")
+            entities.map {  //TODO mapper
+                CardInfo(
+                    name = it.name,
+                    imageUrl = it.smallImageUrl,
+                    isOngoing = it.isOngoing
+                )
+            }
         }
 }

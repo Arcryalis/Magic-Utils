@@ -7,4 +7,8 @@ import androidx.room.PrimaryKey
 data class CardInfoEntity(
     @PrimaryKey val id: String,
     val setId: String,
+    val name: String,
+    val smallImageUrl: String,
+    val oracleText: String,
+    val isOngoing: Boolean
 )

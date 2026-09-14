@@ -17,7 +17,8 @@ class ScryfallHeaderInterceptor @Inject constructor() : Interceptor {
             chain
                 .request()
                 .newBuilder()
-//                .addHeader("Header", "value")
+                .addHeader("User-Agent", "com.arcryalis.gwentest/1.0")
+                .addHeader("Accept", "application/json")
                 .build()
         } catch (e: Exception) {
             Log.e(LOG_TAG, "Error adding header: ${e.message}")

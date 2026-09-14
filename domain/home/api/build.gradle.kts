@@ -9,4 +9,6 @@ android {
 
 dependencies {
     implementation(libs.kotlinx.couroutines.core)
+
+    implementation(projects.data.card.api)
 }
