@@ -22,7 +22,11 @@ data class ScryfallDataDto(
     @SerialName("oracle_text")
     val oracleText: String,
     @SerialName("type_line")
-    val type: String
+    val type: String,
+    @SerialName("set")
+    val setId: String,
+    @SerialName("set_name")
+    val setName: String
 )
 
 @InternalSerializationApi

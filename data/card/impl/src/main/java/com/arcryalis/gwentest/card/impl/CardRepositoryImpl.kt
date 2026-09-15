@@ -1,52 +1,79 @@
 package com.arcryalis.gwentest.card.impl
 
-import android.util.Log
+import android.content.Context
 import com.arcryalis.gwentest.api.RemoteResponse
 import com.arcryalis.gwentest.api.scryfall.ScryfallDataSource
-import com.arcryalis.gwentest.card.impl.mapper.toEntity
-import com.arcryalis.gwentest.data.card.CardInfo
+import com.arcryalis.gwentest.api.scryfall.dto.ScryfallSearchDto
+import com.arcryalis.gwentest.card.impl.mapper.toDistinctSetEntity
+import com.arcryalis.gwentest.card.impl.mapper.toInfoEntity
+import com.arcryalis.gwentest.card.impl.mapper.toModel
 import com.arcryalis.gwentest.data.card.CardRepository
-import com.arcryalis.gwentest.data.local.api.CardDataStore
+import com.arcryalis.gwentest.network.R
+import com.arcryalis.gwentest.data.card.model.CardInfo
+import com.arcryalis.gwentest.data.card.model.CardSet
+import com.arcryalis.gwentest.data.local.api.CardInfoDataStore
+import com.arcryalis.gwentest.data.local.api.CardSetDataStore
+import com.arcryalis.gwentest.network.CoilImageCacher
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class CardRepositoryImpl @Inject constructor(
-    private val db: CardDataStore,
-    private val dataSource: ScryfallDataSource
+    private val cardInfoStore: CardInfoDataStore,
+    private val cardSetStore: CardSetDataStore,
+    private val dataSource: ScryfallDataSource,
+    private val imageCacher: CoilImageCacher,
+    @ApplicationContext private val context: Context
 ) : CardRepository {
 
-    companion object {
-        const val LOG_TAG = "CardRepositoryImpl"
+    override suspend fun downloadSet(setId: String): Boolean {
+        val query = "s=${setId}"
+        val response = dataSource.getCards(query)
+        return handleDownloadSetPage(response)
     }
 
-    override suspend fun downloadSet(setId: String) {
-        Log.i(LOG_TAG, "Downloading set $setId")
-        val result = dataSource.getCards("s=${setId}")
-        Log.i(LOG_TAG, "Download result $result")
+    private suspend fun handleDownloadSetPage(response: RemoteResponse<ScryfallSearchDto>): Boolean = when (response) {
+        is RemoteResponse.Success -> {
+            val data = response.data.data
 
-        when (result) {
-            is RemoteResponse.Success -> {
-                //TODO handle pagination
-                db.insertCards(result.data.data.map { it.toEntity(setId) })
+            cardSetStore.insertSets(data.toDistinctSetEntity())
+            cardInfoStore.insertCards(data.toInfoEntity())
+
+            imageCacher.queueImageCacheRequests(
+                data.map {
+                    it.imageUris.small
+                }.distinct()
+            )
+
+            val hasMore = response.data.hasMore
+            val nextPage = response.data.nextPage
+            if (hasMore == true && nextPage != null) {
+                //Download next page recursively
+                val baseUrl = context.getString(R.string.scryfall_base_url)
+                val query = nextPage.replace(baseUrl, "")
+
+                val response = dataSource.getCards(query)
+                handleDownloadSetPage(response)
+            } else {
+                true
             }
-            is RemoteResponse.Error -> {
-                // Do nothing
-            }
+
+
+        }
+        is RemoteResponse.Error -> {
+            // Do nothing
+            false
         }
     }
 
-    override fun isSetAvailable(setId: String): Flow<Boolean> = db.getSetExists(setId)
+    override fun getAvailableSets(): Flow<List<CardSet>> = cardSetStore.getSets()
+        .map { entities ->
+            entities.toModel()
+        }
 
-    override fun getSet(setId: String): Flow<List<CardInfo>> =
-        db.getSet(setId).map { entities ->
-            Log.i(LOG_TAG, "Found ${entities.size} entities with id $setId")
-            entities.map {  //TODO mapper
-                CardInfo(
-                    name = it.name,
-                    imageUrl = it.smallImageUrl,
-                    isOngoing = it.isOngoing
-                )
-            }
+    override fun getSet(setId: String): Flow<List<CardInfo>> = cardInfoStore.getSet(setId)
+        .map { entities ->
+            entities.toModel()
         }
 }

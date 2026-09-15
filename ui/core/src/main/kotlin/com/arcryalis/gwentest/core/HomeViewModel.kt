@@ -3,7 +3,7 @@ package com.arcryalis.gwentest.core
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcryalis.gwentest.data.card.CardInfo
+import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.home.GetCardInfoListUseCase
 import com.arcryalis.gwentest.home.TestUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,12 +19,17 @@ class HomeViewModel @Inject constructor(
     private val testUseCase: TestUseCase,
     private val getCardInfoListUseCase: GetCardInfoListUseCase
 ): ViewModel()  {
+
+    companion object {
+        private const val SET_ID = "oe01"
+    }
+
     private val currentName = MutableStateFlow<String>("")
 
     private val isLoading = MutableStateFlow<Boolean>(false)
 
     val state = combine(
-        getCardInfoListUseCase(),
+        getCardInfoListUseCase(SET_ID),
         isLoading
     ) { cardList, loading ->
         if (loading) {
@@ -37,7 +42,7 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun fetchName() {
         isLoading.value = true
-        currentName.value = testUseCase.invoke()
+        currentName.value = testUseCase.invoke(SET_ID)
         isLoading.value = false
     }
 

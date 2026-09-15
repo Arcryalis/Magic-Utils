@@ -1,10 +1,13 @@
 package com.arcryalis.gwentest.network.di
 
+import android.content.Context
+import com.arcryalis.gwentest.network.R
 import com.arcryalis.gwentest.network.ScryfallHeaderInterceptor
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -27,9 +30,12 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient): Retrofit =
+    fun provideRetrofit(
+        client: OkHttpClient,
+        @ApplicationContext context: Context
+    ): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://api.scryfall.com/")
+            .baseUrl(context.getString(R.string.scryfall_base_url))
             .client(client)
             .addCallAdapterFactory(NetworkResponseAdapterFactory())
             .addConverterFactory(ScalarsConverterFactory.create())

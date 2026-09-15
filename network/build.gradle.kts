@@ -14,4 +14,5 @@ dependencies {
     implementation(libs.retrofit.converter.kotlinx.serialization)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.network.response.adapter)
+    implementation(libs.coil.compose)
 }

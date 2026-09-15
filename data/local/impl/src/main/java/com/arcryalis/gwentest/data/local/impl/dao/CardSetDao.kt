@@ -6,15 +6,16 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
+import com.arcryalis.gwentest.data.local.api.entity.CardSetEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CardDao {
+interface CardSetDao {
 
-    @Query("SELECT * FROM cards WHERE setId = :setId")
-    fun getSet(setId: String): Flow<List<CardInfoEntity>>
+    @Query("SELECT * FROM cardSets")
+    fun getSets(): Flow<List<CardSetEntity>>
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCards(cards: List<CardInfoEntity>)
+    suspend fun insertCardSets(cards: List<CardSetEntity>)
 }

@@ -2,11 +2,10 @@ package com.arcryalis.gwentest.card.impl.mapper
 
 import com.arcryalis.gwentest.api.scryfall.dto.ScryfallDataDto
 import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
-import kotlin.String
 
-const val TYPE_ONGOING = "ongoing"
+private const val TYPE_ONGOING = "ongoing"
 
-fun ScryfallDataDto.toEntity(setId: String): CardInfoEntity = CardInfoEntity(
+fun ScryfallDataDto.toInfoEntity(): CardInfoEntity = CardInfoEntity(
     id = id,
     setId = setId,
     name = name,
@@ -14,3 +13,5 @@ fun ScryfallDataDto.toEntity(setId: String): CardInfoEntity = CardInfoEntity(
     oracleText = oracleText,
     isOngoing = type.lowercase().contains(TYPE_ONGOING)
 )
+
+fun List<ScryfallDataDto>.toInfoEntity() = map { it.toInfoEntity() }

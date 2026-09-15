@@ -1,8 +1,8 @@
 package com.arcryalis.gwentest.home
 
-import com.arcryalis.gwentest.data.card.CardInfo
+import com.arcryalis.gwentest.data.card.model.CardInfo
 import kotlinx.coroutines.flow.Flow
 
 interface GetCardInfoListUseCase {
-    operator fun invoke(): Flow<List<CardInfo>>
+    operator fun invoke(setId: String): Flow<List<CardInfo>>
 }
