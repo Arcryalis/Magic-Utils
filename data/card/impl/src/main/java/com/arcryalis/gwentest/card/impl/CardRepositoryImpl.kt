@@ -3,12 +3,11 @@ package com.arcryalis.gwentest.card.impl
 import android.content.Context
 import com.arcryalis.gwentest.api.RemoteResponse
 import com.arcryalis.gwentest.api.scryfall.ScryfallDataSource
-import com.arcryalis.gwentest.api.scryfall.dto.ScryfallSearchDto
+import com.arcryalis.gwentest.api.scryfall.dto.ScryfallDataDto
 import com.arcryalis.gwentest.card.impl.mapper.toDistinctSetEntity
 import com.arcryalis.gwentest.card.impl.mapper.toInfoEntity
 import com.arcryalis.gwentest.card.impl.mapper.toModel
 import com.arcryalis.gwentest.data.card.CardRepository
-import com.arcryalis.gwentest.network.R
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.data.card.model.CardSet
 import com.arcryalis.gwentest.data.local.api.CardInfoDataStore
@@ -18,6 +17,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import kotlin.collections.distinct
 
 class CardRepositoryImpl @Inject constructor(
     private val cardInfoStore: CardInfoDataStore,
@@ -27,44 +27,57 @@ class CardRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : CardRepository {
 
-    override suspend fun downloadSet(setId: String): Boolean {
-        val query = "s=${setId}"
-        val response = dataSource.getCards(query)
-        return handleDownloadSetPage(response)
+    companion object {
+
+        // TODO move to settings
+        // Search api currently doesn't support this. Hardcode for now
+        const val CARD_BACK_URL = "https://backs.scryfall.io/large/1/b/1b2396d4-9048-439d-96bd-354288518841.jpg?1665006146"
     }
 
-    private suspend fun handleDownloadSetPage(response: RemoteResponse<ScryfallSearchDto>): Boolean = when (response) {
-        is RemoteResponse.Success -> {
-            val data = response.data.data
+    override suspend fun downloadSchemes(): Boolean {
+        imageCacher.queueImageCacheRequest(CARD_BACK_URL)
 
-            cardSetStore.insertSets(data.toDistinctSetEntity())
-            cardInfoStore.insertCards(data.toInfoEntity())
+        return handleDownloadSetPage(1)
+    }
 
-            imageCacher.queueImageCacheRequests(
-                data.map {
-                    it.imageUris.small
-                }.distinct()
-            )
+    private suspend fun handleDownloadSetPage(pageToFetch: Int): Boolean {
+        val response = dataSource.getSchemes(pageToFetch)
+        return when (response) {
+            is RemoteResponse.Success -> {
+                val data = response.data.data
 
-            val hasMore = response.data.hasMore
-            val nextPage = response.data.nextPage
-            if (hasMore == true && nextPage != null) {
-                //Download next page recursively
-                val baseUrl = context.getString(R.string.scryfall_base_url)
-                val query = nextPage.replace(baseUrl, "")
+                cardSetStore.insertSets(data.toDistinctSetEntity())
+                cardInfoStore.insertCards(data.toInfoEntity())
 
-                val response = dataSource.getCards(query)
-                handleDownloadSetPage(response)
-            } else {
-                true
+                cacheFaceImages(data)
+
+                val hasMore = response.data.hasMore
+                if (hasMore) {
+                    //Download next page recursively
+                    handleDownloadSetPage(pageToFetch + 1)
+                } else {
+                    true
+                }
             }
 
+            is RemoteResponse.Error -> {
+                // Do nothing
+                false
+            }
+        }
+    }
 
+    private fun cacheFaceImages(data: List<ScryfallDataDto>) {
+        val smallImages = data.mapNotNull {
+            it.imageUris?.small
         }
-        is RemoteResponse.Error -> {
-            // Do nothing
-            false
+        val largeImages = data.mapNotNull {
+            it.imageUris?.large
         }
+
+        imageCacher.queueImageCacheRequests(
+            (smallImages + largeImages).distinct()
+        )
     }
 
     override fun getAvailableSets(): Flow<List<CardSet>> = cardSetStore.getSets()
@@ -72,7 +85,7 @@ class CardRepositoryImpl @Inject constructor(
             entities.toModel()
         }
 
-    override fun getSet(setId: String): Flow<List<CardInfo>> = cardInfoStore.getSet(setId)
+    override fun getSet(setId: String): Flow<List<CardInfo>> = cardInfoStore.getCardSet(setId)
         .map { entities ->
             entities.toModel()
         }

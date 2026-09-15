@@ -5,7 +5,7 @@ import com.arcryalis.gwentest.data.local.api.CardSetDataStore
 import com.arcryalis.gwentest.data.local.impl.Database
 import com.arcryalis.gwentest.data.local.impl.dao.CardDao
 import com.arcryalis.gwentest.data.local.impl.dao.CardSetDao
-import com.arcryalis.gwentest.data.local.impl.datastore.CardInfoInfoDataStoreImpl
+import com.arcryalis.gwentest.data.local.impl.datastore.CardInfoDataStoreImpl
 import com.arcryalis.gwentest.data.local.impl.datastore.CardSetDataStoreImpl
 import dagger.Binds
 import dagger.Module
@@ -18,7 +18,7 @@ import dagger.hilt.components.SingletonComponent
 interface DatastoreModule {
 
     @Binds
-    fun bindCardDataStore(cardDataStore: CardInfoInfoDataStoreImpl): CardInfoDataStore
+    fun bindCardDataStore(cardDataStore: CardInfoDataStoreImpl): CardInfoDataStore
 
     @Binds
     fun bindCardSetDataStore(cardSetDataStore: CardSetDataStoreImpl): CardSetDataStore

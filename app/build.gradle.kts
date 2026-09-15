@@ -22,6 +22,7 @@ android {
 
 dependencies {
     implementation(projects.ui.core)
+    implementation(projects.ui.scheme)
 
     implementation(projects.domain.home.api)
     implementation(projects.domain.home.impl)
@@ -55,4 +56,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 }

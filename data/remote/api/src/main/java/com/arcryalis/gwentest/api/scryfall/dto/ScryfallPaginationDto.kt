@@ -3,12 +3,13 @@ package com.arcryalis.gwentest.api.scryfall.dto
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
 @InternalSerializationApi
 @Serializable
-data class ScryfallSearchDto(
+data class ScryfallPaginationDto(
     @SerialName("has_more")
-    val hasMore: Boolean? = null,
-    val nextPage: String? = null,
+    val hasMore: Boolean,
+    val warnings: String? = null,
     val data: List<ScryfallDataDto>
 )
 
@@ -18,9 +19,9 @@ data class ScryfallDataDto(
     val id: String,
     val name: String,
     @SerialName("image_uris")
-    val imageUris: ScryfallImageUrlsDto,
+    val imageUris: ScryfallImageUrlsDto? = null,
     @SerialName("oracle_text")
-    val oracleText: String,
+    val oracleText: String? = null,
     @SerialName("type_line")
     val type: String,
     @SerialName("set")

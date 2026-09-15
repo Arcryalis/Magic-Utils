@@ -1,20 +1,25 @@
 package com.arcryalis.gwentest.remote.impl.api
 
-import com.arcryalis.gwentest.api.scryfall.dto.ScryfallSearchDto
+import com.arcryalis.gwentest.api.scryfall.dto.ScryfallPaginationDto
 import com.haroldadmin.cnradapter.NetworkResponse
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface ScryfallApi {
 
     @GET("cards/search")
-    suspend fun getCards(
+    suspend fun getAllSchemes(
         @Query("q") query: String,
-    ): NetworkResponse<ScryfallSearchDto, Unit>
+        @Query("unique") unique: String,
+        @Query("order") order: String,
+        @Query("include_extras") includeExtras: Boolean,
+        @Query("page") page: Int
+    ): NetworkResponse<ScryfallPaginationDto, Unit>
 
-    @GET("{url}")
-    suspend fun getCardsViaUrl(
-        @Path("url") url: String,
-    ): NetworkResponse<ScryfallSearchDto, Unit>
+    @GET
+    suspend fun getNextPage(
+        @Url url: String,
+    ): NetworkResponse<ScryfallPaginationDto, Unit>
+
 }

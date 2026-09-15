@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CardRepository {
 
-    suspend fun downloadSet(setId: String): Boolean
+    suspend fun downloadSchemes(): Boolean
 
     fun getAvailableSets(): Flow<List<CardSet>>
 

@@ -30,7 +30,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(
+    fun provideSRetrofit(
         client: OkHttpClient,
         @ApplicationContext context: Context
     ): Retrofit =

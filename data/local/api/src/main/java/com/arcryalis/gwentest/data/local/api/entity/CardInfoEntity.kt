@@ -5,7 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "cards",
+    tableName = "cardInfo",
     foreignKeys = [
         ForeignKey(
             entity = CardSetEntity::class,
@@ -20,6 +20,7 @@ data class CardInfoEntity(
     val setId: String,
     val name: String,
     val smallImageUrl: String,
+    val largeImageUrl: String,
     val oracleText: String,
     val isOngoing: Boolean
 )

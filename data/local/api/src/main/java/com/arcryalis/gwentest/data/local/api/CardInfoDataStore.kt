@@ -7,6 +7,6 @@ interface CardInfoDataStore {
 
     suspend fun insertCards(cards: List<CardInfoEntity>)
 
-    fun getSet(setId: String): Flow<List<CardInfoEntity>>
+    fun getCardSet(setId: String): Flow<List<CardInfoEntity>>
 
 }

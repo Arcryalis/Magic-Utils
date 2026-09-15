@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CardSetDao {
 
-    @Query("SELECT * FROM cardSets")
+    @Query("SELECT * FROM cardSet")
     fun getSets(): Flow<List<CardSetEntity>>
 
     @Transaction

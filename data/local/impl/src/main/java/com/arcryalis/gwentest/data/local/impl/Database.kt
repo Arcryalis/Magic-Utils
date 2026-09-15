@@ -12,7 +12,7 @@ import com.arcryalis.gwentest.data.local.impl.dao.CardSetDao
         CardInfoEntity::class,
         CardSetEntity::class
     ],
-    version = 2
+    version = 1
 )
 abstract class Database : RoomDatabase() {
 

@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CardDao {
 
-    @Query("SELECT * FROM cards WHERE setId = :setId")
-    fun getSet(setId: String): Flow<List<CardInfoEntity>>
+    @Query("SELECT * FROM cardInfo WHERE setId = :setId")
+    fun getCardSet(setId: String): Flow<List<CardInfoEntity>>
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)

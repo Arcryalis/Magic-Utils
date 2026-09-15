@@ -8,12 +8,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CardInfoInfoDataStoreImpl @Inject constructor(
+class CardInfoDataStoreImpl @Inject constructor(
     private val cardDao: CardDao
 ): CardInfoDataStore {
 
     override suspend fun insertCards(cards: List<CardInfoEntity>) = cardDao.insertCards(cards)
 
-    override fun getSet(setId: String): Flow<List<CardInfoEntity>> = cardDao.getSet(setId)
-
+    override fun getCardSet(setId: String): Flow<List<CardInfoEntity>> = cardDao.getCardSet(setId)
 }

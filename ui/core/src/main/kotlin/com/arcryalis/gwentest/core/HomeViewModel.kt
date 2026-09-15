@@ -1,11 +1,11 @@
 package com.arcryalis.gwentest.core
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil.compose.AsyncImagePainter
 import com.arcryalis.gwentest.data.card.model.CardInfo
-import com.arcryalis.gwentest.home.GetCardInfoListUseCase
-import com.arcryalis.gwentest.home.TestUseCase
+import com.arcryalis.gwentest.home.DownloadSchemesUseCase
+import com.arcryalis.gwentest.home.GetCardSetsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,38 +16,33 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val testUseCase: TestUseCase,
-    private val getCardInfoListUseCase: GetCardInfoListUseCase
+    private val downloadSchemesUseCase: DownloadSchemesUseCase,
+    private val getCardSetsUseCase: GetCardSetsUseCase,
 ): ViewModel()  {
 
-    companion object {
-        private const val SET_ID = "oe01"
-    }
-
-    private val currentName = MutableStateFlow<String>("")
-
-    private val isLoading = MutableStateFlow<Boolean>(false)
+    private val isLoading = MutableStateFlow<Boolean>(true)
 
     val state = combine(
-        getCardInfoListUseCase(SET_ID),
-        isLoading
-    ) { cardList, loading ->
-        if (loading) {
-            emptyList<CardInfo>()
-        } else {
-            Log.i("HomeViewModel", "state: $cardList")
-            cardList //TODO add model
+        isLoading,
+        getCardSetsUseCase()
+    ) { loading, availableSets ->
+        when (loading) {
+            true -> HomeState.Loading
+            false -> HomeState.Ready(availableSets)
         }
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList<CardInfo>())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState.Loading)
 
     private suspend fun fetchName() {
         isLoading.value = true
-        currentName.value = testUseCase.invoke(SET_ID)
+        //TODO handle for more info
+        //val loadSuccessful =
+        downloadSchemesUseCase.invoke()
         isLoading.value = false
     }
 
     init {
         viewModelScope.launch {
+            //TODO default don't fetch if DB has values, add refresh to force
             fetchName()
         }
     }
