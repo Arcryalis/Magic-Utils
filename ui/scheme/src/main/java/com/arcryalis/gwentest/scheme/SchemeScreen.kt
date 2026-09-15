@@ -1,8 +1,8 @@
 package com.arcryalis.gwentest.scheme
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,14 +35,16 @@ fun SchemeScreen(
     SchemeScreen(
         state = state.value,
         modifier = modifier,
-        addCardToOngoingList = viewModel::addCardToOngoingList
+        onSchemeClicked = viewModel::onSchemeClicked,
+        onOngoingClicked = viewModel::onOngoingClicked
     )
 }
 @Composable
 fun SchemeScreen(
     state: SchemeState,
     modifier: Modifier = Modifier,
-    addCardToOngoingList: (CardInfo) -> Unit = {}
+    onSchemeClicked: (CardUiInfo) -> Unit = {},
+    onOngoingClicked: (CardUiInfo) -> Unit = {},
 ) {
     when (state) {
         SchemeState.Loading -> {
@@ -53,7 +55,8 @@ fun SchemeScreen(
                 cardList = state.cards,
                 ongoingCardList = state.ongoingCards,
                 modifier = modifier,
-                onOngoingCardAppear = addCardToOngoingList
+                onSchemeClicked = onSchemeClicked,
+                onOngoingClicked = onOngoingClicked
             )
         }
     }
@@ -61,10 +64,11 @@ fun SchemeScreen(
 
 @Composable
 fun CardList(
-    cardList: List<CardInfo>,
-    ongoingCardList: List<CardInfo>,
+    cardList: List<CardUiInfo>,
+    ongoingCardList: List<CardUiInfo>,
     modifier: Modifier = Modifier,
-    onOngoingCardAppear: (CardInfo) -> Unit = {}
+    onSchemeClicked: (CardUiInfo) -> Unit = {},
+    onOngoingClicked: (CardUiInfo) -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -79,20 +83,23 @@ fun CardList(
         ) { index ->
             val card = cardList[index]
 
-            if (index == pagerState.currentPage && card.isOngoing) {
-                onOngoingCardAppear(card)
-            }
-
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 AsyncImage(
-                    model = card.images.large,
+                    model = if (card.isFaceUp) {
+                        card.images.large
+                    } else {
+                        card.images.back
+                    },
                     contentDescription = card.name,
                     alignment = Alignment.Center,
                     modifier = Modifier
+                        .clickable(
+                            onClick = { onSchemeClicked(card) }
+                        )
                         .padding(horizontal = 8.dp)
-                        .fillMaxSize()
+                        .fillMaxSize(),
                 )
             }
         }
@@ -109,28 +116,17 @@ fun CardList(
         ) {
             itemsIndexed(ongoingCardList) { _, card ->
                 AsyncImage(
-                    model = card.images.back,
+                    model = card.images.small,
                     contentDescription = card.name,
                     alignment = Alignment.Center,
                     modifier = Modifier
+                        .clickable(
+                            onClick = { onOngoingClicked(card) }
+                        )
                         .height(100.dp)
                         .padding(horizontal = 8.dp)
-                        .background(Color.Blue)
                 )
             }
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun CardListPreview() {
-//    GwenTestTheme {
-//        CardList(
-//            listOf(
-//                CardInfo("Name", "https://image.url", true),
-//                CardInfo("Different name","http://something.else", false),
-//            )
-//        )
-//    }
-//}

@@ -1,0 +1,5 @@
+<resources>
+    <string name="loading_info">Downloading images from Scryfall</string>
+    <string name="error_info">An error has occurred</string>
+    <string name="refresh_button">Refresh</string>
+</resources>

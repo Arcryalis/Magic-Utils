@@ -26,16 +26,33 @@ class SchemeViewModel @AssistedInject constructor(
 
     private val isLoading = MutableStateFlow(false)
 
-    private val ongoingCardList = MutableStateFlow(mutableListOf<CardInfo>())
+    private val ongoingCardList = MutableStateFlow(mutableListOf<CardUiInfo>())
+
+    private val selectedCardIds = MutableStateFlow(mutableListOf<CardUiInfo>())
 
     private val shuffledCardList = getCardInfoListUseCase(setId).map {
         it.shuffled()
     }
 
+    private val cardList = combine(
+        shuffledCardList,
+        selectedCardIds
+    ) { cardList, selectedCardIds ->
+        cardList
+            .map { card ->
+                CardUiInfo(
+                    name = card.name,
+                    images = card.images,
+                    isOngoing = card.isOngoing,
+                    isFaceUp = selectedCardIds.containsSameName(card.name)
+                )
+            }
+    }
+
     val state = combine(
         isLoading,
         ongoingCardList,
-        shuffledCardList,
+        cardList,
     ) { loading, ongoingList, shuffledList ->
         if (loading) {
             SchemeState.Loading
@@ -47,17 +64,44 @@ class SchemeViewModel @AssistedInject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, SchemeState.Loading)
 
-
-    fun addCardToOngoingList(card: CardInfo) {
-        val cardInList = ongoingCardList.value.contains(card)
-
-        if (!cardInList) {
+    fun onSchemeClicked(card: CardUiInfo) {
+        val cardInOngoingList = ongoingCardList.value.containsSameName(card.name)
+        if (!cardInOngoingList && card.isOngoing && !card.isFaceUp) {
             ongoingCardList.update {
                 ongoingCardList.value.toMutableList().apply {
                     this.add(card)
                 }
             }
         }
+
+        val cardIsSelected = selectedCardIds.value.containsSameName(card.name)
+        if (!cardIsSelected) {
+            selectedCardIds.update {
+                selectedCardIds.value.toMutableList().apply {
+                    this.add(card)
+                }
+            }
+        } else {
+            selectedCardIds.update {
+                selectedCardIds.value.toMutableList().apply {
+                    this.removeAll {
+                        it.name == card.name
+                    }
+                }
+            }
+        }
+    }
+
+    fun onOngoingClicked(card: CardUiInfo) {
+        ongoingCardList.update {
+            ongoingCardList.value.toMutableList().apply {
+                this.remove(card)
+            }
+        }
+    }
+
+    private fun List<CardUiInfo>.containsSameName(name: String): Boolean = this.any {
+        it.name == name
     }
 
     @AssistedFactory

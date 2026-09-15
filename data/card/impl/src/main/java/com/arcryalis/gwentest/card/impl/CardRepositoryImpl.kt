@@ -8,6 +8,7 @@ import com.arcryalis.gwentest.card.impl.mapper.toDistinctSetEntity
 import com.arcryalis.gwentest.card.impl.mapper.toInfoEntity
 import com.arcryalis.gwentest.card.impl.mapper.toModel
 import com.arcryalis.gwentest.data.card.CardRepository
+import com.arcryalis.gwentest.data.card.impl.R
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.data.card.model.CardSet
 import com.arcryalis.gwentest.data.local.api.CardInfoDataStore
@@ -27,15 +28,10 @@ class CardRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : CardRepository {
 
-    companion object {
-
-        // TODO move to settings
-        // Search api currently doesn't support this. Hardcode for now
-        const val CARD_BACK_URL = "https://backs.scryfall.io/large/1/b/1b2396d4-9048-439d-96bd-354288518841.jpg?1665006146"
-    }
+    override suspend fun doCardsExistLocally(): Boolean = cardInfoStore.doCardsExistLocally()
 
     override suspend fun downloadSchemes(): Boolean {
-        imageCacher.queueImageCacheRequest(CARD_BACK_URL)
+        imageCacher.queueImageCacheRequest(context.getString(R.string.card_back_url))
 
         return handleDownloadSetPage(1)
     }
@@ -85,8 +81,10 @@ class CardRepositoryImpl @Inject constructor(
             entities.toModel()
         }
 
-    override fun getSet(setId: String): Flow<List<CardInfo>> = cardInfoStore.getCardSet(setId)
-        .map { entities ->
-            entities.toModel()
+    override fun getSet(setId: String): Flow<List<CardInfo>> {
+        val cardBackUrl = context.getString(R.string.card_back_url)
+        return cardInfoStore.getCardSet(setId).map { entities ->
+            entities.toModel(cardBackUrl)
         }
+    }
 }
