@@ -35,8 +35,6 @@ class ScryfallDataSourceImpl @Inject constructor(
         )
     }
 
-
-    //TODO separate out
     private fun <T> handleResponse(response: NetworkResponse<T, Unit>): RemoteResponse<T> = when (response) {
         is NetworkResponse.Success -> Success(response.body)
         is NetworkResponse.Error -> Error()

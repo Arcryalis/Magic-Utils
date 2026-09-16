@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -63,9 +65,9 @@ fun HomeScreen(
         is HomeState.Ready -> HomeReadyScreen(
             availableSets = state.availableSets,
             modifier = modifier,
-            onItemClick = onNavigateToSchemeScreen
+            onItemClick = onNavigateToSchemeScreen,
+            onRefresh = onRefreshClick
         )
-
     }
 }
 
@@ -108,31 +110,38 @@ private fun HomeErrorScreen(
 private fun HomeReadyScreen(
     availableSets: List<CardSet>,
     modifier: Modifier = Modifier,
-    onItemClick: (String) -> Unit = {}
+    onItemClick: (String) -> Unit = {},
+    onRefresh: () -> Unit = {}
 ) {
-    LazyColumn(modifier
-        .fillMaxSize()
-        .padding(vertical = 8.dp, horizontal = 32.dp)
+    PullToRefreshBox(
+        isRefreshing = false, //handled by HomeState instead
+        onRefresh = onRefresh,
+        modifier = modifier,
     ) {
-        itemsIndexed(availableSets) { _, availableSet ->
-            val name = availableSet.name
-            val id = availableSet.id
+        LazyColumn(Modifier
+            .fillMaxSize()
+            .padding(vertical = 8.dp, horizontal = 32.dp)
+        ) {
+            itemsIndexed(availableSets) { _, availableSet ->
+                val name = availableSet.name
+                val id = availableSet.id
 
-            Button(
-                onClick = {
-                    onItemClick(id)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Text(
-                    text = "$name (${id.uppercase()})",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
+                Button(
+                    onClick = {
+                        onItemClick(id)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Text(
+                        text = "$name (${id.uppercase()})",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
             }
         }
     }
