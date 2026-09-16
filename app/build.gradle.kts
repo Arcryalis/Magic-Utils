@@ -22,6 +22,7 @@ android {
 
 dependencies {
     implementation(projects.ui.core)
+    implementation(projects.ui.home)
     implementation(projects.ui.scheme)
 
     implementation(projects.domain.home.api)

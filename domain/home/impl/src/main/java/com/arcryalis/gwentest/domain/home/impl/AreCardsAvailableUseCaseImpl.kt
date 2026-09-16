@@ -1,7 +1,7 @@
-package com.arcryalis.gwentest.home.impl
+package com.arcryalis.gwentest.domain.home.impl
 
 import com.arcryalis.gwentest.data.card.CardRepository
-import com.arcryalis.gwentest.home.AreCardsAvailableUseCase
+import com.arcryalis.gwentest.domain.home.AreCardsAvailableUseCase
 import javax.inject.Inject
 
 class AreCardsAvailableUseCaseImpl @Inject constructor(

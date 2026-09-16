@@ -7,6 +7,7 @@ import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
 
 fun CardInfoEntity.toModel(cardBackUrl: String): CardInfo = CardInfo(
     name = name,
+    oracleText = oracleText,
     images = toCardInfoImageUrls(cardBackUrl),
     isOngoing = isOngoing
 )

@@ -11,7 +11,7 @@ fun ScryfallDataDto.toInfoEntity(): CardInfoEntity = CardInfoEntity(
     name = name,
     smallImageUrl = imageUris?.small ?: "",
     largeImageUrl = imageUris?.large ?: "",
-    oracleText = oracleText ?: "",
+    oracleText = oracleText,
     isOngoing = type.lowercase().contains(TYPE_ONGOING)
 )
 

@@ -12,7 +12,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.arcryalis.gwentest.core.HomeScreen
+import com.arcryalis.gwentest.home.HomeScreen
 import com.arcryalis.gwentest.scheme.SchemeScreen
 import com.arcryalis.gwentest.scheme.SchemeViewModel
 import com.arcryalis.gwentest.scheme.navigation.SchemeRoute

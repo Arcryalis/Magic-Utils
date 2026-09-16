@@ -1,13 +1,13 @@
-package com.arcryalis.gwentest.home.impl.di
+package com.arcryalis.gwentest.domain.home.impl.di
 
-import com.arcryalis.gwentest.home.AreCardsAvailableUseCase
-import com.arcryalis.gwentest.home.DownloadSchemesUseCase
-import com.arcryalis.gwentest.home.GetCardInfoListUseCase
-import com.arcryalis.gwentest.home.GetCardSetsUseCase
-import com.arcryalis.gwentest.home.impl.AreCardsAvailableUseCaseImpl
-import com.arcryalis.gwentest.home.impl.DownloadSchemesUseCaseImpl
-import com.arcryalis.gwentest.home.impl.GetCardInfoListUseCaseImpl
-import com.arcryalis.gwentest.home.impl.GetCardSetsUseCaseImpl
+import com.arcryalis.gwentest.domain.home.AreCardsAvailableUseCase
+import com.arcryalis.gwentest.domain.home.DownloadSchemesUseCase
+import com.arcryalis.gwentest.domain.home.GetCardInfoListUseCase
+import com.arcryalis.gwentest.domain.home.GetCardSetsUseCase
+import com.arcryalis.gwentest.domain.home.impl.AreCardsAvailableUseCaseImpl
+import com.arcryalis.gwentest.domain.home.impl.DownloadSchemesUseCaseImpl
+import com.arcryalis.gwentest.domain.home.impl.GetCardInfoListUseCaseImpl
+import com.arcryalis.gwentest.domain.home.impl.GetCardSetsUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

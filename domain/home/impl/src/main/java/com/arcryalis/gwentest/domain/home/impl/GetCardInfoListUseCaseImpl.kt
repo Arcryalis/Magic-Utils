@@ -1,8 +1,8 @@
-package com.arcryalis.gwentest.home.impl
+package com.arcryalis.gwentest.domain.home.impl
 
 import com.arcryalis.gwentest.data.card.CardRepository
 import com.arcryalis.gwentest.data.card.model.CardInfo
-import com.arcryalis.gwentest.home.GetCardInfoListUseCase
+import com.arcryalis.gwentest.domain.home.GetCardInfoListUseCase
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

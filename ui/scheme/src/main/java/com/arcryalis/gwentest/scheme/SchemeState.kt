@@ -7,13 +7,15 @@ sealed interface SchemeState{
 
     data class Ready(
         val cards: List<CardUiInfo>,
-        val ongoingCards: List<CardUiInfo>
+        val ongoingCards: List<CardUiInfo>,
+        val faceUpCards: List<CardUiInfo>,
+        val overlayCard: CardUiInfo?
     ): SchemeState
 }
 
 data class CardUiInfo(
     val name: String,
+    val oracleText: String?,
     val images: CardInfoImageUrls,
     val isOngoing: Boolean,
-    val isFaceUp: Boolean
 )

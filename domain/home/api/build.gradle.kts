@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.arcryalis.gwentest.home"
+    namespace = "com.arcryalis.gwentest.domain.home"
 }
 
 dependencies {

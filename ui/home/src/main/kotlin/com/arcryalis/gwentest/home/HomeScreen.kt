@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.core
+package com.arcryalis.gwentest.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,17 +9,23 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.arcryalis.gwentest.core.HomeState
+import com.arcryalis.gwentest.core.HomeViewModel
+import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardSet
 
@@ -46,7 +52,8 @@ fun HomeScreen(
     onRefreshClick: () -> Unit = {}
 ) {
     when (state) {
-        is HomeState.Loading -> HomeLoadingScreen(
+        is HomeState.Loading -> LoadingScreen(
+            text = stringResource(R.string.loading_info),
             modifier = modifier
         )
 
@@ -63,32 +70,6 @@ fun HomeScreen(
 
     }
 }
-
-@Composable
-private fun HomeLoadingScreen(
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
-        Column(
-            modifier.align(Alignment.Center)
-        ) {
-            CircularProgressIndicator(
-                modifier = modifier.align(Alignment.CenterHorizontally)
-            )
-
-            Text(
-                text = stringResource(R.string.loading_info),
-                modifier = modifier
-                    .padding(top = 16.dp)
-                    .width(180.dp),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
 
 @Composable
 private fun HomeErrorScreen(
@@ -131,7 +112,10 @@ private fun HomeReadyScreen(
     modifier: Modifier = Modifier,
     onItemClick: (String) -> Unit = {}
 ) {
-    LazyColumn(modifier.fillMaxSize()) {
+    LazyColumn(modifier
+        .fillMaxSize()
+        .padding(vertical = 8.dp, horizontal = 32.dp)
+    ) {
         itemsIndexed(availableSets) { _, availableSet ->
             val name = availableSet.name
             val id = availableSet.id
@@ -142,23 +126,17 @@ private fun HomeReadyScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
+                    .padding(vertical = 8.dp)
             ) {
                 Text(
-                    "$name ($id)",
-                    modifier = Modifier,
-                    textAlign = TextAlign.Center
+                    text = "$name (${id.capitalize(Locale.current)})",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeLoadingScreenPreview() {
-    GwenTestTheme {
-        HomeLoadingScreen()
     }
 }
 

@@ -21,6 +21,6 @@ data class CardInfoEntity(
     val name: String,
     val smallImageUrl: String,
     val largeImageUrl: String,
-    val oracleText: String,
+    val oracleText: String?,
     val isOngoing: Boolean
 )

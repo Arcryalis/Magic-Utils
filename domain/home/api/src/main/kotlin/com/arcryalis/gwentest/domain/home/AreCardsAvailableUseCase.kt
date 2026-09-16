@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.home
+package com.arcryalis.gwentest.domain.home
 
 interface AreCardsAvailableUseCase {
     suspend operator fun invoke(): Boolean
