@@ -153,13 +153,13 @@ private fun CardList(
         )
 
         HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
             thickness = 2.dp
         )
 
         OngoingCardList(
             ongoingCardList = ongoingCardList,
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier.height(150.dp),
             onOngoingClicked = onOngoingClicked
         )
     }
@@ -178,7 +178,7 @@ private fun SchemePager(
 
     HorizontalPager(
         state = pagerState,
-        modifier = modifier
+        modifier = modifier.fillMaxSize(),
     ) { index ->
         val card = cardList[index]
         val isCardFaceUp = faceUpList.contains(card)
@@ -220,8 +220,7 @@ private fun OngoingCardList(
                     .clickable(
                         onClick = { onOngoingClicked(card) }
                     )
-                    .height(100.dp)
-                    .padding(horizontal = 8.dp)
+                    .width(120.dp)
             )
         }
     }

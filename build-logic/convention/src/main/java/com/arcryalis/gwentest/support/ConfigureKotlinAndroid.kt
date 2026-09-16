@@ -28,15 +28,6 @@ internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension) {
     }
 }
 
-internal fun Project.configureKotlinJvm() {
-    extensions.configure<JavaPluginExtension> {
-        sourceCompatibility = AppConfig.sourceCompatibility
-        targetCompatibility = AppConfig.targetCompatibility
-    }
-
-    configureKotlin()
-}
-
 private fun Project.configureKotlin() {
     // https://youtrack.jetbrains.com/issue/KT-55947
     tasks.withType<KotlinCompile>().configureEach {

@@ -24,8 +24,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
                 buildTypes {
                     release {
-                        isMinifyEnabled = true
-                        optimization.enable = true
+                        isMinifyEnabled = false
                     }
                 }
             }
