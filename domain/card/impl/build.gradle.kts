@@ -12,4 +12,7 @@ dependencies {
     implementation(projects.data.card.api)
 
     implementation(libs.kotlinx.coroutines.core)
+
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(testFixtures(projects.domain.card.api))
 }

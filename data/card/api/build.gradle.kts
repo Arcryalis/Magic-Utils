@@ -5,6 +5,10 @@ plugins {
 
 android {
     namespace = "com.arcryalis.gwentest.data.card"
+
+    testFixtures {
+        enable = true
+    }
 }
 
 dependencies {

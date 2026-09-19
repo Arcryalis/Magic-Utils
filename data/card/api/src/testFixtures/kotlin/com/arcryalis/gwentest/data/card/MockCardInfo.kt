@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.domain.card
+package com.arcryalis.gwentest.data.card
 
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
