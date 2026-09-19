@@ -4,11 +4,11 @@ import com.arcryalis.gwentest.data.card.model.CardInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class MockGetShuffledCardInfoUseCase: GetShuffledCardInfoUseCase {
+class MockGetShuffledCardInfoUseCase(
+    private val cardInfo: Map<String, List<CardInfo>>
+): GetShuffledCardInfoUseCase {
+
     override fun invoke(setId: String): Flow<List<CardInfo>> = flowOf(
-        listOf(
-            MockCardInfo.cardInfo,
-            MockCardInfo.cardInfo2
-        )
+        cardInfo.getOrDefault(setId, emptyList())
     )
 }

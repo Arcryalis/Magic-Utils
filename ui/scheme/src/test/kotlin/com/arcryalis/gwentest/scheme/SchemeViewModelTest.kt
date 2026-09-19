@@ -1,6 +1,7 @@
 package com.arcryalis.gwentest.scheme
 
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
+import com.arcryalis.gwentest.domain.card.MockCardInfo
 import com.arcryalis.gwentest.domain.card.MockGetShuffledCardInfoUseCase
 import com.arcryalis.gwentest.scheme.navigation.SchemeRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,6 +18,10 @@ import kotlin.test.assertNull
 @OptIn(ExperimentalCoroutinesApi::class)
 class SchemeViewModelTest {
 
+    companion object {
+        const val DEFAULT_SET_ID = "defaultSet"
+    }
+
     @get:Rule
     val mainDispatcher = BaseDispatchRule()
 
@@ -30,9 +35,17 @@ class SchemeViewModelTest {
     @Before
     fun setUpSut() {
         route = SchemeRoute(
-            setId = "testSet"
+            setId = DEFAULT_SET_ID
         )
-        mockGetShuffledCardInfoUseCase = MockGetShuffledCardInfoUseCase()
+        
+        mockGetShuffledCardInfoUseCase = MockGetShuffledCardInfoUseCase(
+            mapOf(
+                DEFAULT_SET_ID to listOf(
+                    MockCardInfo.cardInfo,
+                    MockCardInfo.cardInfo2
+                )
+            )
+        )
 
         sut = SchemeViewModel(
             route = route,
