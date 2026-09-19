@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.network
+package com.arcryalis.gwentest.network.impl
 
 import android.content.Context
 import android.util.Log

@@ -1,8 +1,8 @@
-package com.arcryalis.gwentest.network.di
+package com.arcryalis.gwentest.network.impl.di
 
 import android.content.Context
-import com.arcryalis.gwentest.network.R
-import com.arcryalis.gwentest.network.ScryfallHeaderInterceptor
+import com.arcryalis.gwentest.network.impl.R
+import com.arcryalis.gwentest.network.impl.ScryfallHeaderInterceptor
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -30,7 +30,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideSRetrofit(
+    fun provideRetrofit(
         client: OkHttpClient,
         @ApplicationContext context: Context
     ): Retrofit =

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.arcryalis.gwentest.network"
+    namespace = "com.arcryalis.gwentest.network.impl"
 }
 
 dependencies {
@@ -15,4 +15,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.network.response.adapter)
     implementation(libs.coil.compose)
+
+    implementation(projects.network.api)
+
+    testImplementation(libs.robolectric)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

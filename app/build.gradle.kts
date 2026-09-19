@@ -33,7 +33,8 @@ dependencies {
     implementation(projects.data.local.impl)
     implementation(projects.data.remote.api)
     implementation(projects.data.remote.impl)
-    implementation(projects.network)
+    implementation(projects.network.api)
+    implementation(projects.network.impl)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

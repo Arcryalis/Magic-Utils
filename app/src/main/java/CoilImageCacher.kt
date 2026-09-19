@@ -1,5 +1,3 @@
-package com.arcryalis.gwentest.network
-
 import android.content.Context
 import coil.imageLoader
 import coil.request.CachePolicy

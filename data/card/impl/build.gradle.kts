@@ -14,5 +14,5 @@ dependencies {
     implementation(projects.data.card.api)
     implementation(projects.data.local.api)
     implementation(projects.data.remote.api)
-    implementation(projects.network)
+    implementation(projects.network.api)
 }

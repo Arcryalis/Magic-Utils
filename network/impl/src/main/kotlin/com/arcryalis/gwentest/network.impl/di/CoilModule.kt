@@ -1,7 +1,9 @@
-package com.arcryalis.gwentest.network.di
+package com.arcryalis.gwentest.network.impl.di
 
 import android.content.Context
 import coil.ImageLoader
+import com.arcryalis.gwentest.network.CoilImageCacher
+import com.arcryalis.gwentest.network.impl.CoilImageCacherImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,4 +24,11 @@ object CoilModule {
     ): ImageLoader = ImageLoader.Builder(context)
         .okHttpClient(httpClient)
         .build()
+
+    @Provides
+    @Singleton
+    fun provideCoilImageCacher(
+        @ApplicationContext context: Context,
+    ): CoilImageCacher = CoilImageCacherImpl(context)
+
 }
