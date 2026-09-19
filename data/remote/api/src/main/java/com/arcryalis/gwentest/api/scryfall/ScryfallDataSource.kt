@@ -7,6 +7,4 @@ import kotlinx.serialization.InternalSerializationApi
 @OptIn(InternalSerializationApi::class)
 interface ScryfallDataSource {
     suspend fun getSchemes(page: Int): RemoteResponse<ScryfallPaginationDto>
-
-    suspend fun getNextPage(url :String): RemoteResponse<ScryfallPaginationDto>
 }

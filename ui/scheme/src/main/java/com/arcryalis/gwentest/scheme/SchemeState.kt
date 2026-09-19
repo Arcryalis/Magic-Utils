@@ -1,7 +1,5 @@
 package com.arcryalis.gwentest.scheme
 
-import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
-
 sealed interface SchemeState{
     data object Loading: SchemeState
 

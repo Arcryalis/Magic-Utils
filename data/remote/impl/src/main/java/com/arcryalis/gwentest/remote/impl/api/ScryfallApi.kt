@@ -4,7 +4,6 @@ import com.arcryalis.gwentest.api.scryfall.dto.ScryfallPaginationDto
 import com.haroldadmin.cnradapter.NetworkResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
-import retrofit2.http.Url
 
 interface ScryfallApi {
 
@@ -16,10 +15,4 @@ interface ScryfallApi {
         @Query("include_extras") includeExtras: Boolean,
         @Query("page") page: Int
     ): NetworkResponse<ScryfallPaginationDto, Unit>
-
-    @GET
-    suspend fun getNextPage(
-        @Url url: String,
-    ): NetworkResponse<ScryfallPaginationDto, Unit>
-
 }

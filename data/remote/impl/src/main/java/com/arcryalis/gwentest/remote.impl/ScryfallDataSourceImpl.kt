@@ -28,13 +28,6 @@ class ScryfallDataSourceImpl @Inject constructor(
         return handleResponse(response)
     }
 
-    override suspend fun getNextPage(url: String): RemoteResponse<ScryfallPaginationDto> {
-        val response = scryfallApi.getNextPage(url)
-        return handleResponse(
-            response
-        )
-    }
-
     private fun <T> handleResponse(response: NetworkResponse<T, Unit>): RemoteResponse<T> = when (response) {
         is NetworkResponse.Success -> Success(response.body)
         is NetworkResponse.Error -> Error()
