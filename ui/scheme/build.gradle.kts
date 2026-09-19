@@ -21,6 +21,8 @@ dependencies {
     implementation(libs.material.icons.core)
     
     implementation(projects.ui.core)
-    implementation(projects.domain.home.api)
+    implementation(projects.domain.card.api)
     implementation(projects.data.card.api)
+
+    testFixtures(projects.domain.card.api)
 }

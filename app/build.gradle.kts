@@ -25,8 +25,8 @@ dependencies {
     implementation(projects.ui.home)
     implementation(projects.ui.scheme)
 
-    implementation(projects.domain.home.api)
-    implementation(projects.domain.home.impl)
+    implementation(projects.domain.card.api)
+    implementation(projects.domain.card.impl)
     implementation(projects.data.card.api)
     implementation(projects.data.card.impl)
     implementation(projects.data.local.api)

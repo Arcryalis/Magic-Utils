@@ -36,8 +36,8 @@ include(":ui:core")
 include(":ui:home")
 include(":ui:scheme")
 
-include(":domain:home:api")
-include(":domain:home:impl")
+include(":domain:card:api")
+include(":domain:card:impl")
 
 include(":data:card:api")
 include(":data:card:impl")

@@ -2,7 +2,8 @@ package com.arcryalis.gwentest.scheme
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcryalis.gwentest.domain.home.GetCardInfoListUseCase
+import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
+import com.arcryalis.gwentest.scheme.mapper.toUiModel
 import com.arcryalis.gwentest.scheme.navigation.SchemeRoute
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -11,14 +12,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel(assistedFactory = SchemeViewModel.Factory::class)
 class SchemeViewModel @AssistedInject constructor(
     @Assisted private val route: SchemeRoute,
-    private val getCardInfoListUseCase: GetCardInfoListUseCase
+    private val getShuffledCardInfoUseCase: GetShuffledCardInfoUseCase
 ): ViewModel()  {
 
     private val setId = route.setId
@@ -31,37 +31,19 @@ class SchemeViewModel @AssistedInject constructor(
 
     private val overlayCard = MutableStateFlow<CardUiInfo?>(null)
 
-    private val shuffledCardList = getCardInfoListUseCase(setId).map {
-        it.shuffled()
-    }
-
-    private val cardList = combine(
-        shuffledCardList,
-        flippedCardList
-    ) { cardList, selectedCardIds ->
-        cardList
-            .map { card ->
-                CardUiInfo(
-                    name = card.name,
-                    oracleText = card.oracleText,
-                    images = card.images,
-                    isOngoing = card.isOngoing
-                )
-            }
-    }
 
     val state = combine(
         isLoading,
         ongoingCardList,
         flippedCardList,
-        cardList,
+        getShuffledCardInfoUseCase(setId),
         overlayCard
     ) { loading, ongoingList, flippedCards, shuffledList, overlay ->
         if (loading) {
             SchemeState.Loading
         } else {
             SchemeState.Ready(
-                cards = shuffledList,
+                cards = shuffledList.toUiModel(),
                 faceUpCards = flippedCards,
                 ongoingCards = ongoingList,
                 overlayCard = overlay
@@ -121,10 +103,6 @@ class SchemeViewModel @AssistedInject constructor(
                 this.remove(card)
             }
         }
-    }
-
-    private fun List<CardUiInfo>.containsSameName(name: String): Boolean = this.any {
-        it.name == name
     }
 
     @AssistedFactory

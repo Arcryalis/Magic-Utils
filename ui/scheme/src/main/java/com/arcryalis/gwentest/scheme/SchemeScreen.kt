@@ -372,10 +372,10 @@ fun SchemeReadyScreenWithOverlayPreview() {
             overlayCard = CardUiInfo(
                 name = "Some name",
                 oracleText = "Oracle text that is very long and can cover multiple lines at once. \nSecond line",
-                images = CardInfoImageUrls(
-                    small = "",
-                    large = "",
-                    back = ""
+                images = CardUiImageUrls(
+                    small = "s",
+                    large = "l",
+                    back = "b"
                 ),
                 isOngoing = true,
             )

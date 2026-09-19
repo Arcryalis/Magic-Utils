@@ -38,5 +38,6 @@ private fun Project.configureKotlin() {
 
     dependencies {
         add("testImplementation", kotlin("test"))
+        add("testImplementation", libs.findLibrary("junit").get())
     }
 }
