@@ -16,4 +16,14 @@ object MockCardInfo {
         isOngoing = false,
     )
 
+    val cardInfo2 = CardInfo(
+        name = "c2.name",
+        oracleText = "o2.text",
+        images = CardInfoImageUrls(
+            small = "https://too-small.url",
+            large = "https://too-large.url",
+            back = "https://too-back.url"
+        ),
+        isOngoing = true,
+    )
 }

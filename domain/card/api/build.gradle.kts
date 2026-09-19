@@ -5,10 +5,16 @@ plugins {
 
 android {
     namespace = "com.arcryalis.gwentest.domain.card"
+
+    testFixtures {
+        enable = true
+    }
 }
 
 dependencies {
-    implementation(libs.kotlinx.couroutines.core)
+    implementation(libs.kotlinx.coroutines.core)
 
-    implementation(projects.data.card.api)
+    api(projects.data.card.api)
+
+    testFixturesImplementation(libs.kotlinx.coroutines.core)
 }

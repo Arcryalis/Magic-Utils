@@ -11,5 +11,5 @@ dependencies {
     implementation(projects.domain.card.api)
     implementation(projects.data.card.api)
 
-    implementation(libs.kotlinx.couroutines.core)
+    implementation(libs.kotlinx.coroutines.core)
 }

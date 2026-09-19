@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.flowOf
 class MockGetShuffledCardInfoUseCase: GetShuffledCardInfoUseCase {
     override fun invoke(setId: String): Flow<List<CardInfo>> = flowOf(
         listOf(
-            MockCardInfo.cardInfo
+            MockCardInfo.cardInfo,
+            MockCardInfo.cardInfo2
         )
     )
 }

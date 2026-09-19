@@ -88,9 +88,12 @@ class SchemeViewModel @AssistedInject constructor(
     fun onAddOngoingClicked(card: CardUiInfo) {
         onCloseOverlayClicked()
 
-        ongoingCardList.update {
-            ongoingCardList.value.toMutableList().apply {
-                this.add(card)
+        val cardInOngoingList = ongoingCardList.value.contains(card)
+        if (!cardInOngoingList) {
+            ongoingCardList.update {
+                ongoingCardList.value.toMutableList().apply {
+                    this.add(card)
+                }
             }
         }
     }
@@ -98,9 +101,12 @@ class SchemeViewModel @AssistedInject constructor(
     fun onRemoveOngoingClicked(card: CardUiInfo) {
         onCloseOverlayClicked()
 
-        ongoingCardList.update {
-            ongoingCardList.value.toMutableList().apply {
-                this.remove(card)
+        val cardInOngoingList = ongoingCardList.value.contains(card)
+        if (cardInOngoingList) {
+            ongoingCardList.update {
+                ongoingCardList.value.toMutableList().apply {
+                    this.remove(card)
+                }
             }
         }
     }
