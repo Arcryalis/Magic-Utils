@@ -14,6 +14,4 @@ android {
 
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
-
-    testFixturesImplementation(libs.kotlinx.coroutines.core)
 }

@@ -15,4 +15,5 @@ dependencies {
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(testFixtures(projects.domain.card.api))
+    testImplementation(testFixtures(projects.data.card.api))
 }
