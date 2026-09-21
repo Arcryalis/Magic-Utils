@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.arcryalis.gwentest.core.HomeState
+import com.arcryalis.gwentest.core.LifeCounterScreen
 import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardSet
@@ -60,12 +61,13 @@ fun HomeScreen(
             onRefreshClick = onRefreshClick
         )
 
-        is HomeState.Ready -> HomeReadyScreen(
-            availableSets = state.availableSets,
-            modifier = modifier,
-            onItemClick = onNavigateToSchemeScreen,
-            onRefresh = onRefreshClick
-        )
+        is HomeState.Ready -> LifeCounterScreen()
+//        is HomeState.Ready -> HomeReadyScreen(
+//            availableSets = state.availableSets,
+//            modifier = modifier,
+//            onItemClick = onNavigateToSchemeScreen,
+//            onRefresh = onRefreshClick
+//        )
     }
 }
 

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.arcryalis.gwentest.home"
+    namespace = "com.arcryalis.gwentest.game"
 }
 
 dependencies {
@@ -13,12 +13,7 @@ dependencies {
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
-    implementation(libs.coil.compose)
+    implementation(libs.material.icons.core)
 
     implementation(projects.ui.core)
-    implementation(projects.ui.game)
-    implementation(projects.domain.card.api)
-    implementation(projects.data.card.api)
 }

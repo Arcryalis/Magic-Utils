@@ -332,6 +332,7 @@ private fun OngoingCardOverlayHeader(
 private fun OngoingCardOverlayIcon(
     imageVector: ImageVector,
     contentDescription: String,
+    modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current,
     onClicked: () -> Unit = {}
 ) {
@@ -339,7 +340,7 @@ private fun OngoingCardOverlayIcon(
         imageVector = imageVector,
         contentDescription = contentDescription,
         tint = tint,
-        modifier = Modifier
+        modifier = modifier
             .size(48.dp)
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClicked)

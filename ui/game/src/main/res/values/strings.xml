@@ -1,0 +1,5 @@
+<resources>
+    <string name="button_increase">Increase</string>
+    <string name="button_decrease">Decrease</string>
+    <string name="button_set">Set Life</string>
+</resources>
