@@ -8,3 +8,15 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.room) apply false
 }
+
+// Runs all unit tests across every module.
+// Usage: ./gradlew allUnitTests
+tasks.register("allUnitTests") {
+    group = "verification"
+    description = "Runs all unit tests in every module."
+    dependsOn(
+        subprojects.mapNotNull { subproject ->
+            subproject.tasks.findByName("testDebugUnitTest")
+        }
+    )
+}

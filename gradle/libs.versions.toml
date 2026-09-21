@@ -25,7 +25,7 @@ networkResponseAdapter = "5.0.0"
 coil = "2.7.0"
 navigation3Runtime = "1.1.7"
 ui = "1.12.1"
-robolectric = "4.16.1"
+robolectric = "4.17"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

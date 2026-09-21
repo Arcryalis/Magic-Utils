@@ -5,7 +5,7 @@ import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallImageUrlsDto
 
 object TestScryfallDataDto {
 
-    val scryfallCardDto = ScryfallDataDto(
+    val dto1 = ScryfallDataDto(
         id = "cardId",
         name = "Card Name",
         imageUris = ScryfallImageUrlsDto(
@@ -18,7 +18,7 @@ object TestScryfallDataDto {
         setName = "Set Name"
     )
 
-    val scryfallCardDto2 = ScryfallDataDto(
+    val dto2 = ScryfallDataDto(
         id = "cardId 2",
         name = "one more name",
         imageUris = ScryfallImageUrlsDto(

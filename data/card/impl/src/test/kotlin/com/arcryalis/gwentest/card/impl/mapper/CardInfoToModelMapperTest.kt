@@ -1,8 +1,8 @@
 package com.arcryalis.gwentest.card.impl.mapper
 
-import com.arcryalis.gwentest.data.card.TestCardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
+import com.arcryalis.gwentest.data.local.api.TestCardInfoEntity
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -12,8 +12,17 @@ class CardInfoToModelMapperTest {
 
     @Test
     fun givenCardInfoEntity_whenToModel_thenReturnsCardInfo() {
-        val entity = TestScryfallDataDto.cardInfoEntity
-        val expectedModel = TestCardInfo.info1
+        val entity = TestCardInfoEntity.entity1
+        val expectedModel = CardInfo(
+            name = entity.name,
+            oracleText = entity.oracleText,
+            images = CardInfoImageUrls(
+                small = entity.smallImageUrl,
+                large = entity.largeImageUrl,
+                back = cardBackUrl
+            ),
+            isOngoing = entity.isOngoing
+        )
 
         val result = entity.toModel(cardBackUrl)
 
@@ -22,12 +31,16 @@ class CardInfoToModelMapperTest {
 
     @Test
     fun givenCardInfoEntityWithNullOracleText_whenToModel_thenReturnsCardInfoWithNullOracleText() {
-        val entity = TestScryfallDataDto.cardInfoEntity.copy(oracleText = null)
-        val expectedModel = TestCardInfo.info1.copy(
-            oracleText = null,
-            images = TestCardInfo.info1.images.copy(
+        val entity = TestCardInfoEntity.entity1.copy(oracleText = null)
+        val expectedModel = CardInfo(
+            name = entity.name,
+            oracleText = entity.oracleText,
+            images = CardInfoImageUrls(
+                small = entity.smallImageUrl,
+                large = entity.largeImageUrl,
                 back = cardBackUrl
-            )
+            ),
+            isOngoing = entity.isOngoing
         )
 
         val result = entity.toModel(cardBackUrl)
@@ -37,7 +50,7 @@ class CardInfoToModelMapperTest {
 
     @Test
     fun givenCardInfoEntityWithOngoingFalse_whenToModel_thenReturnsCardInfoOngoingFalse() {
-        val entity = TestScryfallDataDto.cardInfoEntity.copy(isOngoing = false)
+        val entity = TestCardInfoEntity.entity1.copy(isOngoing = false)
         val expectedModel = CardInfo(
             name = entity.name,
             oracleText = entity.oracleText,
@@ -56,8 +69,8 @@ class CardInfoToModelMapperTest {
 
     @Test
     fun givenCardInfoEntities_whenToModelList_thenReturnsCardInfos() {
-        val entity1 = TestScryfallDataDto.cardInfoEntity
-        val entity2 = TestScryfallDataDto.cardInfoEntity2
+        val entity1 = TestCardInfoEntity.entity1
+        val entity2 = TestCardInfoEntity.entity2
 
         val expectedModel = listOf(
             CardInfo(

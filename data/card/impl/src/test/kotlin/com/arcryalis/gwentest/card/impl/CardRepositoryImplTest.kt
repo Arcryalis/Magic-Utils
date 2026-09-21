@@ -88,7 +88,7 @@ class CardRepositoryImplTest {
         responses[1] = RemoteResponse.Success(
             ScryfallPaginationDto(
                 hasMore = false,
-                data = listOf(TestScryfallDataDto.scryfallCardDto)
+                data = listOf(TestScryfallDataDto.dto1)
             )
         )
 
@@ -99,7 +99,7 @@ class CardRepositoryImplTest {
 
     @Test
     fun givenSuccessfulResponse_whenDownloadSchemes_thenPersistsSetsAndCards() = runTest {
-        val dto = TestScryfallDataDto.scryfallCardDto.copy(
+        val dto = TestScryfallDataDto.dto1.copy(
             type = "Type that includes ongoing"
         )
         val setEntity = CardSetEntity(
@@ -107,7 +107,7 @@ class CardRepositoryImplTest {
             name = dto.setName
         )
         val cardEntity = CardInfoEntity(
-            id = dto.name,
+            id = dto.id,
             setId = dto.setId,
             name = dto.name,
             smallImageUrl = dto.imageUris!!.small,
@@ -134,7 +134,7 @@ class CardRepositoryImplTest {
 
     @Test
     fun givenSuccessfulResponse_whenDownloadSchemes_thenCachesCardBackAndFaceImages() = runTest {
-        val entity = TestScryfallDataDto.scryfallCardDto
+        val entity = TestScryfallDataDto.dto1
         val smallUrl = entity.imageUris!!.small
         val largeUrl = entity.imageUris!!.large
         val cardBackUrl = context.getString(R.string.card_back_url)
@@ -156,13 +156,13 @@ class CardRepositoryImplTest {
 
     @Test
     fun givenCardsWithDuplicateImageUrls_whenDownloadSchemes_thenCachesDistinctUrls() = runTest {
-        val entity = TestScryfallDataDto.scryfallCardDto
+        val entity = TestScryfallDataDto.dto1
         val smallUrl = entity.imageUris!!.small
         val largeUrl = entity.imageUris!!.large
         val cardBackUrl = context.getString(R.string.card_back_url)
 
-        val entity2 = TestScryfallDataDto.scryfallCardDto2.copy(
-            imageUris = TestScryfallDataDto.scryfallCardDto2.imageUris!!.copy(
+        val entity2 = TestScryfallDataDto.dto2.copy(
+            imageUris = TestScryfallDataDto.dto2.imageUris!!.copy(
                 // keep small different
                 large = largeUrl
             )
@@ -172,7 +172,7 @@ class CardRepositoryImplTest {
         responses[1] = RemoteResponse.Success(
             ScryfallPaginationDto(
                 hasMore = false,
-                data = listOf(TestScryfallDataDto.scryfallCardDto, entity2)
+                data = listOf(TestScryfallDataDto.dto1, entity2)
             )
         )
 
@@ -189,13 +189,13 @@ class CardRepositoryImplTest {
         responses[1] = RemoteResponse.Success(
             ScryfallPaginationDto(
                 hasMore = true,
-                data = listOf(TestScryfallDataDto.scryfallCardDto)
+                data = listOf(TestScryfallDataDto.dto1)
             )
         )
         responses[2] = RemoteResponse.Success(
             ScryfallPaginationDto(
                 hasMore = false,
-                data = listOf(TestScryfallDataDto.scryfallCardDto2)
+                data = listOf(TestScryfallDataDto.dto2)
             )
         )
 

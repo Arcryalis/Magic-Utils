@@ -1,14 +1,20 @@
 package com.arcryalis.gwentest.card.impl.mapper
 
+import com.arcryalis.gwentest.data.local.api.entity.CardSetEntity
+import com.arcryalis.gwentest.remote.scryfall.TestScryfallDataDto
 import org.junit.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class ScryfallCardDtoToSetEntityMapperTest {
 
     @Test
     fun givenScryfallCardDto_whenToSetEntity_thenReturnsCardSetEntity() {
-        val dto = TestScryfallDataDto.scryfallCardDto
-        val expectedEntity = TestScryfallDataDto.cardSetEntity
+        val dto = TestScryfallDataDto.dto1
+        val expectedEntity = CardSetEntity(
+            id = dto.setId,
+            name = dto.setName
+        )
 
         val result = dto.toSetEntity()
 
@@ -17,45 +23,47 @@ class ScryfallCardDtoToSetEntityMapperTest {
 
     @Test
     fun givenScryfallCardDtos_whenToDistinctSetEntity_thenReturnsSetEntities() {
-        val dtos = listOf(
-            TestScryfallDataDto.scryfallCardDto,
-            TestScryfallDataDto.scryfallCardDto.copy(
-                id = "cardId2",
-                name = "Card Name 2",
-                setId = "setId2",
-                setName = "Set Name 2"
-            )
-        )
+        val dto = TestScryfallDataDto.dto1
+        val dto2 = TestScryfallDataDto.dto2
         val expectedEntities = listOf(
-            TestScryfallDataDto.cardSetEntity,
-            TestScryfallDataDto.cardSetEntity.copy(
-                id = "setId2",
-                name = "Set Name 2"
-            )
+            CardSetEntity(
+                id = dto.setId,
+                name = dto.setName
+            ),
+            CardSetEntity(
+                id = dto2.setId,
+                name = dto2.setName
+            ),
         )
 
-        val result = dtos.toDistinctSetEntity()
+        val result = listOf(dto, dto2).toDistinctSetEntity()
 
         assertEquals(expectedEntities, result)
     }
 
     @Test
     fun givenScryfallCardDtosWithDuplicateSetIds_whenToDistinctSetEntity_thenRemovesDuplicates() {
+        val entity = TestScryfallDataDto.dto1
         val dtos = listOf(
-            TestScryfallDataDto.scryfallCardDto,
-            TestScryfallDataDto.scryfallCardDto.copy(
+            entity,
+            entity.copy(
                 id = "cardId2",
                 name = "Card Name 2"
             ),
-            TestScryfallDataDto.scryfallCardDto.copy(
+            entity.copy(
                 id = "cardId3",
                 name = "Card Name 3"
             )
         )
-        val expectedEntities = listOf(TestScryfallDataDto.cardSetEntity)
+        val expectedEntities = listOf(
+            CardSetEntity(
+                id = entity.setId,
+                name = entity.setName
+            )
+        )
 
         val result = dtos.toDistinctSetEntity()
 
-        assertEquals(expectedEntities, result)
+        assertContentEquals(expectedEntities, result)
     }
 }
