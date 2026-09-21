@@ -34,6 +34,5 @@ data class ScryfallDataDto(
 @Serializable
 data class ScryfallImageUrlsDto(
     val small: String,
-    val normal: String,
     val large: String
 )

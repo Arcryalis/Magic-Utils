@@ -7,8 +7,8 @@ class ScryfallCardDtoToInfoEntityMapperTest {
 
     @Test
     fun givenScryfallCardDto_whenToInfoEntity_thenReturnsCardInfoEntity() {
-        val dto = TestCardData.scryfallCardDto
-        val expectedEntity = TestCardData.cardInfoEntity
+        val dto = TestScryfallDataDto.scryfallCardDto
+        val expectedEntity = TestScryfallDataDto.cardInfoEntity
 
         val result = dto.toInfoEntity()
 
@@ -17,8 +17,8 @@ class ScryfallCardDtoToInfoEntityMapperTest {
 
     @Test
     fun givenScryfallCardDtoWithOngoingType_whenToInfoEntity_thenIsOngoingTrue() {
-        val dto = TestCardData.scryfallCardDto.copy(type = "Scheme - Ongoing")
-        val expectedEntity = TestCardData.cardInfoEntity.copy(isOngoing = true)
+        val dto = TestScryfallDataDto.scryfallCardDto.copy(type = "Scheme - Ongoing")
+        val expectedEntity = TestScryfallDataDto.cardInfoEntity.copy(isOngoing = true)
 
         val result = dto.toInfoEntity()
 
@@ -27,8 +27,8 @@ class ScryfallCardDtoToInfoEntityMapperTest {
 
     @Test
     fun givenScryfallCardDtoWithoutOngoingType_whenToInfoEntity_thenIsOngoingFalse() {
-        val dto = TestCardData.scryfallCardDto.copy(type = "Instant")
-        val expectedEntity = TestCardData.cardInfoEntity.copy(isOngoing = false)
+        val dto = TestScryfallDataDto.scryfallCardDto.copy(type = "Instant")
+        val expectedEntity = TestScryfallDataDto.cardInfoEntity.copy(isOngoing = false)
 
         val result = dto.toInfoEntity()
 
@@ -37,8 +37,8 @@ class ScryfallCardDtoToInfoEntityMapperTest {
 
     @Test
     fun givenScryfallCardDtoWithoutImageUris_whenToInfoEntity_thenEmptyImageUrls() {
-        val dto = TestCardData.scryfallCardDto.copy(imageUris = null)
-        val expectedEntity = TestCardData.cardInfoEntity.copy(
+        val dto = TestScryfallDataDto.scryfallCardDto.copy(imageUris = null)
+        val expectedEntity = TestScryfallDataDto.cardInfoEntity.copy(
             smallImageUrl = "",
             largeImageUrl = ""
         )
@@ -51,16 +51,16 @@ class ScryfallCardDtoToInfoEntityMapperTest {
     @Test
     fun givenScryfallCardDtos_whenToInfoEntityList_thenReturnsCardInfoEntities() {
         val dtos = listOf(
-            TestCardData.scryfallCardDto,
-            TestCardData.scryfallCardDto.copy(
+            TestScryfallDataDto.scryfallCardDto,
+            TestScryfallDataDto.scryfallCardDto.copy(
                 id = "cardId2",
                 name = "Card Name 2",
                 type = "Instant"
             )
         )
         val expectedEntities = listOf(
-            TestCardData.cardInfoEntity,
-            TestCardData.cardInfoEntity.copy(
+            TestScryfallDataDto.cardInfoEntity,
+            TestScryfallDataDto.cardInfoEntity.copy(
                 id = "cardId2",
                 name = "Card Name 2",
                 isOngoing = false

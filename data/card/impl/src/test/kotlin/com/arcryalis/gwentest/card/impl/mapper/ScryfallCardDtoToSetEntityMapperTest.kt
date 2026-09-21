@@ -7,8 +7,8 @@ class ScryfallCardDtoToSetEntityMapperTest {
 
     @Test
     fun givenScryfallCardDto_whenToSetEntity_thenReturnsCardSetEntity() {
-        val dto = TestCardData.scryfallCardDto
-        val expectedEntity = TestCardData.cardSetEntity
+        val dto = TestScryfallDataDto.scryfallCardDto
+        val expectedEntity = TestScryfallDataDto.cardSetEntity
 
         val result = dto.toSetEntity()
 
@@ -18,8 +18,8 @@ class ScryfallCardDtoToSetEntityMapperTest {
     @Test
     fun givenScryfallCardDtos_whenToDistinctSetEntity_thenReturnsSetEntities() {
         val dtos = listOf(
-            TestCardData.scryfallCardDto,
-            TestCardData.scryfallCardDto.copy(
+            TestScryfallDataDto.scryfallCardDto,
+            TestScryfallDataDto.scryfallCardDto.copy(
                 id = "cardId2",
                 name = "Card Name 2",
                 setId = "setId2",
@@ -27,8 +27,8 @@ class ScryfallCardDtoToSetEntityMapperTest {
             )
         )
         val expectedEntities = listOf(
-            TestCardData.cardSetEntity,
-            TestCardData.cardSetEntity.copy(
+            TestScryfallDataDto.cardSetEntity,
+            TestScryfallDataDto.cardSetEntity.copy(
                 id = "setId2",
                 name = "Set Name 2"
             )
@@ -42,17 +42,17 @@ class ScryfallCardDtoToSetEntityMapperTest {
     @Test
     fun givenScryfallCardDtosWithDuplicateSetIds_whenToDistinctSetEntity_thenRemovesDuplicates() {
         val dtos = listOf(
-            TestCardData.scryfallCardDto,
-            TestCardData.scryfallCardDto.copy(
+            TestScryfallDataDto.scryfallCardDto,
+            TestScryfallDataDto.scryfallCardDto.copy(
                 id = "cardId2",
                 name = "Card Name 2"
             ),
-            TestCardData.scryfallCardDto.copy(
+            TestScryfallDataDto.scryfallCardDto.copy(
                 id = "cardId3",
                 name = "Card Name 3"
             )
         )
-        val expectedEntities = listOf(TestCardData.cardSetEntity)
+        val expectedEntities = listOf(TestScryfallDataDto.cardSetEntity)
 
         val result = dtos.toDistinctSetEntity()
 

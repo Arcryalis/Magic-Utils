@@ -3,9 +3,9 @@ package com.arcryalis.gwentest.data.card
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 
-object MockCardInfo {
+object TestCardInfo {
 
-    val cardInfo = CardInfo(
+    val info1 = CardInfo(
         name = "c.name",
         oracleText = "o.text",
         images = CardInfoImageUrls(
@@ -16,7 +16,7 @@ object MockCardInfo {
         isOngoing = false,
     )
 
-    val cardInfo2 = CardInfo(
+    val info2 = CardInfo(
         name = "c2.name",
         oracleText = "o2.text",
         images = CardInfoImageUrls(

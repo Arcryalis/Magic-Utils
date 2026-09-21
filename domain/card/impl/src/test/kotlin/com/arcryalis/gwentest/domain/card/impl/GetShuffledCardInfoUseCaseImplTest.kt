@@ -1,6 +1,6 @@
 package com.arcryalis.gwentest.domain.card.impl
 
-import com.arcryalis.gwentest.data.card.MockCardInfo
+import com.arcryalis.gwentest.data.card.TestCardInfo
 import com.arcryalis.gwentest.data.card.MockCardRepository
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
@@ -31,12 +31,12 @@ class GetShuffledCardInfoUseCaseImplTest {
     @Test
     fun givenCardsForSet_whenInvoked_thenReturnsCards() = runTest {
         val setId = "setId"
-        val cards = listOf(MockCardInfo.cardInfo, MockCardInfo.cardInfo2)
+        val cards = listOf(TestCardInfo.info1, TestCardInfo.info2)
 
         setupSut(
             cardsBySet = mapOf(
                 setId to cards,
-                "differentId" to listOf(MockCardInfo.cardInfo),
+                "differentId" to listOf(TestCardInfo.info1),
             )
         )
 
@@ -49,7 +49,7 @@ class GetShuffledCardInfoUseCaseImplTest {
     fun givenUnknownSet_whenInvoked_thenReturnsEmptyList() = runTest {
         val setId = "set1"
         val incorrectSetId = "set2"
-        val cards = listOf(MockCardInfo.cardInfo)
+        val cards = listOf(TestCardInfo.info1)
         setupSut(
             cardsBySet = mapOf(setId to cards)
         )

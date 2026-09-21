@@ -1,63 +1,89 @@
 package com.arcryalis.gwentest.card.impl.mapper
 
+import com.arcryalis.gwentest.data.card.TestCardInfo
+import com.arcryalis.gwentest.data.card.model.CardInfo
+import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class CardInfoToModelMapperTest {
 
+    private val cardBackUrl = "cardBackUrl"
+
     @Test
     fun givenCardInfoEntity_whenToModel_thenReturnsCardInfo() {
-        val entity = TestCardData.cardInfoEntity
-        val cardBack = TestCardData.cardBackUrl
-        val expectedModel = TestCardData.cardInfo
+        val entity = TestScryfallDataDto.cardInfoEntity
+        val expectedModel = TestCardInfo.info1
 
-        val result = entity.toModel(cardBack)
+        val result = entity.toModel(cardBackUrl)
 
         assertEquals(expectedModel, result)
     }
 
     @Test
     fun givenCardInfoEntityWithNullOracleText_whenToModel_thenReturnsCardInfoWithNullOracleText() {
-        val entity = TestCardData.cardInfoEntity.copy(oracleText = null)
-        val cardBack = TestCardData.cardBackUrl
-        val expectedModel = TestCardData.cardInfo.copy(oracleText = null)
+        val entity = TestScryfallDataDto.cardInfoEntity.copy(oracleText = null)
+        val expectedModel = TestCardInfo.info1.copy(
+            oracleText = null,
+            images = TestCardInfo.info1.images.copy(
+                back = cardBackUrl
+            )
+        )
 
-        val result = entity.toModel(cardBack)
+        val result = entity.toModel(cardBackUrl)
 
         assertEquals(expectedModel, result)
     }
 
     @Test
     fun givenCardInfoEntityWithOngoingFalse_whenToModel_thenReturnsCardInfoOngoingFalse() {
-        val entity = TestCardData.cardInfoEntity.copy(isOngoing = false)
-        val cardBack = TestCardData.cardBackUrl
-        val expectedModel = TestCardData.cardInfo.copy(isOngoing = false)
+        val entity = TestScryfallDataDto.cardInfoEntity.copy(isOngoing = false)
+        val expectedModel = CardInfo(
+            name = entity.name,
+            oracleText = entity.oracleText,
+            images = CardInfoImageUrls(
+                small = entity.smallImageUrl,
+                large = entity.largeImageUrl,
+                back = cardBackUrl
+            ),
+            isOngoing = false
+        )
 
-        val result = entity.toModel(cardBack)
+        val result = entity.toModel(cardBackUrl)
 
         assertEquals(expectedModel, result)
     }
 
     @Test
     fun givenCardInfoEntities_whenToModelList_thenReturnsCardInfos() {
-        val entities = listOf(
-            TestCardData.cardInfoEntity,
-            TestCardData.cardInfoEntity.copy(
-                id = "cardId2",
-                name = "Card Name 2",
-                isOngoing = false
-            )
-        )
-        val cardBack = TestCardData.cardBackUrl
-        val expectedModel = listOf(
-            TestCardData.cardInfo,
-            TestCardData.cardInfo.copy(
-                name = "Card Name 2",
-                isOngoing = false
-            )
-        )
+        val entity1 = TestScryfallDataDto.cardInfoEntity
+        val entity2 = TestScryfallDataDto.cardInfoEntity2
 
-        val result = entities.toModel(cardBack)
+        val expectedModel = listOf(
+            CardInfo(
+                name = entity1.name,
+                oracleText = entity1.oracleText,
+                images = CardInfoImageUrls(
+                    small = entity1.smallImageUrl,
+                    large = entity1.largeImageUrl,
+                    back = cardBackUrl
+                ),
+                isOngoing = entity1.isOngoing
+            ),
+            CardInfo(
+                name = entity2.name,
+                oracleText = entity2.oracleText,
+                images = CardInfoImageUrls(
+                    small = entity2.smallImageUrl,
+                    large = entity2.largeImageUrl,
+                    back = cardBackUrl
+                ),
+                isOngoing = entity2.isOngoing
+            )
+        )
+        val entities = listOf(entity1, entity2)
+
+        val result = entities.toModel(cardBackUrl)
 
         assertEquals(expectedModel, result)
     }

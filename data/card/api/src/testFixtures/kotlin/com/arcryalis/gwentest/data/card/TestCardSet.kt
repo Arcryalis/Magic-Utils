@@ -2,7 +2,7 @@ package com.arcryalis.gwentest.data.card
 
 import com.arcryalis.gwentest.data.card.model.CardSet
 
-object MockCardSet {
+object TestCardSet {
     val set1 = CardSet(
         id = "set1",
         name = "Set One"

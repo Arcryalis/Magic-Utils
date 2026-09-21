@@ -1,5 +1,6 @@
 package com.arcryalis.gwentest.card.impl.mapper
 
+import com.arcryalis.gwentest.data.card.model.CardSet
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -7,8 +8,11 @@ class CardSetEntityToModelMapperTest {
 
     @Test
     fun givenCardSetEntity_whenToModel_thenReturnsCardSet() {
-        val entity = TestCardData.cardSetEntity
-        val expectedModel = TestCardData.cardSet
+        val entity = TestScryfallDataDto.cardSetEntity
+        val expectedModel = CardSet(
+            id = entity.id,
+            name = entity.name
+        )
 
         val result = entity.toModel()
 
@@ -17,18 +21,18 @@ class CardSetEntityToModelMapperTest {
 
     @Test
     fun givenCardSetEntities_whenToModelList_thenReturnsCardSets() {
-        val entities = listOf(
-            TestCardData.cardSetEntity,
-            TestCardData.cardSetEntity.copy(
-                id = "setId2",
-                name = "Set Name 2"
-            )
-        )
+        val firstEntity = TestScryfallDataDto.cardSetEntity
+        val secondEntity = TestScryfallDataDto.cardSetEntity2
+
+        val entities = listOf(firstEntity,secondEntity)
         val expectedModel = listOf(
-            TestCardData.cardSet,
-            TestCardData.cardSet.copy(
-                id = "setId2",
-                name = "Set Name 2"
+            CardSet(
+                id = firstEntity.id,
+                name = firstEntity.name
+            ),
+            CardSet(
+                id = secondEntity.id,
+                name = secondEntity.name
             )
         )
 

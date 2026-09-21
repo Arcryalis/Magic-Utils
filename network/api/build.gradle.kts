@@ -6,6 +6,10 @@ plugins {
 
 android {
     namespace = "com.arcryalis.gwentest.network"
+
+    testFixtures {
+        enable = true
+    }
 }
 
 dependencies {

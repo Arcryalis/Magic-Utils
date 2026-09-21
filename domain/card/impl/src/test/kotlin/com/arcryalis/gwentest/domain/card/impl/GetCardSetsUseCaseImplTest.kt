@@ -1,9 +1,8 @@
 package com.arcryalis.gwentest.domain.card.impl
 
 import com.arcryalis.gwentest.data.card.MockCardRepository
-import com.arcryalis.gwentest.data.card.MockCardSet
+import com.arcryalis.gwentest.data.card.TestCardSet
 import com.arcryalis.gwentest.data.card.model.CardSet
-import com.arcryalis.gwentest.domain.card.AreCardsAvailableUseCase
 import com.arcryalis.gwentest.domain.card.GetCardSetsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -31,7 +30,7 @@ class GetCardSetsUseCaseImplTest {
 
     @Test
     fun givenAvailableSets_whenInvoked_thenReturnsSets() = runTest {
-        val setList = listOf(MockCardSet.set1, MockCardSet.set2)
+        val setList = listOf(TestCardSet.set1, TestCardSet.set2)
         setupSut(availableSets = setList)
 
         val result = sut().first()

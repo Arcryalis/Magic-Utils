@@ -5,6 +5,12 @@ plugins {
 
 android {
     namespace = "com.arcryalis.gwentest.data.card.impl"
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -15,4 +21,11 @@ dependencies {
     implementation(projects.data.local.api)
     implementation(projects.data.remote.api)
     implementation(projects.network.api)
+
+    testImplementation(libs.robolectric)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(testFixtures(projects.data.card.api))
+    testImplementation(testFixtures(projects.data.local.api))
+    testImplementation(testFixtures(projects.data.remote.api))
+    testImplementation(testFixtures(projects.network.api))
 }
