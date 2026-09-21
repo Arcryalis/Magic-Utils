@@ -1,6 +1,6 @@
 package com.arcryalis.gwentest.card.impl.mapper
 
-import com.arcryalis.gwentest.api.scryfall.dto.ScryfallDataDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallDataDto
 import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
 
 private const val TYPE_ONGOING = "ongoing"

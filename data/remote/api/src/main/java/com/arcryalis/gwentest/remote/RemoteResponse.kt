@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.api
+package com.arcryalis.gwentest.remote
 
 sealed interface RemoteResponse<T> {
     data class Success<T>(val data: T) : RemoteResponse<T>

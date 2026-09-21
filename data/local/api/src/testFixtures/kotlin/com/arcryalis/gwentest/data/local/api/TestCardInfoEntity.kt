@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.card.impl.mapper
+package com.arcryalis.gwentest.data.local.api
 
 import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
 

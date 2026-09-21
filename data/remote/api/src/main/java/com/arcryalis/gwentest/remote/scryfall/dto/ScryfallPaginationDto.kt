@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.api.scryfall.dto
+package com.arcryalis.gwentest.remote.scryfall.dto
 
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName

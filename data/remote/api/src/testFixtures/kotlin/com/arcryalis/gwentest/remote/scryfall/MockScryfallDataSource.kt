@@ -1,7 +1,7 @@
-package com.arcryalis.gwentest.api.scryfall
+package com.arcryalis.gwentest.remote.scryfall
 
-import com.arcryalis.gwentest.api.RemoteResponse
-import com.arcryalis.gwentest.api.scryfall.dto.ScryfallPaginationDto
+import com.arcryalis.gwentest.remote.RemoteResponse
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallPaginationDto
 
 class MockScryfallDataSource(
     private var responses: MutableMap<Int, RemoteResponse<ScryfallPaginationDto>> = mutableMapOf()

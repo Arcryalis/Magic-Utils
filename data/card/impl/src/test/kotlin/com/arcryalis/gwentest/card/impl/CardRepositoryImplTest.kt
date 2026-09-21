@@ -1,21 +1,21 @@
 package com.arcryalis.gwentest.card.impl
 
 import android.content.Context
-import com.arcryalis.gwentest.api.RemoteResponse
-import com.arcryalis.gwentest.api.scryfall.MockScryfallDataSource
-import com.arcryalis.gwentest.api.scryfall.dto.ScryfallPaginationDto
-import com.arcryalis.gwentest.card.impl.mapper.TestScryfallDataDto
-import com.arcryalis.gwentest.card.impl.mapper.TestCardInfoEntity
-import com.arcryalis.gwentest.card.impl.mapper.TestCardSetEntity
 import com.arcryalis.gwentest.data.card.impl.R
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 import com.arcryalis.gwentest.data.card.model.CardSet
 import com.arcryalis.gwentest.data.local.api.MockCardInfoDataStore
 import com.arcryalis.gwentest.data.local.api.MockCardSetDataStore
+import com.arcryalis.gwentest.data.local.api.TestCardInfoEntity
+import com.arcryalis.gwentest.data.local.api.TestCardSetEntity
 import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
 import com.arcryalis.gwentest.data.local.api.entity.CardSetEntity
 import com.arcryalis.gwentest.network.MockCoilImageCacher
+import com.arcryalis.gwentest.remote.RemoteResponse
+import com.arcryalis.gwentest.remote.scryfall.MockScryfallDataSource
+import com.arcryalis.gwentest.remote.scryfall.TestScryfallDataDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallPaginationDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

@@ -1,9 +1,9 @@
 package com.arcryalis.gwentest.card.impl
 
 import android.content.Context
-import com.arcryalis.gwentest.api.RemoteResponse
-import com.arcryalis.gwentest.api.scryfall.ScryfallDataSource
-import com.arcryalis.gwentest.api.scryfall.dto.ScryfallDataDto
+import com.arcryalis.gwentest.remote.RemoteResponse
+import com.arcryalis.gwentest.remote.scryfall.ScryfallDataSource
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallDataDto
 import com.arcryalis.gwentest.card.impl.mapper.toDistinctSetEntity
 import com.arcryalis.gwentest.card.impl.mapper.toInfoEntity
 import com.arcryalis.gwentest.card.impl.mapper.toModel

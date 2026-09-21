@@ -1,10 +1,10 @@
 package com.arcryalis.gwentest.remote.impl
 
-import com.arcryalis.gwentest.api.RemoteResponse
-import com.arcryalis.gwentest.api.RemoteResponse.Error
-import com.arcryalis.gwentest.api.RemoteResponse.Success
-import com.arcryalis.gwentest.api.scryfall.ScryfallDataSource
-import com.arcryalis.gwentest.api.scryfall.dto.ScryfallPaginationDto
+import com.arcryalis.gwentest.remote.RemoteResponse
+import com.arcryalis.gwentest.remote.RemoteResponse.Error
+import com.arcryalis.gwentest.remote.RemoteResponse.Success
+import com.arcryalis.gwentest.remote.scryfall.ScryfallDataSource
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallPaginationDto
 import com.arcryalis.gwentest.remote.impl.api.ScryfallApi
 import com.haroldadmin.cnradapter.NetworkResponse
 import javax.inject.Inject

@@ -1,6 +1,6 @@
 package com.arcryalis.gwentest.remote.impl.api
 
-import com.arcryalis.gwentest.api.scryfall.dto.ScryfallPaginationDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallPaginationDto
 import com.haroldadmin.cnradapter.NetworkResponse
 import retrofit2.http.GET
 import retrofit2.http.Query

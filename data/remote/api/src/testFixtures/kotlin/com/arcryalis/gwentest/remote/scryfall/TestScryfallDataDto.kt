@@ -1,7 +1,7 @@
-package com.arcryalis.gwentest.card.impl.mapper
+package com.arcryalis.gwentest.remote.scryfall
 
-import com.arcryalis.gwentest.api.scryfall.dto.ScryfallDataDto
-import com.arcryalis.gwentest.api.scryfall.dto.ScryfallImageUrlsDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallDataDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallImageUrlsDto
 
 object TestScryfallDataDto {
 
