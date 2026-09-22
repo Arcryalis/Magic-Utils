@@ -1,32 +1,32 @@
 package com.arcryalis.gwentest.core
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,79 +45,95 @@ fun LifeCounter(
     modifier: Modifier = Modifier,
     onUpClicked: () -> Unit = {},
     onDownClicked: () -> Unit = {},
-    onClicked: () -> Unit = {},
+    onMiddleClicked: () -> Unit = {},
     onLongClicked: () -> Unit = {},
 ) {
     val haptics = LocalHapticFeedback.current
-    Card(
-        modifier = modifier
-    ) {
-        Box(
-            modifier = Modifier.background(backgroundColor)
+    var boxHeight by remember { mutableFloatStateOf(0f) }
+//    Box(
+//        modifier = modifier
+//            .fillMaxSize()
+//    ) {
+        Column(
+            modifier = modifier
+//                .fillMaxSize()
+                .background(backgroundColor)
+                .drawBehind(
+                    onDraw = { boxHeight = size.height }
+                )
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = { tapOffset ->
+                            handleOnPress(
+                                containerHeight = boxHeight,
+                                tapYOffset = tapOffset.y,
+                                haptics = haptics,
+                                onLowerClicked = onDownClicked,
+                                onUpperClicked = onUpClicked,
+                                onMiddleClicked = onMiddleClicked
+                            )
+                        },
+                        onLongPress = { _ ->
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onLongClicked()
+                        }
+                    )
+                },
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
-//                    .pointerInput(Unit) {
-//                        detectTapGestures(
-//                            onPress = { tapOffset ->
-//                                if (pressInTopHalf(tapOffset)) {
-//                                    onUpPressed()
-//                                } else {
-//                                    onDownPressed()
-//                                }
-//                            },
-//                            onLongPress = { tapOffset ->
-//                                if (tapOffset)
-////                                zoomOffset = if (zoomed) Offset.Zero else
-////                                    calculateOffset(tapOffset, size)
-////                                zoomed = !zoomed
-//                            }
-//                        )
-//                    }
-            ) {
-                LifeCounterButton(
-                    imageVector = Icons.Default.KeyboardArrowUp,
-                    contentDescription = stringResource(R.string.button_increase),
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = onUpClicked
-                )
+            LifeCounterArrow(
+                imageVector = Icons.Default.KeyboardArrowUp,
+                contentDescription = stringResource(R.string.button_increase),
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
 
-                Text(
-                    text = lifeTotal,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .combinedClickable(
-                            onClick = onClicked,
-                            onLongClick = {
-                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                                onLongClicked()
-                            },
-                            onLongClickLabel = stringResource(R.string.button_set)
-                        ),
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 48.sp,
-                )
+            Text(
+                text = lifeTotal,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                fontSize = 48.sp,
+            )
 
-                LifeCounterButton(
-                    imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = stringResource(R.string.button_decrease),
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = onDownClicked,
-                )
-            }
+            LifeCounterArrow(
+                imageVector = Icons.Default.KeyboardArrowDown,
+                contentDescription = stringResource(R.string.button_decrease),
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
         }
+//    }
+}
+
+private fun handleOnPress(
+    containerHeight: Float,
+    tapYOffset: Float,
+    haptics: HapticFeedback,
+    onLowerClicked: () -> Unit = {},
+    onUpperClicked: () -> Unit = {},
+    onMiddleClicked: () -> Unit = {}
+) {
+    // check top/bottom. Ignore middle press
+    val lowerThreshold = containerHeight / 3
+    val upperThreshold = containerHeight - lowerThreshold
+
+    if (tapYOffset >= upperThreshold) {
+        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+        onLowerClicked()
+    } else if (tapYOffset <= lowerThreshold) {
+        haptics.performHapticFeedback(HapticFeedbackType.Reject)
+        onUpperClicked()
+    } else {
+        haptics.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+        onMiddleClicked()
     }
 }
 
 @Composable
-private fun LifeCounterButton(
+private fun LifeCounterArrow(
     imageVector: ImageVector,
     contentDescription: String,
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current,
-    onClick: () -> Unit = {},
 ) {
     Icon(
         imageVector = imageVector,
@@ -126,15 +142,6 @@ private fun LifeCounterButton(
         modifier = modifier
             .fillMaxWidth()
             .height(96.dp)
-            .clickable(onClick = onClick)
-//            .combinedClickable(
-//                onClick = onPressed,
-//                onLongClick = {
-//                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-//                    onLongClicked()
-//                },
-//                onLongClickLabel = stringResource(R.string.button_set)
-//            )
     )
 }
 

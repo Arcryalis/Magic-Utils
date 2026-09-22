@@ -14,6 +14,7 @@ dependencies {
     api(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.material.icons.core)
+    implementation(libs.coil.compose)
 
     implementation(projects.ui.core)
 }
