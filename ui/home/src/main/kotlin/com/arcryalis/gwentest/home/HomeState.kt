@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.core
+package com.arcryalis.gwentest.home
 
 import com.arcryalis.gwentest.data.card.model.CardSet
 

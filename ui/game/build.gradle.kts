@@ -16,5 +16,6 @@ dependencies {
     implementation(libs.material.icons.core)
     implementation(libs.coil.compose)
 
+    implementation(projects.data.card.api)
     implementation(projects.ui.core)
 }

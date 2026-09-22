@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,67 +42,64 @@ import com.arcryalis.gwentest.game.R
 @Composable
 fun LifeCounter(
     lifeTotal: String,
-    backgroundColor: Color,
     modifier: Modifier = Modifier,
+    backgroundColor: Color = Color.LightGray,
+    arrowsVisible: Boolean = true,
     onUpClicked: () -> Unit = {},
     onDownClicked: () -> Unit = {},
-    onMiddleClicked: () -> Unit = {},
     onLongClicked: () -> Unit = {},
 ) {
     val haptics = LocalHapticFeedback.current
     var boxHeight by remember { mutableFloatStateOf(0f) }
-//    Box(
-//        modifier = modifier
-//            .fillMaxSize()
-//    ) {
-        Column(
-            modifier = modifier
-//                .fillMaxSize()
-                .background(backgroundColor)
-                .drawBehind(
-                    onDraw = { boxHeight = size.height }
+    Column(
+        modifier = modifier
+            .background(backgroundColor)
+            .drawBehind(
+                onDraw = { boxHeight = size.height }
+            )
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { tapOffset ->
+                        handleOnPress(
+                            containerHeight = boxHeight,
+                            tapYOffset = tapOffset.y,
+                            haptics = haptics,
+                            onLowerClicked = onDownClicked,
+                            onUpperClicked = onUpClicked
+                        )
+                    },
+                    onLongPress = { _ ->
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onLongClicked()
+                    }
                 )
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onTap = { tapOffset ->
-                            handleOnPress(
-                                containerHeight = boxHeight,
-                                tapYOffset = tapOffset.y,
-                                haptics = haptics,
-                                onLowerClicked = onDownClicked,
-                                onUpperClicked = onUpClicked,
-                                onMiddleClicked = onMiddleClicked
-                            )
-                        },
-                        onLongPress = { _ ->
-                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                            onLongClicked()
-                        }
-                    )
-                },
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            LifeCounterArrow(
-                imageVector = Icons.Default.KeyboardArrowUp,
-                contentDescription = stringResource(R.string.button_increase),
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
+            }
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        LifeCounterArrow(
+            imageVector = Icons.Default.KeyboardArrowUp,
+            isVisible = arrowsVisible,
+            contentDescription = stringResource(R.string.button_increase),
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
 
-            Text(
-                text = lifeTotal,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                fontSize = 48.sp,
-            )
+        Text(
+            text = lifeTotal,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            fontSize = 48.sp,
+        )
 
-            LifeCounterArrow(
-                imageVector = Icons.Default.KeyboardArrowDown,
-                contentDescription = stringResource(R.string.button_decrease),
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
-        }
-//    }
+        LifeCounterArrow(
+            imageVector = Icons.Default.KeyboardArrowDown,
+            isVisible = arrowsVisible,
+            contentDescription = stringResource(R.string.button_decrease),
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
+    }
 }
 
 private fun handleOnPress(
@@ -109,40 +107,42 @@ private fun handleOnPress(
     tapYOffset: Float,
     haptics: HapticFeedback,
     onLowerClicked: () -> Unit = {},
-    onUpperClicked: () -> Unit = {},
-    onMiddleClicked: () -> Unit = {}
+    onUpperClicked: () -> Unit = {}
 ) {
     // check top/bottom. Ignore middle press
-    val lowerThreshold = containerHeight / 3
+    val lowerThreshold = containerHeight / 4
     val upperThreshold = containerHeight - lowerThreshold
 
     if (tapYOffset >= upperThreshold) {
-        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+        haptics.performHapticFeedback(HapticFeedbackType.Confirm) //TODO remove
         onLowerClicked()
     } else if (tapYOffset <= lowerThreshold) {
         haptics.performHapticFeedback(HapticFeedbackType.Reject)
         onUpperClicked()
-    } else {
-        haptics.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
-        onMiddleClicked()
     }
 }
 
 @Composable
 private fun LifeCounterArrow(
     imageVector: ImageVector,
+    isVisible: Boolean,
     contentDescription: String,
     modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current,
 ) {
-    Icon(
-        imageVector = imageVector,
-        contentDescription = contentDescription,
-        tint = tint,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(96.dp)
-    )
+    if (isVisible) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = contentDescription,
+            tint = LocalContentColor.current,
+            modifier = modifier
+                .fillMaxWidth()
+                .height(96.dp)
+        )
+    } else {
+        Spacer(
+            modifier = Modifier
+        )
+    }
 }
 
 @Preview(showBackground = true)
@@ -155,3 +155,15 @@ fun LifeCounterPreview() {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun LifeCounterWithoutArrowsPreview() {
+    GwenTestTheme {
+        LifeCounter(
+            lifeTotal = "100",
+            arrowsVisible = false
+        )
+    }
+}
+
