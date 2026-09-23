@@ -25,19 +25,19 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardSet
-import com.arcryalis.gwentest.game.LifeCounterScreen
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToSchemeScreen: (String) -> Unit = {}
+    onNavigateToSchemeScreen: (String) -> Unit = {},
+    onNavigateToGameScreen: (String) -> Unit = {}
 ) {
     val state = viewModel.state.collectAsState()
     HomeScreen(
         state = state.value,
         modifier = modifier,
-        onNavigateToSchemeScreen = onNavigateToSchemeScreen,
+        onNavigateToSchemeScreen = onNavigateToGameScreen,
         onRefreshClick = viewModel::onRefresh
     )
 }
@@ -60,13 +60,12 @@ fun HomeScreen(
             onRefreshClick = onRefreshClick
         )
 
-        is HomeState.Ready -> LifeCounterScreen()
-//        is HomeState.Ready -> HomeReadyScreen(
-//            availableSets = state.availableSets,
-//            modifier = modifier,
-//            onItemClick = onNavigateToSchemeScreen,
-//            onRefresh = onRefreshClick
-//        )
+        is HomeState.Ready -> HomeReadyScreen(
+            availableSets = state.availableSets,
+            modifier = modifier,
+            onItemClick = onNavigateToSchemeScreen,
+            onRefresh = onRefreshClick
+        )
     }
 }
 

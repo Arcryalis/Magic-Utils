@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.arcryalis.gwentest.core.CardInfoDialog
 import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 
@@ -119,14 +120,15 @@ private fun SchemeReadyScreen(
         )
 
         if (overlayCard != null) {
-            OngoingCardOverlay(
-                card = overlayCard,
-                inOngoingList = ongoingCardList.contains(overlayCard),
-                modifier = Modifier.fillMaxSize(),
-                onCloseClicked = onCloseOverlayClicked,
-                onAddClicked = onAddOngoingClicked,
-                onRemoveClicked = onRemoveOngoingClicked
-            )
+            //TODO
+//            CardInfoDialog(
+//                card = overlayCard,
+//                inOngoingList = ongoingCardList.contains(overlayCard),
+//                modifier = Modifier.fillMaxSize(),
+//                onCloseClicked = onCloseOverlayClicked,
+//                onAddClicked = onAddOngoingClicked,
+//                onRemoveClicked = onRemoveOngoingClicked
+//            )
         }
     }
 }
@@ -222,129 +224,6 @@ private fun OngoingCardList(
             )
         }
     }
-}
-
-@Composable
-private fun OngoingCardOverlay(
-    card: CardUiInfo,
-    inOngoingList: Boolean,
-    modifier: Modifier = Modifier,
-    onCloseClicked: () -> Unit = {},
-    onAddClicked: (CardUiInfo) -> Unit = {},
-    onRemoveClicked: (CardUiInfo) -> Unit = {}
-) {
-    Dialog(
-        onDismissRequest = { onCloseClicked() },
-    ) {
-        Card(
-            modifier = modifier.padding(vertical = 96.dp),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxSize()
-            ) {
-                OngoingCardOverlayHeader(
-                    card = card,
-                    isCardSelected = inOngoingList,
-                    modifier = Modifier,
-                    onCloseClicked = onCloseClicked,
-                    onRemoveClicked = onRemoveClicked,
-                    onAddClicked = onAddClicked
-                )
-
-                AsyncImage(
-                    model = card.images.large,
-                    contentDescription = card.name,
-                    alignment = Alignment.Center,
-                    modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.CenterHorizontally)
-                        .padding(vertical = 8.dp)
-                )
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    thickness = 2.dp
-                )
-
-                Text(
-                    text = card.name,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-
-                if (card.oracleText != null) {
-                    Text(
-                        text = card.oracleText,
-                        fontSize = 12.sp,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .padding(top = 4.dp)
-                            .align(Alignment.CenterHorizontally)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun OngoingCardOverlayHeader(
-    card: CardUiInfo,
-    isCardSelected: Boolean,
-    modifier: Modifier = Modifier,
-    onCloseClicked: () -> Unit = {},
-    onAddClicked: (CardUiInfo) -> Unit = {},
-    onRemoveClicked: (CardUiInfo) -> Unit = {}
-) {
-    Row(modifier = modifier) {
-        OngoingCardOverlayIcon(
-            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-            contentDescription = stringResource(R.string.overlay_back),
-            onClicked = onCloseClicked
-        )
-
-        Spacer(modifier.weight(1f))
-
-        if(isCardSelected) {
-            OngoingCardOverlayIcon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(R.string.overlay_close),
-                tint = Color.Red,
-                onClicked = { onRemoveClicked(card) }
-            )
-        } else {
-            OngoingCardOverlayIcon(
-                imageVector = Icons.Default.Add,
-                contentDescription = stringResource(R.string.overlay_add),
-                onClicked = { onAddClicked(card) }
-            )
-        }
-    }
-}
-
-
-@Composable
-private fun OngoingCardOverlayIcon(
-    imageVector: ImageVector,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current,
-    onClicked: () -> Unit = {}
-) {
-    Icon(
-        imageVector = imageVector,
-        contentDescription = contentDescription,
-        tint = tint,
-        modifier = modifier
-            .size(48.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .clickable(onClick = onClicked)
-    )
 }
 
 @Preview(showBackground = true)

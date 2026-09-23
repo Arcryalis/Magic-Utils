@@ -24,6 +24,7 @@ dependencies {
     implementation(projects.ui.core)
     implementation(projects.ui.home)
     implementation(projects.ui.scheme)
+    implementation(projects.ui.game)
 
     implementation(projects.domain.card.api)
     implementation(projects.domain.card.impl)

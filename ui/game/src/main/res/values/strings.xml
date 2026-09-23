@@ -3,6 +3,7 @@
     <string name="button_decrease">Decrease</string>
     <string name="button_set">Set Life</string>
 
+    <string name="loading">Loading</string>
     <string name="button_show_next">Show next</string>
     <string name="button_show_history">Show history</string>
 </resources>

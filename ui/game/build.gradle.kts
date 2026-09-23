@@ -15,7 +15,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.material.icons.core)
     implementation(libs.coil.compose)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
 
-    implementation(projects.data.card.api)
     implementation(projects.ui.core)
+    implementation(projects.data.card.api)
+    implementation(projects.domain.card.api)
 }
