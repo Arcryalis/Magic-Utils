@@ -53,7 +53,7 @@ fun DeckComponent(
             contentDescription = stringResource(R.string.button_show_next),
             alignment = Alignment.Center,
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(8.dp)
                 .clip(RoundedCornerShape(4.dp))
                 .weight(1f)
                 .align(Alignment.CenterVertically)
@@ -66,7 +66,7 @@ fun DeckComponent(
             contentDescription = stringResource(R.string.button_show_history),
             alignment = Alignment.Center,
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(8.dp)
                 .clip(RoundedCornerShape(4.dp))
                 .weight(1f)
                 .align(Alignment.CenterVertically)

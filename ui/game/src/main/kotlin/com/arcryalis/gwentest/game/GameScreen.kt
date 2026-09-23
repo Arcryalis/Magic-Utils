@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.arcryalis.gwentest.core.CardInfoDialog
+import com.arcryalis.gwentest.core.CardInfoGallery
 import com.arcryalis.gwentest.core.FullScreenDialog
 import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
@@ -115,7 +116,8 @@ private fun GameReadyScreen(
                 modifier = Modifier.fillMaxSize(),
                 onCloseClicked = onOverlayCloseClicked,
                 onAddClicked = onOverlayAddClicked,
-                onRemoveClicked = onOverlayRemoveClicked
+                onRemoveClicked = onOverlayRemoveClicked,
+                onGalleryCardClicked = onListItemClicked
             )
         }
     }
@@ -169,25 +171,35 @@ fun GameOverlayContent(
     modifier: Modifier = Modifier,
     onCloseClicked: () -> Unit = {},
     onAddClicked: (CardInfo) -> Unit = {},
-    onRemoveClicked: (CardInfo) -> Unit = {}
+    onRemoveClicked: (CardInfo) -> Unit = {},
+    onGalleryCardClicked: (CardInfo) -> Unit = {}
 ) {
     when (state) {
-        is OverlayState.Visible.Individual -> {
-            FullScreenDialog(
+        is OverlayState.Visible.Individual -> FullScreenDialog(
+            modifier = modifier,
+            onDismiss = onCloseClicked
+        ) {
+            CardInfoDialog(
+                card = state.info,
+                showRemoveButton = state.showRemove,
                 modifier = modifier,
-                onDismiss = onCloseClicked
-            ) {
-                CardInfoDialog(
-                    card = state.info,
-                    showRemoveButton = true,
-                    modifier = modifier,
-                    onCloseClicked = onCloseClicked,
-                    onAddClicked = onAddClicked,
-                    onRemoveClicked = onRemoveClicked
-                )
-            }
+                onCloseClicked = onCloseClicked,
+                onAddClicked = onAddClicked,
+                onRemoveClicked = onRemoveClicked
+            )
         }
-        else -> {} //TODO
+
+        is OverlayState.Visible.Gallery -> FullScreenDialog(
+            modifier = modifier,
+            onDismiss = onCloseClicked
+        ) {
+            CardInfoGallery(
+                cards = state.cards,
+                modifier = modifier,
+                onCloseClicked = onCloseClicked,
+                onCardClicked = onGalleryCardClicked
+            )
+        }
     }
 }
 
