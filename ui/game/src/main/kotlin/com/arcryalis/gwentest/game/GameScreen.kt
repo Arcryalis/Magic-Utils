@@ -34,7 +34,7 @@ fun GameScreen(
         onPlayerLongClicked = {}, //TODO
         onNextClicked = viewModel::revealNextCard,
         onHistoryClicked = viewModel::showRevealedCardsGallery,
-        onListItemClicked = viewModel::addCardToExtras,
+        onListItemClicked = viewModel::showCardOnOverlay,
         onOverlayCloseClicked = viewModel::hideOverlay,
         onOverlayAddClicked = viewModel::addCardToExtras,
         onOverlayRemoveClicked = viewModel::removeCardFromExtras
@@ -151,7 +151,7 @@ private fun GameScreenContent(
         if (deckSettings != null) {
             DeckComponent(
                 nextImageUrl = deckSettings.nextCardUrl,
-                mostRecentCard = deckSettings.revealedCards?.first(),
+                mostRecentCard = deckSettings.revealedCards?.firstOrNull(),
                 extraCardList = deckSettings.extraCardList,
                 modifier = Modifier.weight(if (isPortrait) 1f else 2f),
                 onNextClicked = onNextClicked,

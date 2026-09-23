@@ -42,32 +42,32 @@ class GameViewModel @AssistedInject constructor(
     }
 
     private val setId = route.setId
-    private val startingDeck = setId?.let {
-        getShuffledCardInfoUseCase(setId)
-    } ?: flowOf(null)
+    private val startingDeck = (
+            setId?.let { getShuffledCardInfoUseCase(setId) } ?: flowOf(emptyList())
+        ).stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     private var revealedCardIndex = MutableStateFlow<Int?>(null)
     private val revealedCardList = combine(
         startingDeck,
         revealedCardIndex,
     ) { deck, index ->
-        if (deck != null && index != null) {
-            deck.take(index).reversed()
+        if (index != null) {
+            deck.take(index+1).reversed()
         } else {
-            null
+            emptyList()
         }
-    }
-    private val extraCardList = MutableStateFlow(mutableListOf<CardInfo>())
-    private val cardbackUrl = MutableStateFlow("")
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    private val extraCardList = MutableStateFlow<List<CardInfo>>(emptyList())
+    private val cardbackUrl = MutableStateFlow("https://backs.scryfall.io/large/1/b/1b2396d4-9048-439d-96bd-354288518841.jpg?1665006146")
     private val deckState = combine(
         startingDeck,
         revealedCardList,
         extraCardList,
         cardbackUrl,
     ) { starting, revealedCards, extraCards, backUrl ->
-        if (starting != null) {
-            val totalRevealed = revealedCards?.size ?: 0
+        if (starting.isNotEmpty()) {
             DeckSettings(
-                nextCardUrl = if(totalRevealed < starting.size) {
+                nextCardUrl = if (revealedCards.size < starting.size) {
                     backUrl
                 } else {
                     null
@@ -88,11 +88,15 @@ class GameViewModel @AssistedInject constructor(
         when (overlayCards.size) {
             0 -> OverlayState.Hidden
             1 -> {
-                val card = overlayCards.first()
-                OverlayState.Visible.Individual(
-                    info = card,
-                    showRemove = extraList.contains(card)
-                )
+                val card = overlayCards.firstOrNull()
+                if (card != null) {
+                    OverlayState.Visible.Individual(
+                        info = card,
+                        showRemove = extraList.contains(card)
+                    )
+                } else {
+                    OverlayState.Hidden
+                }
             }
             else -> OverlayState.Visible.Gallery(overlayCards)
         }
@@ -121,47 +125,45 @@ class GameViewModel @AssistedInject constructor(
     }
 
     fun decreasePlayerLife(index: Int) {
-//        lifeTotals.update {
-//            lifeTotals.value.apply {
-//                if (this != null) {
-//                    val currentVal = this[index]
-//                    this[index] = currentVal - 1
-//                }
-//            }
-//        }
+        lifeTotals.update {
+            lifeTotals.value
+                ?.toMutableList()
+                ?.apply {
+                    this[index] = this[index] - 1
+                }?.toList()
+        }
     }
 
     fun revealNextCard() {
         val currentIndex = revealedCardIndex.value
-        val newIndex = currentIndex?.let { it + 1 } ?: 0
+        val maxIndex = startingDeck.value.size - 1
+        val newIndex = (currentIndex?.let { it + 1 } ?: 0).coerceAtMost(maxIndex)
         revealedCardIndex.value = newIndex
 
-        viewModelScope.launch {
-            val card = revealedCardList.first()?.first()
-            if (card != null) {
-                showCardOnOverlay(card)
-
-                if(card.isOngoing) {
-                    addCardToExtras(card = card)
-                }
-            }
+        val card = startingDeck.value[newIndex]
+        if(card.isOngoing) {
+            addCardToExtras(card = card)
         }
+
+        showCardOnOverlay(card)
     }
 
     fun addCardToExtras(card: CardInfo) {
-        extraCardList.update {
-            extraCardList.value.apply {
-                this.add(card)
+        extraCardList.update { currentList ->
+            if (!currentList.contains(card)) {
+                currentList + card
+            } else {
+                currentList
             }
         }
+        hideOverlay()
     }
 
     fun removeCardFromExtras(card: CardInfo) {
-        extraCardList.update {
-            extraCardList.value.apply {
-                this.remove(card)
-            }
+        extraCardList.update { currentList ->
+            currentList - card
         }
+        hideOverlay()
     }
 
     fun showCardOnOverlay(cardInfo: CardInfo) {
@@ -170,7 +172,7 @@ class GameViewModel @AssistedInject constructor(
 
     fun showRevealedCardsGallery() {
         viewModelScope.launch {
-            overlayCards.value = revealedCardList.first() ?: emptyList()
+            overlayCards.value = revealedCardList.first()
         }
     }
 

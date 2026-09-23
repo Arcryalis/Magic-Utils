@@ -1,6 +1,7 @@
 package com.arcryalis.gwentest.game
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -166,7 +167,7 @@ private fun LifeMultiPlayerSection(
             modifier = Modifier.weight(1f)
         ) {
             if (isThreePlayer) {
-                Spacer(
+                Box(
                     modifier = Modifier.weight(0.5f)
                 )
             }
@@ -182,7 +183,7 @@ private fun LifeMultiPlayerSection(
             )
 
             if (isThreePlayer) {
-                Spacer(
+                Box(
                     modifier = Modifier.weight(0.5f)
                 )
             } else {

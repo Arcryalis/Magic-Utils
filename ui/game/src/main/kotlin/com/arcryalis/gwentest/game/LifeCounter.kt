@@ -139,7 +139,7 @@ private fun LifeCounterArrow(
                 .height(96.dp)
         )
     } else {
-        Spacer(
+        Box(
             modifier = Modifier
         )
     }

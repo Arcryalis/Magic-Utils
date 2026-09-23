@@ -34,6 +34,7 @@ include(":app")
 include(":ui:core")
 include(":ui:home")
 include(":ui:scheme")
+include(":ui:game")
 
 include(":domain:card:api")
 include(":domain:card:impl")
@@ -47,4 +48,3 @@ include(":data:remote:impl")
 
 include(":network:impl")
 include(":network:api")
-include(":ui:game")

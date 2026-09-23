@@ -1,14 +1,17 @@
 package com.arcryalis.gwentest.game
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
@@ -24,19 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.arcryalis.gwentest.data.card.model.CardInfo
-
-
-@Composable
-fun FulLScreenDeckComponent(
-) {
-
-}
-
 
 @Composable
 fun DeckComponent(
@@ -52,37 +48,31 @@ fun DeckComponent(
         modifier = modifier.padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        if (nextImageUrl != null) {
-            AsyncImage(
-                model = nextImageUrl,
-                contentDescription = stringResource(R.string.button_show_next),
-                alignment = Alignment.Center,
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .weight(1f)
-                    .align(Alignment.CenterVertically)
-                    .clickable(onClick = onNextClicked),
-            )
-        } else {
-            Spacer(modifier = Modifier.weight(3f))
-        }
+        AsyncImage(
+            model = nextImageUrl ?: "",
+            contentDescription = stringResource(R.string.button_show_next),
+            alignment = Alignment.Center,
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .weight(1f)
+                .align(Alignment.CenterVertically)
+                .fillMaxHeight()
+                .clickable(onClick = onNextClicked),
+        )
 
-        if (mostRecentCard != null) {
-            AsyncImage(
-                model = mostRecentCard.images.small,
-                contentDescription = stringResource(R.string.button_show_history),
-                alignment = Alignment.Center,
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .weight(1f)
-                    .align(Alignment.CenterVertically)
-                    .clickable(onClick = onHistoryClicked),
-            )
-        } else {
-            Spacer(modifier = Modifier.weight(3f))
-        }
+        AsyncImage(
+            model = mostRecentCard?.images?.small ?: "",
+            contentDescription = stringResource(R.string.button_show_history),
+            alignment = Alignment.Center,
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .weight(1f)
+                .align(Alignment.CenterVertically)
+                .fillMaxHeight()
+                .clickable(onClick = onHistoryClicked),
+        )
 
         ExtraCardListCard(
             cards = extraCardList,
@@ -104,21 +94,32 @@ private fun ExtraCardListCard(
     var boxWidth by remember { mutableFloatStateOf(0f) }
 
     Box(
-        modifier = modifier.drawBehind(
-            onDraw = { boxWidth = size.width }
-        )
+        modifier = modifier
+            .fillMaxSize()
+            .drawBehind(
+                onDraw = { boxWidth = size.width }
+            )
     ) {
         Card(
-            modifier = modifier
-                .align(Alignment.Center)
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(8.dp)
         ) {
+            if (cards.isNotEmpty()) {
+                val pagerState = rememberPagerState(
+                    pageCount = { cards.size }
+                )
 
-            LazyRow(
-                modifier = modifier,
-
-            ) {
-                itemsIndexed(cards) { _, card ->
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = if (isPortrait) {
+                        (boxWidth / 20).dp
+                    } else {
+                        (boxWidth / 12).dp
+                    })
+                ) { index ->
+                    val card = cards[index]
                     AsyncImage(
                         model = card.images.small,
                         contentDescription = stringResource(R.string.button_show_history),
@@ -126,36 +127,11 @@ private fun ExtraCardListCard(
                         modifier = Modifier
                             .padding(8.dp)
                             .fillMaxSize()
+                            .clip(RoundedCornerShape(4.dp))
                             .clickable(onClick = { onListItemClicked(card) }),
                     )
                 }
-
             }
-//
-//            val pagerState = rememberPagerState(
-//                pageCount = { cards.size }
-//            )
-//
-//            HorizontalPager(
-//                state = pagerState,
-//                modifier = modifier,
-//                contentPadding = PaddingValues(horizontal = if (isPortrait) {
-//                    (boxWidth/20).dp
-//                } else {
-//                    (boxWidth/12).dp
-//                })
-//            ) { index ->
-//                val card = cards[index]
-//                AsyncImage(
-//                    model = card.images.small,
-//                    contentDescription = stringResource(R.string.button_show_history),
-//                    alignment = Alignment.Center,
-//                    modifier = Modifier
-//                        .padding(8.dp)
-//                        .fillMaxSize()
-//                        .clickable(onClick = { onListItemClicked(card) }),
-//                )
-//            }
         }
     }
 }
