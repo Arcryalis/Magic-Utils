@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.arcryalis.gwentest.core.CardInfoDialog
+import com.arcryalis.gwentest.core.FullScreenDialog
 import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardInfo
@@ -171,14 +172,21 @@ fun GameOverlayContent(
     onRemoveClicked: (CardInfo) -> Unit = {}
 ) {
     when (state) {
-        is OverlayState.Visible.Individual -> CardInfoDialog(
-            card = state.info,
-            showRemoveButton = true,
-            modifier = modifier,
-            onCloseClicked = onCloseClicked,
-            onAddClicked = onAddClicked,
-            onRemoveClicked = onRemoveClicked
-        )
+        is OverlayState.Visible.Individual -> {
+            FullScreenDialog(
+                modifier = modifier,
+                onDismiss = onCloseClicked
+            ) {
+                CardInfoDialog(
+                    card = state.info,
+                    showRemoveButton = true,
+                    modifier = modifier,
+                    onCloseClicked = onCloseClicked,
+                    onAddClicked = onAddClicked,
+                    onRemoveClicked = onRemoveClicked
+                )
+            }
+        }
         else -> {} //TODO
     }
 }

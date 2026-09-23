@@ -140,12 +140,14 @@ class GameViewModel @AssistedInject constructor(
         val newIndex = (currentIndex?.let { it + 1 } ?: 0).coerceAtMost(maxIndex)
         revealedCardIndex.value = newIndex
 
-        val card = startingDeck.value[newIndex]
-        if(card.isOngoing) {
-            addCardToExtras(card = card)
-        }
+        if (currentIndex != newIndex) {
+            val card = startingDeck.value[newIndex]
+            if (card.isOngoing) {
+                addCardToExtras(card = card)
+            }
 
-        showCardOnOverlay(card)
+            showCardOnOverlay(card)
+        }
     }
 
     fun addCardToExtras(card: CardInfo) {

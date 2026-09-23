@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.gwentest.android.library)
     alias(libs.plugins.gwentest.android.library.compose)
     alias(libs.plugins.gwentest.android.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -13,7 +14,7 @@ dependencies {
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.ui)
-    implementation(libs.navigation3.runtime)
+    implementation(libs.androidx.navigation3.runtime)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)

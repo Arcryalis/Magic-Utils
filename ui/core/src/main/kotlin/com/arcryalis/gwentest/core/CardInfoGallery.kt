@@ -1,5 +1,6 @@
 package com.arcryalis.gwentest.core
 
+import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,11 +8,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -22,85 +25,58 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 
 @Composable
-fun CardInfoDialog(
-    card: CardInfo,
-    showRemoveButton: Boolean,
+fun CardInfoGallery(
+    cards: List<CardInfo>,
     modifier: Modifier = Modifier,
     onCloseClicked: () -> Unit = {},
-    onAddClicked: (CardInfo) -> Unit = {},
-    onRemoveClicked: (CardInfo) -> Unit = {}
+    onCardClicked: (CardInfo) -> Unit = {},
 ) {
     Column(
         modifier = modifier
             .padding(8.dp)
             .fillMaxSize()
     ) {
-        CardInfoDialogHeader(
-            card = card,
-            showRemoveButton = showRemoveButton,
+        CardInfoGalleryHeader(
             modifier = Modifier,
-            onCloseClicked = onCloseClicked,
-            onRemoveClicked = onRemoveClicked,
-            onAddClicked = onAddClicked
+            onCloseClicked = onCloseClicked
         )
 
-        AsyncImage(
-            model = card.images.large,
-            contentDescription = card.name,
-            alignment = Alignment.Center,
-            modifier = Modifier
-                .weight(1f)
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 8.dp)
-        )
+        LazyColumn(
 
-        HorizontalDivider(
-            modifier = Modifier.padding(vertical = 8.dp),
-            thickness = 2.dp
-        )
+        ) { card ->
 
-        Text(
-            text = card.name,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        val oracleText = card.oracleText
-        if (oracleText != null) {
-            Text(
-                text = oracleText,
-                fontSize = 12.sp,
-                textAlign = TextAlign.Center,
+            AsyncImage(
+                model = card.images.small,
+                contentDescription = card.name,
+                alignment = Alignment.Center,
                 modifier = Modifier
-                    .padding(top = 4.dp)
+                    .weight(1f)
                     .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 8.dp)
             )
+
         }
     }
 }
 
 @Composable
-private fun CardInfoDialogHeader(
-    card: CardInfo,
-    showRemoveButton: Boolean,
+private fun CardInfoGalleryHeader(
     modifier: Modifier = Modifier,
     onCloseClicked: () -> Unit = {},
-    onAddClicked: (CardInfo) -> Unit = {},
-    onRemoveClicked: (CardInfo) -> Unit = {}
 ) {
     Row(modifier = modifier) {
         CardInfoDialogIcon(
@@ -108,23 +84,6 @@ private fun CardInfoDialogHeader(
             contentDescription = stringResource(R.string.card_info_back),
             onClicked = onCloseClicked
         )
-
-        Spacer(modifier.weight(1f))
-
-        if(showRemoveButton) {
-            CardInfoDialogIcon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(R.string.card_info_close),
-                tint = Color.Red,
-                onClicked = { onRemoveClicked(card) }
-            )
-        } else {
-            CardInfoDialogIcon(
-                imageVector = Icons.Default.Add,
-                contentDescription = stringResource(R.string.card_info_add),
-                onClicked = { onAddClicked(card) }
-            )
-        }
     }
 }
 
@@ -151,20 +110,31 @@ private fun CardInfoDialogIcon(
 
 @Preview(showBackground = true)
 @Composable
-fun CardInfoDialogPreview() {
+fun CardInfoGalleryPreview() {
     GwenTestTheme {
-        CardInfoDialog(
-            card = CardInfo(
-                name = "Card Name",
-                oracleText = "Oracle Text",
-                images = CardInfoImageUrls(
-                    small = "smallUrl",
-                    large = "largeUrl",
-                    back = "backUrl"
+        CardInfoGallery(
+            cards = listOf(
+                CardInfo(
+                    name = "Card Name",
+                    oracleText = "Oracle Text",
+                    images = CardInfoImageUrls(
+                        small = "smallUrl",
+                        large = "largeUrl",
+                        back = "backUrl"
+                    ),
+                    isOngoing = true,
                 ),
-                isOngoing = true,
+                CardInfo(
+                    name = "c.name",
+                    oracleText = "o.text",
+                    images = CardInfoImageUrls(
+                        small = "https://small.url",
+                        large = "https://large.url",
+                        back = "https://back.url"
+                    ),
+                    isOngoing = false,
+                )
             ),
-            showRemoveButton = true,
             modifier = Modifier
         )
     }
