@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -44,7 +43,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
-import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 
 @Composable
 fun SchemeScreen(
@@ -306,7 +304,7 @@ private fun OngoingCardOverlayHeader(
     Row(modifier = modifier) {
         OngoingCardOverlayIcon(
             imageVector = Icons.AutoMirrored.Default.ArrowBack,
-            contentDescription = stringResource(R.string.overlay_close),
+            contentDescription = stringResource(R.string.overlay_back),
             onClicked = onCloseClicked
         )
 
@@ -322,7 +320,7 @@ private fun OngoingCardOverlayHeader(
         } else {
             OngoingCardOverlayIcon(
                 imageVector = Icons.Default.Add,
-                contentDescription = stringResource(R.string.overlay_close),
+                contentDescription = stringResource(R.string.overlay_add),
                 onClicked = { onAddClicked(card) }
             )
         }
@@ -372,10 +370,10 @@ fun SchemeReadyScreenWithOverlayPreview() {
             overlayCard = CardUiInfo(
                 name = "Some name",
                 oracleText = "Oracle text that is very long and can cover multiple lines at once. \nSecond line",
-                images = CardInfoImageUrls(
-                    small = "",
-                    large = "",
-                    back = ""
+                images = CardUiImageUrls(
+                    small = "s",
+                    large = "l",
+                    back = "b"
                 ),
                 isOngoing = true,
             )

@@ -1,6 +1,6 @@
 package com.arcryalis.gwentest.remote.impl.di
 
-import com.arcryalis.gwentest.api.scryfall.ScryfallDataSource
+import com.arcryalis.gwentest.remote.scryfall.ScryfallDataSource
 import com.arcryalis.gwentest.remote.impl.ScryfallDataSourceImpl
 import com.arcryalis.gwentest.remote.impl.api.ScryfallApi
 import dagger.Binds

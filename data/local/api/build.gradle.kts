@@ -6,8 +6,14 @@ plugins {
 
 android {
     namespace = "com.arcryalis.gwentest.data.local.api"
+
+    testFixtures {
+        enable = true
+    }
 }
 
 dependencies {
-    implementation(libs.kotlinx.couroutines.core)
+    implementation(libs.kotlinx.coroutines.core)
+
+    testFixturesImplementation(libs.kotlinx.coroutines.core)
 }

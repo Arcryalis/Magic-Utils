@@ -30,14 +30,13 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "GwenTest"
 include(":app")
-include(":network")
 
 include(":ui:core")
 include(":ui:home")
 include(":ui:scheme")
 
-include(":domain:home:api")
-include(":domain:home:impl")
+include(":domain:card:api")
+include(":domain:card:impl")
 
 include(":data:card:api")
 include(":data:card:impl")
@@ -45,4 +44,6 @@ include(":data:local:api")
 include(":data:local:impl")
 include(":data:remote:api")
 include(":data:remote:impl")
-include(":ui:home")
+
+include(":network:impl")
+include(":network:api")

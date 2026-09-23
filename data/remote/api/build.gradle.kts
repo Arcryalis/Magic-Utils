@@ -6,6 +6,10 @@ plugins {
 
 android {
     namespace = "com.arcryalis.gwentest.data.remote"
+
+    testFixtures {
+        enable = true
+    }
 }
 
 dependencies {

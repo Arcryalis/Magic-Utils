@@ -28,10 +28,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                     }
                 }
             }
-
-            dependencies {
-                add("testImplementation", kotlin("test"))
-            }
         }
     }
 }

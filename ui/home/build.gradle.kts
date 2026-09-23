@@ -18,6 +18,6 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(projects.ui.core)
-    implementation(projects.domain.home.api)
+    implementation(projects.domain.card.api)
     implementation(projects.data.card.api)
 }

@@ -1,10 +1,11 @@
-package com.arcryalis.gwentest.core
+package com.arcryalis.gwentest.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcryalis.gwentest.domain.home.AreCardsAvailableUseCase
-import com.arcryalis.gwentest.domain.home.DownloadSchemesUseCase
-import com.arcryalis.gwentest.domain.home.GetCardSetsUseCase
+import com.arcryalis.gwentest.core.HomeState
+import com.arcryalis.gwentest.domain.card.AreCardsAvailableUseCase
+import com.arcryalis.gwentest.domain.card.DownloadSchemesUseCase
+import com.arcryalis.gwentest.domain.card.GetCardSetsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

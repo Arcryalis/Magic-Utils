@@ -1,0 +1,3 @@
+<resources>
+    <string name="scryfall_base_url" translatable="false">https://api.scryfall.com/</string>
+</resources>

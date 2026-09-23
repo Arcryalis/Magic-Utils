@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
 import com.arcryalis.gwentest.data.local.api.entity.CardSetEntity
 import kotlinx.coroutines.flow.Flow
 

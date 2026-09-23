@@ -1,9 +1,7 @@
 package com.arcryalis.gwentest.data.local.impl.datastore
 
 import com.arcryalis.gwentest.data.local.api.CardSetDataStore
-import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
 import com.arcryalis.gwentest.data.local.api.entity.CardSetEntity
-import com.arcryalis.gwentest.data.local.impl.dao.CardDao
 import com.arcryalis.gwentest.data.local.impl.dao.CardSetDao
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

@@ -18,13 +18,14 @@ hiltNavigationCompose = "1.4.0"
 androidNavigation3 = "1.0.0"
 androidNavigation3ViewModel = "2.10.0-rc01"
 kotlinxSerialization = "1.7.3"
-kotlinxCouroutines = "1.11.0"
+kotlinxCoroutines = "1.11.0"
 retrofit = "2.11.0"
 room = "2.7.0"
 networkResponseAdapter = "5.0.0"
 coil = "2.7.0"
 navigation3Runtime = "1.1.7"
 ui = "1.12.1"
+robolectric = "4.17"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -57,7 +58,8 @@ androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runt
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "androidNavigation3" }
 androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidNavigation3ViewModel" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
-kotlinx-couroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCouroutines" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-scalars = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref = "retrofit" }
 retrofit-converter-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
@@ -67,6 +69,7 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 network-response-adapter = { group = "com.github.haroldadmin", name = "NetworkResponseAdapter", version.ref = "networkResponseAdapter" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3Runtime" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 

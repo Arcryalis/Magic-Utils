@@ -21,6 +21,10 @@ dependencies {
     implementation(libs.material.icons.core)
     
     implementation(projects.ui.core)
-    implementation(projects.domain.home.api)
+    implementation(projects.domain.card.api)
     implementation(projects.data.card.api)
+
+    testImplementation(testFixtures(projects.domain.card.api))
+    testImplementation(testFixtures(projects.data.card.api))
+    testImplementation(libs.kotlinx.coroutines.test)
 }
