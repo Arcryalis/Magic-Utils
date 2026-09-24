@@ -9,6 +9,7 @@ sealed interface HomeState {
     data object Loading: HomeState
 
     data class Ready(
-        val availableSets: List<CardSet>
+        val availableSets: List<CardSet>,
+        val selectedSet: CardSet?
     ): HomeState
 }

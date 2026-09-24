@@ -2,6 +2,7 @@ package com.arcryalis.gwentest.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcryalis.gwentest.data.card.model.CardSet
 import com.arcryalis.gwentest.domain.card.AreCardsAvailableUseCase
 import com.arcryalis.gwentest.domain.card.DownloadSchemesUseCase
 import com.arcryalis.gwentest.domain.card.GetCardSetsUseCase
@@ -18,27 +19,37 @@ class HomeViewModel @Inject constructor(
     private val areCardsAvailableUseCase: AreCardsAvailableUseCase,
     private val downloadSchemesUseCase: DownloadSchemesUseCase,
     private val getCardSetsUseCase: GetCardSetsUseCase,
-): ViewModel()  {
+): ViewModel() {
 
     private val isLoading = MutableStateFlow(true)
-
     private val hasError = MutableStateFlow(false)
+    private val selectedSet = MutableStateFlow<CardSet?>(null)
 
     val state = combine(
         isLoading,
         hasError,
-        getCardSetsUseCase()
-    ) { loading, error, availableSets ->
+        getCardSetsUseCase(),
+        selectedSet
+    ) { loading, error, availableSets, selected ->
         when (error) {
             true -> HomeState.Error
             false -> {
                 when (loading) {
                     true -> HomeState.Loading
-                    false -> HomeState.Ready(availableSets)
+                    false -> {
+                        HomeState.Ready(
+                            availableSets = availableSets,
+                            selectedSet = selected
+                        )
+                    }
                 }
             }
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState.Loading)
+
+    fun onSelectSet(set: CardSet?) {
+        selectedSet.value = set
+    }
 
     private suspend fun fetchSchemes() {
         isLoading.value = true
@@ -55,7 +66,6 @@ class HomeViewModel @Inject constructor(
             fetchSchemes()
         }
     }
-
 
     init {
         viewModelScope.launch {

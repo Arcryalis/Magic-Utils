@@ -30,13 +30,14 @@ fun ComposeApp(
         entry<HomeRoute> {
             HomeScreen(
                 onNavigateToSchemeScreen = { setId ->
-                    backStack.add(SchemeRoute(setId))
+                    backStack.add(
+                        SchemeRoute(setId)
+                    )
                 },
-                onNavigateToGameScreen = { setId ->
-                    backStack.add(GameRoute(
-                        listOf(40,40),
-                        setId
-                    ))
+                onNavigateToGameScreen = { players, setId,  ->
+                    backStack.add(
+                        GameRoute(players, setId)
+                    )
                 }
             )
         }
