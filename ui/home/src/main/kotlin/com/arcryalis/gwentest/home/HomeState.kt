@@ -10,6 +10,8 @@ sealed interface HomeState {
 
     data class Ready(
         val availableSets: List<CardSet>,
-        val selectedSet: CardSet?
+        val selectedSet: CardSet?,
+        val selectedPlayerCount: Int? = null,
+        val selectedLifeTotal: Int = 40,
     ): HomeState
 }

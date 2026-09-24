@@ -24,13 +24,17 @@ class HomeViewModel @Inject constructor(
     private val isLoading = MutableStateFlow(true)
     private val hasError = MutableStateFlow(false)
     private val selectedSet = MutableStateFlow<CardSet?>(null)
+    private val selectedPlayerCount = MutableStateFlow<Int?>(null)
+    private val selectedLifeTotal = MutableStateFlow(40)
 
     val state = combine(
-        isLoading,
-        hasError,
-        getCardSetsUseCase(),
-        selectedSet
-    ) { loading, error, availableSets, selected ->
+        combine(isLoading, hasError, getCardSetsUseCase()) { loading, error, availableSets ->
+            Triple(loading, error, availableSets)
+        },
+        combine(selectedSet, selectedPlayerCount, selectedLifeTotal) { selectedSetVal, playerCountVal, lifeTotalVal ->
+            Triple(selectedSetVal, playerCountVal, lifeTotalVal)
+        }
+    ) { (loading, error, availableSets), (selectedSetVal, playerCountVal, lifeTotalVal) ->
         when (error) {
             true -> HomeState.Error
             false -> {
@@ -39,7 +43,9 @@ class HomeViewModel @Inject constructor(
                     false -> {
                         HomeState.Ready(
                             availableSets = availableSets,
-                            selectedSet = selected
+                            selectedSet = selectedSetVal,
+                            selectedPlayerCount = playerCountVal,
+                            selectedLifeTotal = lifeTotalVal
                         )
                     }
                 }
@@ -49,6 +55,14 @@ class HomeViewModel @Inject constructor(
 
     fun onSelectSet(set: CardSet?) {
         selectedSet.value = set
+    }
+
+    fun onSelectPlayerCount(count: Int?) {
+        selectedPlayerCount.value = count
+    }
+
+    fun onSelectLifeTotal(life: Int) {
+        selectedLifeTotal.value = life
     }
 
     private suspend fun fetchSchemes() {

@@ -49,6 +49,8 @@ fun HomeScreen(
         modifier = modifier,
         onNavigateToGameScreen = onNavigateToGameScreen,
         onSetSelected = viewModel::onSelectSet,
+        onPlayerCountSelected = viewModel::onSelectPlayerCount,
+        onLifeTotalSelected = viewModel::onSelectLifeTotal,
         onRefreshClick = viewModel::onRefresh
     )
 }
@@ -59,6 +61,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     onNavigateToGameScreen: (List<Int>?, String?) -> Unit = { _, _ -> },
     onSetSelected: (CardSet?) -> Unit = {},
+    onPlayerCountSelected: (Int?) -> Unit = {},
+    onLifeTotalSelected: (Int) -> Unit = {},
     onRefreshClick: () -> Unit = {}
 ) {
     when (state) {
@@ -75,8 +79,12 @@ fun HomeScreen(
         is HomeState.Ready -> HomeReadyScreen(
             availableSets = state.availableSets,
             selectedSet = state.selectedSet,
+            selectedPlayerCount = state.selectedPlayerCount,
+            selectedLifeTotal = state.selectedLifeTotal,
             modifier = modifier,
             onSetSelected = onSetSelected,
+            onPlayerCountSelected = onPlayerCountSelected,
+            onLifeTotalSelected = onLifeTotalSelected,
             onSubmitClicked = onNavigateToGameScreen,
             onRefresh = onRefreshClick
         )
@@ -123,13 +131,21 @@ private fun HomeErrorScreen(
 private fun HomeReadyScreen(
     availableSets: List<CardSet>,
     selectedSet: CardSet?,
+    selectedPlayerCount: Int?,
+    selectedLifeTotal: Int,
     modifier: Modifier = Modifier,
     onSetSelected: (CardSet?) -> Unit = {},
+    onPlayerCountSelected: (Int?) -> Unit = {},
+    onLifeTotalSelected: (Int) -> Unit = {},
     onSubmitClicked: (List<Int>?, String?) -> Unit = { _, _ -> },
     onRefresh: () -> Unit = {}
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var playersExpanded by remember { mutableStateOf(false) }
+    var lifeExpanded by remember { mutableStateOf(false) }
+    var setsExpanded by remember { mutableStateOf(false) }
     val emptyText = stringResource(R.string.empty_option)
+    val playerCountOptions = listOf(null, 1, 2, 3, 4)
+    val lifeTotalOptions = listOf(5, 20, 30, 40, 60, 80, 100)
 
     PullToRefreshBox(
         isRefreshing = false, //handled by HomeState instead
@@ -146,9 +162,90 @@ private fun HomeReadyScreen(
                     .padding(horizontal = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Players Dropdown Menu
                 ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it },
+                    expanded = playersExpanded,
+                    onExpandedChange = { playersExpanded = it },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = selectedPlayerCount?.toString() ?: emptyText,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.select_players_label)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = playersExpanded) },
+                        modifier = Modifier
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = playersExpanded,
+                        onDismissRequest = { playersExpanded = false }
+                    ) {
+                        playerCountOptions.forEach { count ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = count?.toString() ?: emptyText,
+                                        fontSize = 16.sp
+                                    )
+                                },
+                                onClick = {
+                                    onPlayerCountSelected(count)
+                                    playersExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Show life total option only if number of players is not null
+                if (selectedPlayerCount != null) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    ExposedDropdownMenuBox(
+                        expanded = lifeExpanded,
+                        onExpandedChange = { lifeExpanded = it },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = selectedLifeTotal.toString(),
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text(stringResource(R.string.select_life_label)) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = lifeExpanded) },
+                            modifier = Modifier
+                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                                .fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = lifeExpanded,
+                            onDismissRequest = { lifeExpanded = false }
+                        ) {
+                            lifeTotalOptions.forEach { life ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = life.toString(),
+                                            fontSize = 16.sp
+                                        )
+                                    },
+                                    onClick = {
+                                        onLifeTotalSelected(life)
+                                        lifeExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Sets Dropdown Menu
+                ExposedDropdownMenuBox(
+                    expanded = setsExpanded,
+                    onExpandedChange = { setsExpanded = it },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
@@ -156,14 +253,14 @@ private fun HomeReadyScreen(
                         onValueChange = {},
                         readOnly = true,
                         label = { Text(stringResource(R.string.select_set_label)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = setsExpanded) },
                         modifier = Modifier
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                             .fillMaxWidth()
                     )
                     ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        expanded = setsExpanded,
+                        onDismissRequest = { setsExpanded = false }
                     ) {
                         DropdownMenuItem(
                             text = {
@@ -174,7 +271,7 @@ private fun HomeReadyScreen(
                             },
                             onClick = {
                                 onSetSelected(null)
-                                expanded = false
+                                setsExpanded = false
                             }
                         )
                         availableSets.forEach { set ->
@@ -187,19 +284,19 @@ private fun HomeReadyScreen(
                                 },
                                 onClick = {
                                     onSetSelected(set)
-                                    expanded = false
+                                    setsExpanded = false
                                 }
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
                 Button(
                     onClick = {
                         onSubmitClicked(
-                            listOf(40, 40),
+                            selectedPlayerCount?.let { count -> List(count) { selectedLifeTotal } },
                             selectedSet?.id
                         )
                     },
@@ -237,7 +334,9 @@ fun HomeReadyScreenPreview() {
         )
         HomeReadyScreen(
             availableSets = sets,
-            selectedSet = sets.firstOrNull()
+            selectedSet = sets.firstOrNull(),
+            selectedPlayerCount = 2,
+            selectedLifeTotal = 40
         )
     }
 }
