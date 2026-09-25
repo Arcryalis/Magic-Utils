@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.scheme
+package com.arcryalis.gwentest.core
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -9,9 +9,10 @@ import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
-//TODO separate this out
 @OptIn(ExperimentalCoroutinesApi::class)
-class BaseDispatchRule(val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()) : TestWatcher() {
+class BaseDispatchRule(
+    val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(),
+) : TestWatcher() {
     override fun starting(description: Description) {
         Dispatchers.setMain(testDispatcher)
     }

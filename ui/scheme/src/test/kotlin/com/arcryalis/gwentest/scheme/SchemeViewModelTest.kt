@@ -1,5 +1,6 @@
 package com.arcryalis.gwentest.scheme
 
+import com.arcryalis.gwentest.core.BaseDispatchRule
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
 import com.arcryalis.gwentest.data.card.TestCardInfo
 import com.arcryalis.gwentest.domain.card.MockGetShuffledCardInfoUseCase

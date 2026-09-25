@@ -25,6 +25,7 @@ dependencies {
     implementation(projects.domain.card.api)
     implementation(projects.data.card.api)
 
+    testImplementation(testFixtures(projects.ui.core))
     testImplementation(testFixtures(projects.domain.card.api))
     testImplementation(testFixtures(projects.data.card.api))
     testImplementation(libs.kotlinx.coroutines.test)

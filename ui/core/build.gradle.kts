@@ -6,6 +6,10 @@ plugins {
 
 android {
     namespace = "com.arcryalis.gwentest.core"
+
+    testFixtures {
+        enable = true
+    }
 }
 
 dependencies {
@@ -17,4 +21,7 @@ dependencies {
 
     implementation(projects.data.card.api)
     implementation(kotlin("reflect"))
+
+    testFixturesImplementation(libs.kotlinx.coroutines.test)
+    testFixturesImplementation(libs.junit)
 }
