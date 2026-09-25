@@ -46,7 +46,8 @@ fun LifeComponent(
             onPlayerDownClicked = onPlayerDownClicked,
             onPlayerLongClicked = onPlayerLongClicked
         )
-        4 -> LifeMultiPlayerSection(
+
+        3, 4 -> LifeMultiPlayerSection(
             players = players,
             arrowsVisible = isPortrait,
             modifier = modifier,
@@ -54,6 +55,7 @@ fun LifeComponent(
             onPlayerDownClicked = onPlayerDownClicked,
             onPlayerLongClicked = onPlayerLongClicked
         )
+
         else -> {
             // Nothing
         }

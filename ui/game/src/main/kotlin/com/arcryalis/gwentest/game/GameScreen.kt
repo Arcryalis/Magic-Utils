@@ -140,11 +140,10 @@ private fun GameScreenContent(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        val primaryWeight = if (isPortrait) 3f else 2f
         if (!players.isNullOrEmpty()) {
             LifeComponent(
                 players = players,
-                modifier = Modifier.weight(primaryWeight),
+                modifier = Modifier.weight(if (isPortrait) 3f else 2f),
                 onPlayerUpClicked = onPlayerUpClicked,
                 onPlayerDownClicked = onPlayerDownClicked,
                 onPlayerLongClicked = onPlayerLongClicked

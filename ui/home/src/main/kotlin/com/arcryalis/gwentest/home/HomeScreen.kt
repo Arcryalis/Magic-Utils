@@ -32,9 +32,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.arcryalis.gwentest.core.DropdownMenu
 import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardSet
+import kotlin.Int
 
 @Composable
 fun HomeScreen(
@@ -77,10 +79,9 @@ fun HomeScreen(
         )
 
         is HomeState.Ready -> HomeReadyScreen(
-            availableSets = state.availableSets,
-            selectedSet = state.selectedSet,
-            selectedPlayerCount = state.selectedPlayerCount,
-            selectedLifeTotal = state.selectedLifeTotal,
+            playerCountState = state.playerCount,
+            startingLifeState = state.startingLife,
+            availableSetsState = state.sets,
             modifier = modifier,
             onSetSelected = onSetSelected,
             onPlayerCountSelected = onPlayerCountSelected,
@@ -129,10 +130,9 @@ private fun HomeErrorScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeReadyScreen(
-    availableSets: List<CardSet>,
-    selectedSet: CardSet?,
-    selectedPlayerCount: Int?,
-    selectedLifeTotal: Int,
+    playerCountState: HomeItemState<Int?>,
+    startingLifeState: HomeItemState<Int>,
+    availableSetsState: HomeItemState<CardSet?>,
     modifier: Modifier = Modifier,
     onSetSelected: (CardSet?) -> Unit = {},
     onPlayerCountSelected: (Int?) -> Unit = {},
@@ -140,20 +140,15 @@ private fun HomeReadyScreen(
     onSubmitClicked: (List<Int>?, String?) -> Unit = { _, _ -> },
     onRefresh: () -> Unit = {}
 ) {
-    var playersExpanded by remember { mutableStateOf(false) }
-    var lifeExpanded by remember { mutableStateOf(false) }
-    var setsExpanded by remember { mutableStateOf(false) }
-    val emptyText = stringResource(R.string.empty_option)
-    val playerCountOptions = listOf(null, 1, 2, 3, 4)
-    val lifeTotalOptions = listOf(5, 20, 30, 40, 60, 80, 100)
-
     PullToRefreshBox(
         isRefreshing = false, //handled by HomeState instead
         onRefresh = onRefresh,
         modifier = modifier,
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .padding(vertical = 32.dp)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -162,142 +157,47 @@ private fun HomeReadyScreen(
                     .padding(horizontal = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Players Dropdown Menu
-                ExposedDropdownMenuBox(
-                    expanded = playersExpanded,
-                    onExpandedChange = { playersExpanded = it },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = selectedPlayerCount?.toString() ?: emptyText,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text(stringResource(R.string.select_players_label)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = playersExpanded) },
-                        modifier = Modifier
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                            .fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = playersExpanded,
-                        onDismissRequest = { playersExpanded = false }
-                    ) {
-                        playerCountOptions.forEach { count ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = count?.toString() ?: emptyText,
-                                        fontSize = 16.sp
-                                    )
-                                },
-                                onClick = {
-                                    onPlayerCountSelected(count)
-                                    playersExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
+                Spacer(modifier = Modifier.weight(1f))
 
-                // Show life total option only if number of players is not null
-                if (selectedPlayerCount != null) {
+                DropdownMenu(
+                    items = playerCountState.items,
+                    selectedItem = playerCountState.selectedItem,
+                    titleLabel = stringResource(R.string.select_players_label),
+                    onItemSelected = onPlayerCountSelected
+                )
+
+                if (playerCountState.selectedItem != null) {
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    ExposedDropdownMenuBox(
-                        expanded = lifeExpanded,
-                        onExpandedChange = { lifeExpanded = it },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        OutlinedTextField(
-                            value = selectedLifeTotal.toString(),
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text(stringResource(R.string.select_life_label)) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = lifeExpanded) },
-                            modifier = Modifier
-                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                                .fillMaxWidth()
-                        )
-                        ExposedDropdownMenu(
-                            expanded = lifeExpanded,
-                            onDismissRequest = { lifeExpanded = false }
-                        ) {
-                            lifeTotalOptions.forEach { life ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = life.toString(),
-                                            fontSize = 16.sp
-                                        )
-                                    },
-                                    onClick = {
-                                        onLifeTotalSelected(life)
-                                        lifeExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
+                    DropdownMenu(
+                        items = startingLifeState.items,
+                        selectedItem = startingLifeState.selectedItem,
+                        titleLabel = stringResource(R.string.select_life_label),
+                        onItemSelected = onLifeTotalSelected
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Sets Dropdown Menu
-                ExposedDropdownMenuBox(
-                    expanded = setsExpanded,
-                    onExpandedChange = { setsExpanded = it },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = selectedSet?.let { "${it.name} (${it.id.uppercase()})" } ?: emptyText,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text(stringResource(R.string.select_set_label)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = setsExpanded) },
-                        modifier = Modifier
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                            .fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = setsExpanded,
-                        onDismissRequest = { setsExpanded = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = emptyText,
-                                    fontSize = 16.sp
-                                )
-                            },
-                            onClick = {
-                                onSetSelected(null)
-                                setsExpanded = false
-                            }
-                        )
-                        availableSets.forEach { set ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = "${set.name} (${set.id.uppercase()})",
-                                        fontSize = 16.sp
-                                    )
-                                },
-                                onClick = {
-                                    onSetSelected(set)
-                                    setsExpanded = false
-                                }
-                            )
-                        }
-                    }
-                }
+                DropdownMenu(
+                    items = availableSetsState.items,
+                    selectedItem = availableSetsState.selectedItem,
+                    titleLabel = stringResource(R.string.select_set_label),
+                    fieldLabel = { set ->
+                        set?.let { "${set.name} (${set.id.uppercase()})" }
+                    },
+                    onItemSelected = onSetSelected
+                )
 
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button(
                     onClick = {
                         onSubmitClicked(
-                            selectedPlayerCount?.let { count -> List(count) { selectedLifeTotal } },
-                            selectedSet?.id
+                            playerCountState.selectedItem?.let { count ->
+                                List(count) { startingLifeState.selectedItem }
+                            },
+                            availableSetsState.selectedItem?.id
                         )
                     },
                     modifier = Modifier.fillMaxWidth()
@@ -327,16 +227,51 @@ fun HomeErrorScreenPreview() {
 @Composable
 fun HomeReadyScreenPreview() {
     GwenTestTheme {
-        val sets = listOf(
-            CardSet("dci", "DCI Promos"),
-            CardSet("oarc", "Archenemy Schemes"),
-            CardSet("oe01", "Archenemy: Nicol Bolas Schemes")
-        )
         HomeReadyScreen(
-            availableSets = sets,
-            selectedSet = sets.firstOrNull(),
-            selectedPlayerCount = 2,
-            selectedLifeTotal = 40
+            playerCountState = HomeItemState(
+                items = listOf(null, 1, 2, 3, 4),
+                selectedItem = 1
+            ),
+            startingLifeState = HomeItemState(
+                items = listOf(20, 40, 60),
+                selectedItem = 20
+            ),
+            availableSetsState = HomeItemState(
+                items = listOf(
+                    null,
+                    CardSet("dci", "DCI Promos"),
+                    CardSet("oarc", "Archenemy Schemes"),
+                    CardSet("oe01", "Archenemy: Nicol Bolas Schemes")
+                ),
+                selectedItem = CardSet("dci", "DCI Promos")
+            )
+        )
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun HomeReadyScreenNoPlayersPreview() {
+    GwenTestTheme {
+        HomeReadyScreen(
+            playerCountState = HomeItemState(
+                items = listOf(null),
+                selectedItem = null
+            ),
+            startingLifeState = HomeItemState(
+                items = listOf(20, 40, 60),
+                selectedItem = 40
+            ),
+            availableSetsState = HomeItemState(
+                items = listOf(
+                    null,
+                    CardSet("dci", "DCI Promos"),
+                    CardSet("oarc", "Archenemy Schemes"),
+                    CardSet("oe01", "Archenemy: Nicol Bolas Schemes")
+                ),
+                selectedItem = CardSet("dci", "DCI Promos")
+            )
         )
     }
 }

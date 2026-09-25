@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,20 +22,48 @@ class HomeViewModel @Inject constructor(
     private val getCardSetsUseCase: GetCardSetsUseCase,
 ): ViewModel() {
 
+    companion object {
+        private val PLAYER_COUNT_OPTIONS = listOf(1, 2, 3, 4)
+        private val LIFE_TOTAL_OPTIONS = listOf(20, 40, 60)
+    }
+
     private val isLoading = MutableStateFlow(true)
     private val hasError = MutableStateFlow(false)
+
     private val selectedSet = MutableStateFlow<CardSet?>(null)
+    val availableSetState = combine(
+        getCardSetsUseCase(),
+        selectedSet
+    ) { availableItems, selected ->
+        HomeItemState(
+            items = listOf(null) + availableItems, // null for no selection
+            selectedItem = selected
+        )
+    }
+
     private val selectedPlayerCount = MutableStateFlow<Int?>(null)
-    private val selectedLifeTotal = MutableStateFlow(40)
+    val playerCountState = selectedPlayerCount.map {
+        HomeItemState(
+            items = listOf(null) + PLAYER_COUNT_OPTIONS, // null for no selection
+            selectedItem = it
+        )
+    }
+
+    private val selectedLifeTotal = MutableStateFlow(20)
+    val lifeTotalState = selectedLifeTotal.map {
+        HomeItemState(
+            items = LIFE_TOTAL_OPTIONS,
+            selectedItem = it
+        )
+    }
 
     val state = combine(
-        combine(isLoading, hasError, getCardSetsUseCase()) { loading, error, availableSets ->
-            Triple(loading, error, availableSets)
-        },
-        combine(selectedSet, selectedPlayerCount, selectedLifeTotal) { selectedSetVal, playerCountVal, lifeTotalVal ->
-            Triple(selectedSetVal, playerCountVal, lifeTotalVal)
-        }
-    ) { (loading, error, availableSets), (selectedSetVal, playerCountVal, lifeTotalVal) ->
+        isLoading,
+        hasError,
+        availableSetState,
+        playerCountState,
+        lifeTotalState
+    ) { loading, error, setState, playerState, lifeState ->
         when (error) {
             true -> HomeState.Error
             false -> {
@@ -42,10 +71,9 @@ class HomeViewModel @Inject constructor(
                     true -> HomeState.Loading
                     false -> {
                         HomeState.Ready(
-                            availableSets = availableSets,
-                            selectedSet = selectedSetVal,
-                            selectedPlayerCount = playerCountVal,
-                            selectedLifeTotal = lifeTotalVal
+                            sets = setState,
+                            playerCount = playerState,
+                            startingLife = lifeState
                         )
                     }
                 }

@@ -16,4 +16,5 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(projects.data.card.api)
+    implementation(kotlin("reflect"))
 }
