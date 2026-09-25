@@ -33,10 +33,10 @@ fun LifeComponent(
             player = players[0],
             index = 0,
             arrowsVisible = isPortrait,
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier,
             onPlayerUpClicked = onPlayerUpClicked,
             onPlayerDownClicked = onPlayerDownClicked,
-            onPlayerLongClicked = onPlayerLongClicked
+            onPlayerLongClicked = onPlayerLongClicked,
         )
         2 -> LifeTwoPlayerSection(
             players = players,
