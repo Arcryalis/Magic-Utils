@@ -18,7 +18,7 @@ import com.arcryalis.gwentest.core.theme.GwenTestTheme
 
 @Composable
 fun LoadingScreen(
-    text: String,
+    text: String?,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -31,13 +31,15 @@ fun LoadingScreen(
                 modifier = modifier.align(Alignment.CenterHorizontally)
             )
 
-            Text(
-                text = text,
-                modifier = modifier
-                    .padding(top = 16.dp)
-                    .width(180.dp),
-                textAlign = TextAlign.Center
-            )
+            if (text != null) {
+                Text(
+                    text = text,
+                    modifier = modifier
+                        .padding(top = 16.dp)
+                        .width(180.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

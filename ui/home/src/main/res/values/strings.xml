@@ -2,9 +2,9 @@
     <string name="loading_info">Downloading images from Scryfall</string>
     <string name="error_info">An error has occurred</string>
     <string name="refresh_button">Refresh</string>
-    <string name="select_set_label">Select Card Set</string>
+    <string name="select_set_label">Archenemy Set</string>
     <string name="select_set_button">Start</string>
     <string name="empty_option">None</string>
-    <string name="select_players_label">Select Number of Players</string>
+    <string name="select_players_label">Life Counter Num Players</string>
     <string name="select_life_label">Starting Life Total</string>
 </resources>

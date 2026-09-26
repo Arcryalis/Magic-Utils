@@ -23,6 +23,7 @@ fun <T> DropdownMenu(
     items: List<T>,
     selectedItem: T,
     titleLabel: String,
+    modifier: Modifier = Modifier,
     emptyLabel: String = stringResource(R.string.empty_dropdown_option),
     fieldLabel: (T) -> String? = { it?.toString() },
     onItemSelected: (T) -> Unit = {}
@@ -32,7 +33,7 @@ fun <T> DropdownMenu(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         OutlinedTextField(
             value = fieldLabel(selectedItem) ?: emptyLabel,
@@ -40,9 +41,8 @@ fun <T> DropdownMenu(
             readOnly = true,
             label = { Text(titleLabel) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier
+            modifier = modifier
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                .fillMaxWidth()
         )
 
         ExposedDropdownMenu(
