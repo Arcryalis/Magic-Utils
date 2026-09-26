@@ -94,4 +94,6 @@ class CardRepositoryImpl @Inject constructor(
             entities.toModel(cardBackUrl)
         }
     }
+
+    override suspend fun getCardBackUrl(): String = context.getString(R.string.card_back_url)
 }

@@ -10,6 +10,7 @@ class MockCardRepository(
     private val cardsBySet: Map<String, List<CardInfo>>,
     private var cardsExistLocally: Boolean,
     private var downloadResult: Boolean,
+    private val cardBackUrl: String = "https://example.com/card_back.png",
 ) : CardRepository {
 
     override suspend fun doCardsExistLocally(): Boolean = cardsExistLocally
@@ -23,4 +24,6 @@ class MockCardRepository(
 
     override fun getAllCards(): Flow<List<CardInfo>> =
         flowOf(cardsBySet.values.flatten())
+
+    override suspend fun getCardBackUrl(): String = cardBackUrl
 }

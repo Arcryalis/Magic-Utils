@@ -323,4 +323,13 @@ class CardRepositoryImplTest {
 
         assertEquals(emptyList(), result)
     }
+
+    @Test
+    fun whenGetCardBackUrl_thenReturnsStringFromContext() = runTest {
+        val expected = context.getString(R.string.card_back_url)
+
+        val result = sut.getCardBackUrl()
+
+        assertEquals(expected, result)
+    }
 }
