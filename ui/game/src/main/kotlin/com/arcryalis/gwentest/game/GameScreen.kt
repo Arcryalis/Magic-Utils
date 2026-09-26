@@ -3,7 +3,10 @@ package com.arcryalis.gwentest.game
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -30,7 +33,9 @@ fun GameScreen(
 
     GameScreen(
         state = state.value,
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing),
         onPlayerUpClicked = viewModel::increasePlayerLife,
         onPlayerDownClicked = viewModel::decreasePlayerLife,
         onPlayerLongClicked = {}, //TODO

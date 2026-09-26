@@ -1,5 +1,6 @@
 package com.arcryalis.gwentest
 
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -68,7 +69,9 @@ fun ComposeApp(
                 rememberViewModelStoreNavEntryDecorator()
             ),
             entryProvider = entryProvider,
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding),
         )
     }
 }
