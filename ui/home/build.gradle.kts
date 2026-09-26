@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.coil.compose)
+    implementation(libs.material.icons.core)
 
     implementation(projects.ui.core)
     implementation(projects.ui.game)

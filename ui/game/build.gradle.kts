@@ -22,4 +22,11 @@ dependencies {
     implementation(projects.ui.core)
     implementation(projects.data.card.api)
     implementation(projects.domain.card.api)
+
+    testImplementation(testFixtures(projects.ui.core))
+    testImplementation(testFixtures(projects.domain.card.api))
+    testImplementation(testFixtures(projects.data.card.api))
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit)
+    testImplementation(kotlin("test"))
 }
