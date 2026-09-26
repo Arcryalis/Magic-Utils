@@ -5,19 +5,26 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.arcryalis.gwentest.core.CardInfoDialog
 import com.arcryalis.gwentest.core.CardInfoGallery
 import com.arcryalis.gwentest.core.FullScreenDialog
+import com.arcryalis.gwentest.core.FullScreenDialogIcon
 import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardInfo
@@ -181,28 +188,45 @@ fun GameOverlayContent(
     when (state) {
         is OverlayState.Visible.Individual -> FullScreenDialog(
             modifier = modifier,
-            onDismiss = onCloseClicked
+            onDismiss = onCloseClicked,
+            headerEndContent = {
+                if (state.showRemove) {
+                    FullScreenDialogIcon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(com.arcryalis.gwentest.core.R.string.card_info_close),
+                        tint = Color.Red,
+                        onClicked = { onRemoveClicked(state.info) }
+                    )
+                } else {
+                    FullScreenDialogIcon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(com.arcryalis.gwentest.core.R.string.card_info_add),
+                        onClicked = { onAddClicked(state.info) }
+                    )
+                }
+            }
         ) {
             CardInfoDialog(
                 card = state.info,
-                showRemoveButton = state.showRemove,
-                modifier = modifier,
-                onCloseClicked = onCloseClicked,
-                onAddClicked = onAddClicked,
-                onRemoveClicked = onRemoveClicked
+                modifier = Modifier
             )
         }
 
         is OverlayState.Visible.Gallery -> FullScreenDialog(
             modifier = modifier,
-            onDismiss = onCloseClicked
+            onDismiss = onCloseClicked,
         ) {
-            CardInfoGallery(
-                cards = state.cards,
-                modifier = modifier,
-                onCloseClicked = onCloseClicked,
-                onCardClicked = onGalleryCardClicked
-            )
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxSize()
+            ) {
+                CardInfoGallery(
+                    cards = state.cards,
+                    modifier = Modifier,
+                    onCardClicked = onGalleryCardClicked
+                )
+            }
         }
     }
 }
@@ -263,8 +287,7 @@ fun GameScreenFullPreview() {
                             oracleText = "o2.text",
                             images = CardInfoImageUrls(
                                 small = "https://cards.scryfall.io/display/front/3/c/3c05afe6-c92f-440d-b09a-cc23b15da495.webp?1783936123",
-                                large = "https://too-large.url",
-                                back = "https://too-back.url"
+                                large = "https://too-large.url"
                             ),
                             isOngoing = true,
                         )
@@ -275,8 +298,7 @@ fun GameScreenFullPreview() {
                             oracleText = "o2.text",
                             images = CardInfoImageUrls(
                                 small = "https://cards.scryfall.io/display/front/3/c/3c05afe6-c92f-440d-b09a-cc23b15da495.webp?1783936123",
-                                large = "https://too-large.url",
-                                back = "https://too-back.url"
+                                large = "https://too-large.url"
                             ),
                             isOngoing = true,
                         ),
@@ -285,8 +307,7 @@ fun GameScreenFullPreview() {
                             oracleText = "o2.text",
                             images = CardInfoImageUrls(
                                 small = "https://cards.scryfall.io/display/front/3/c/3c05afe6-c92f-440d-b09a-cc23b15da495.webp?1783936123",
-                                large = "https://too-large.url",
-                                back = "https://too-back.url"
+                                large = "https://too-large.url"
                             ),
                             isOngoing = true,
                         )

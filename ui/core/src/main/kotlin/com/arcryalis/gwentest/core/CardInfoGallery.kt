@@ -40,75 +40,28 @@ import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 fun CardInfoGallery(
     cards: List<CardInfo>,
     modifier: Modifier = Modifier,
-    onCloseClicked: () -> Unit = {},
     onCardClicked: (CardInfo) -> Unit = {},
 ) {
-    Column(
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(96.dp),
         modifier = modifier
-            .padding(16.dp)
-            .fillMaxSize()
+            .padding(vertical = 8.dp)
+            .fillMaxSize(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        CardInfoGalleryHeader(
-            modifier = Modifier,
-            onCloseClicked = onCloseClicked
-        )
-
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(96.dp),
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-                .fillMaxSize(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            items(cards) { card ->
-                AsyncImage(
-                    model = card.images.small,
-                    contentDescription = card.name,
-                    alignment = Alignment.Center,
-                    modifier = Modifier
-                        .height(128.dp)
-                        .clickable(onClick = { onCardClicked(card) })
-                )
-            }
+        items(cards) { card ->
+            AsyncImage(
+                model = card.images.small,
+                contentDescription = card.name,
+                alignment = Alignment.Center,
+                modifier = Modifier
+                    .height(128.dp)
+                    .clickable(onClick = { onCardClicked(card) })
+            )
         }
     }
 }
-
-@Composable
-private fun CardInfoGalleryHeader(
-    modifier: Modifier = Modifier,
-    onCloseClicked: () -> Unit = {},
-) {
-    Row(modifier = modifier) {
-        CardInfoDialogIcon(
-            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-            contentDescription = stringResource(R.string.card_info_back),
-            onClicked = onCloseClicked
-        )
-    }
-}
-
-
-@Composable
-private fun CardInfoDialogIcon(
-    imageVector: ImageVector,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current,
-    onClicked: () -> Unit = {}
-) {
-    Icon(
-        imageVector = imageVector,
-        contentDescription = contentDescription,
-        tint = tint,
-        modifier = modifier
-            .size(48.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .clickable(onClick = onClicked)
-    )
-}
-
 
 @Preview(showBackground = true)
 @Composable
@@ -121,8 +74,7 @@ fun CardInfoGalleryPreview() {
                     oracleText = "Oracle Text",
                     images = CardInfoImageUrls(
                         small = "smallUrl",
-                        large = "largeUrl",
-                        back = "backUrl"
+                        large = "largeUrl"
                     ),
                     isOngoing = true,
                 ),
@@ -131,8 +83,7 @@ fun CardInfoGalleryPreview() {
                     oracleText = "o.text",
                     images = CardInfoImageUrls(
                         small = "https://small.url",
-                        large = "https://large.url",
-                        back = "https://back.url"
+                        large = "https://large.url"
                     ),
                     isOngoing = false,
                 ),
@@ -141,8 +92,7 @@ fun CardInfoGalleryPreview() {
                     oracleText = "3rd text",
                     images = CardInfoImageUrls(
                         small = "small3Url",
-                        large = "large3Url",
-                        back = "back3Url"
+                        large = "large3Url"
                     ),
                     isOngoing = false,
                 )

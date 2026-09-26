@@ -1,28 +1,13 @@
 package com.arcryalis.gwentest.core
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,26 +21,13 @@ import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 @Composable
 fun CardInfoDialog(
     card: CardInfo,
-    showRemoveButton: Boolean,
-    modifier: Modifier = Modifier,
-    onCloseClicked: () -> Unit = {},
-    onAddClicked: (CardInfo) -> Unit = {},
-    onRemoveClicked: (CardInfo) -> Unit = {}
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .padding(8.dp)
             .fillMaxSize()
     ) {
-        CardInfoDialogHeader(
-            card = card,
-            showRemoveButton = showRemoveButton,
-            modifier = Modifier,
-            onCloseClicked = onCloseClicked,
-            onRemoveClicked = onRemoveClicked,
-            onAddClicked = onAddClicked
-        )
-
         AsyncImage(
             model = card.images.large,
             contentDescription = card.name,
@@ -93,61 +65,6 @@ fun CardInfoDialog(
     }
 }
 
-@Composable
-private fun CardInfoDialogHeader(
-    card: CardInfo,
-    showRemoveButton: Boolean,
-    modifier: Modifier = Modifier,
-    onCloseClicked: () -> Unit = {},
-    onAddClicked: (CardInfo) -> Unit = {},
-    onRemoveClicked: (CardInfo) -> Unit = {}
-) {
-    Row(modifier = modifier) {
-        CardInfoDialogIcon(
-            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-            contentDescription = stringResource(R.string.card_info_back),
-            onClicked = onCloseClicked
-        )
-
-        Spacer(modifier.weight(1f))
-
-        if(showRemoveButton) {
-            CardInfoDialogIcon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(R.string.card_info_close),
-                tint = Color.Red,
-                onClicked = { onRemoveClicked(card) }
-            )
-        } else {
-            CardInfoDialogIcon(
-                imageVector = Icons.Default.Add,
-                contentDescription = stringResource(R.string.card_info_add),
-                onClicked = { onAddClicked(card) }
-            )
-        }
-    }
-}
-
-
-@Composable
-private fun CardInfoDialogIcon(
-    imageVector: ImageVector,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current,
-    onClicked: () -> Unit = {}
-) {
-    Icon(
-        imageVector = imageVector,
-        contentDescription = contentDescription,
-        tint = tint,
-        modifier = modifier
-            .size(48.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .clickable(onClick = onClicked)
-    )
-}
-
 
 @Preview(showBackground = true)
 @Composable
@@ -159,12 +76,10 @@ fun CardInfoDialogPreview() {
                 oracleText = "Oracle Text",
                 images = CardInfoImageUrls(
                     small = "smallUrl",
-                    large = "largeUrl",
-                    back = "backUrl"
+                    large = "largeUrl"
                 ),
                 isOngoing = true,
             ),
-            showRemoveButton = true,
             modifier = Modifier
         )
     }

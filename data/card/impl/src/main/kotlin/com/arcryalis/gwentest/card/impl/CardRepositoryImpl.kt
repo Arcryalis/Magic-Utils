@@ -82,16 +82,14 @@ class CardRepositoryImpl @Inject constructor(
         }
 
     override fun getSet(setId: String): Flow<List<CardInfo>> {
-        val cardBackUrl = context.getString(R.string.card_back_url)
         return cardInfoStore.getCardSet(setId).map { entities ->
-            entities.toModel(cardBackUrl)
+            entities.toModel()
         }
     }
 
     override fun getAllCards(): Flow<List<CardInfo>> {
-        val cardBackUrl = context.getString(R.string.card_back_url)
         return cardInfoStore.getAllCards().map { entities ->
-            entities.toModel(cardBackUrl)
+            entities.toModel()
         }
     }
 

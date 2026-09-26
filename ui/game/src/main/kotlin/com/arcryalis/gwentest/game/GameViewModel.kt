@@ -3,6 +3,7 @@ package com.arcryalis.gwentest.game
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcryalis.gwentest.data.card.model.CardInfo
+import com.arcryalis.gwentest.domain.card.GetCardBackUrl
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
 import com.arcryalis.gwentest.game.navigation.GameRoute
 import dagger.assisted.Assisted
@@ -23,7 +24,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel(assistedFactory = GameViewModel.Factory::class)
 class GameViewModel @AssistedInject constructor(
     @Assisted private val route: GameRoute,
-    private val getShuffledCardInfoUseCase: GetShuffledCardInfoUseCase
+    private val getShuffledCardInfoUseCase: GetShuffledCardInfoUseCase,
+    private val getCardBackUrl: GetCardBackUrl
 ): ViewModel()  {
 
     companion object {
@@ -58,14 +60,14 @@ class GameViewModel @AssistedInject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
     private val extraCardList = MutableStateFlow<List<CardInfo>>(emptyList())
-    private val cardbackUrl = MutableStateFlow("https://backs.scryfall.io/large/1/b/1b2396d4-9048-439d-96bd-354288518841.jpg?1665006146")
+    private val cardbackUrl = MutableStateFlow<String?>(null)
     private val deckState = combine(
         startingDeck,
         revealedCardList,
         extraCardList,
         cardbackUrl,
     ) { starting, revealedCards, extraCards, backUrl ->
-        if (starting.isNotEmpty()) {
+        if (starting.isNotEmpty() || backUrl != null) {
             DeckSettings(
                 nextCardUrl = if (revealedCards.size < starting.size) {
                     backUrl
@@ -102,17 +104,32 @@ class GameViewModel @AssistedInject constructor(
         }
     }
 
+    private val isLoading = MutableStateFlow(true)
+
     val state = combine(
         playerInfo,
         deckState,
-        overlayState
-    ) { players, deck, overlay ->
-        GameState.Ready(
-            players = players,
-            deckSettings = deck,
-            overlayState = overlay
-        )
+        overlayState,
+        isLoading
+    ) { players, deck, overlay, loading ->
+        if (loading) {
+            GameState.Loading
+        } else {
+            GameState.Ready(
+                players = players,
+                deckSettings = deck,
+                overlayState = overlay
+            )
+        }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, GameState.Loading)
+
+    init {
+        viewModelScope.launch {
+            isLoading.value = true
+            cardbackUrl.value = getCardBackUrl()
+            isLoading.value = false
+        }
+    }
 
     fun increasePlayerLife(index: Int) {
         lifeTotals.update {
