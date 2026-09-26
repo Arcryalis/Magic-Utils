@@ -3,14 +3,13 @@ package com.arcryalis.gwentest.game
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcryalis.gwentest.data.card.model.CardInfo
-import com.arcryalis.gwentest.domain.card.GetCardBackUrl
+import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
 import com.arcryalis.gwentest.game.navigation.GameRoute
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -25,7 +24,7 @@ import kotlinx.coroutines.launch
 class GameViewModel @AssistedInject constructor(
     @Assisted private val route: GameRoute,
     private val getShuffledCardInfoUseCase: GetShuffledCardInfoUseCase,
-    private val getCardBackUrl: GetCardBackUrl
+    private val getCardBackUrl: GetCardBackUrlUseCase
 ): ViewModel()  {
 
     companion object {

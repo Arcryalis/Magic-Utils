@@ -19,12 +19,11 @@ class CardInfoToModelMapperTest {
             images = CardInfoImageUrls(
                 small = entity.smallImageUrl,
                 large = entity.largeImageUrl,
-                back = cardBackUrl
             ),
             isOngoing = entity.isOngoing
         )
 
-        val result = entity.toModel(cardBackUrl)
+        val result = entity.toModel()
 
         assertEquals(expectedModel, result)
     }
@@ -38,12 +37,11 @@ class CardInfoToModelMapperTest {
             images = CardInfoImageUrls(
                 small = entity.smallImageUrl,
                 large = entity.largeImageUrl,
-                back = cardBackUrl
             ),
             isOngoing = entity.isOngoing
         )
 
-        val result = entity.toModel(cardBackUrl)
+        val result = entity.toModel()
 
         assertEquals(expectedModel, result)
     }
@@ -56,13 +54,12 @@ class CardInfoToModelMapperTest {
             oracleText = entity.oracleText,
             images = CardInfoImageUrls(
                 small = entity.smallImageUrl,
-                large = entity.largeImageUrl,
-                back = cardBackUrl
+                large = entity.largeImageUrl
             ),
             isOngoing = false
         )
 
-        val result = entity.toModel(cardBackUrl)
+        val result = entity.toModel()
 
         assertEquals(expectedModel, result)
     }
@@ -78,8 +75,7 @@ class CardInfoToModelMapperTest {
                 oracleText = entity1.oracleText,
                 images = CardInfoImageUrls(
                     small = entity1.smallImageUrl,
-                    large = entity1.largeImageUrl,
-                    back = cardBackUrl
+                    large = entity1.largeImageUrl
                 ),
                 isOngoing = entity1.isOngoing
             ),
@@ -88,15 +84,14 @@ class CardInfoToModelMapperTest {
                 oracleText = entity2.oracleText,
                 images = CardInfoImageUrls(
                     small = entity2.smallImageUrl,
-                    large = entity2.largeImageUrl,
-                    back = cardBackUrl
+                    large = entity2.largeImageUrl
                 ),
                 isOngoing = entity2.isOngoing
             )
         )
         val entities = listOf(entity1, entity2)
 
-        val result = entities.toModel(cardBackUrl)
+        val result = entities.toModel()
 
         assertEquals(expectedModel, result)
     }

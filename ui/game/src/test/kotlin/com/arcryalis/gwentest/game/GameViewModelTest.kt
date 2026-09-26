@@ -2,7 +2,9 @@ package com.arcryalis.gwentest.game
 
 import com.arcryalis.gwentest.core.BaseDispatchRule
 import com.arcryalis.gwentest.data.card.TestCardInfo
+import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
+import com.arcryalis.gwentest.domain.card.MockGetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.MockGetShuffledCardInfoUseCase
 import com.arcryalis.gwentest.game.navigation.GameRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,6 +32,7 @@ class GameViewModelTest {
 
     private lateinit var route: GameRoute
     private lateinit var mockGetShuffledCardInfoUseCase: GetShuffledCardInfoUseCase
+    private lateinit var mockGetCardBackUrlUseCase: GetCardBackUrlUseCase
     private lateinit var sut: GameViewModel
 
     @Before
@@ -47,10 +50,12 @@ class GameViewModelTest {
                 ),
             ),
         )
+        mockGetCardBackUrlUseCase = MockGetCardBackUrlUseCase("cardbackUrl")
 
         sut = GameViewModel(
             route = route,
             getShuffledCardInfoUseCase = mockGetShuffledCardInfoUseCase,
+            getCardBackUrl = mockGetCardBackUrlUseCase
         )
     }
 

@@ -1,5 +1,5 @@
 package com.arcryalis.gwentest.domain.card
 
-interface GetCardBackUrl {
+interface GetCardBackUrlUseCase {
     suspend operator fun invoke(): String
 }

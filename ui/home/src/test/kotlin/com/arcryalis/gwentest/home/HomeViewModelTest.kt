@@ -48,7 +48,6 @@ class HomeViewModelTest {
     ): HomeViewModel {
         testDownloadSchemesUseCase = TestDownloadSchemesUseCase(downloadResult = downloadResult)
         return HomeViewModel(
-            areCardsAvailableUseCase = MockAreCardsAvailableUseCase(result = areCardsAvailable),
             downloadSchemesUseCase = testDownloadSchemesUseCase,
             getCardSetsUseCase = MockGetCardSetsUseCase(cardSets = cardSets)
         )
@@ -80,16 +79,6 @@ class HomeViewModelTest {
 
         val currentState = sut.state.value
         assertIs<HomeState.Ready>(currentState)
-        assertEquals(1, testDownloadSchemesUseCase.invokeCount)
-    }
-
-    @Test
-    fun givenCardsNotAvailableLocallyAndDownloadFails_whenInitialized_thenDownloadsSchemesAndStateIsError() {
-        sut = createSut(areCardsAvailable = false, downloadResult = false)
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        val currentState = sut.state.value
-        assertEquals(HomeState.Error, currentState)
         assertEquals(1, testDownloadSchemesUseCase.invokeCount)
     }
 
@@ -151,37 +140,5 @@ class HomeViewModelTest {
         val updatedState = sut.state.value
         assertIs<HomeState.Ready>(updatedState)
         assertEquals(40, updatedState.startingLife.selectedItem)
-    }
-
-    @Test
-    fun whenOnRefreshAndDownloadSucceeds_thenUpdatesStateToReady() {
-        sut = createSut(areCardsAvailable = false, downloadResult = false)
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        val initialState = sut.state.value
-        assertEquals(HomeState.Error, initialState)
-
-        testDownloadSchemesUseCase.downloadResult = true
-        sut.onRefresh()
-
-        val updatedState = sut.state.value
-        assertIs<HomeState.Ready>(updatedState)
-        assertEquals(2, testDownloadSchemesUseCase.invokeCount)
-    }
-
-    @Test
-    fun whenOnRefreshAndDownloadFails_thenUpdatesStateToError() {
-        sut = createSut(areCardsAvailable = true)
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        val initialState = sut.state.value
-        assertIs<HomeState.Ready>(initialState)
-
-        testDownloadSchemesUseCase.downloadResult = false
-        sut.onRefresh()
-
-        val updatedState = sut.state.value
-        assertEquals(HomeState.Error, updatedState)
-        assertEquals(1, testDownloadSchemesUseCase.invokeCount)
     }
 }

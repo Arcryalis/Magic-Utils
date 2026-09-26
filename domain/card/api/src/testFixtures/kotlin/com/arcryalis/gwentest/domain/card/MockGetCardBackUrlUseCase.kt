@@ -1,7 +1,7 @@
 package com.arcryalis.gwentest.domain.card
 
-class MockGetCardBackUrl(
+class MockGetCardBackUrlUseCase(
     private val cardBackUrl: String
-) : GetCardBackUrl {
+) : GetCardBackUrlUseCase {
     override suspend fun invoke(): String = cardBackUrl
 }

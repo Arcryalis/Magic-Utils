@@ -263,8 +263,7 @@ class CardRepositoryImplTest {
             oracleText = entity.oracleText,
             images = CardInfoImageUrls(
                 small = entity.smallImageUrl,
-                large = entity.largeImageUrl,
-                back = context.getString(R.string.card_back_url)
+                large = entity.largeImageUrl
             ),
             isOngoing = entity.isOngoing
         )
@@ -296,8 +295,7 @@ class CardRepositoryImplTest {
             oracleText = entity1.oracleText,
             images = CardInfoImageUrls(
                 small = entity1.smallImageUrl,
-                large = entity1.largeImageUrl,
-                back = context.getString(R.string.card_back_url)
+                large = entity1.largeImageUrl
             ),
             isOngoing = entity1.isOngoing
         )
@@ -306,8 +304,7 @@ class CardRepositoryImplTest {
             oracleText = entity2.oracleText,
             images = CardInfoImageUrls(
                 small = entity2.smallImageUrl,
-                large = entity2.largeImageUrl,
-                back = context.getString(R.string.card_back_url)
+                large = entity2.largeImageUrl
             ),
             isOngoing = entity2.isOngoing
         )

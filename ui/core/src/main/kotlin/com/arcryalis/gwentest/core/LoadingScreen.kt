@@ -16,7 +16,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 
-
 @Composable
 fun LoadingScreen(
     text: String?,

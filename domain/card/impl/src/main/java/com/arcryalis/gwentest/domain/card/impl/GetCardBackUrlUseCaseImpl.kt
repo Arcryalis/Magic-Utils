@@ -1,11 +1,11 @@
 package com.arcryalis.gwentest.domain.card.impl
 
 import com.arcryalis.gwentest.data.card.CardRepository
-import com.arcryalis.gwentest.domain.card.GetCardBackUrl
+import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
 import javax.inject.Inject
 
-class GetCardBackUrlImpl @Inject constructor(
+class GetCardBackUrlUseCaseImpl @Inject constructor(
     private val cardRepo: CardRepository
-) : GetCardBackUrl {
+) : GetCardBackUrlUseCase {
     override suspend operator fun invoke(): String = cardRepo.getCardBackUrl()
 }

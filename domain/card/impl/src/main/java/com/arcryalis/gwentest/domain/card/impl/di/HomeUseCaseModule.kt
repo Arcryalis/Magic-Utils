@@ -2,13 +2,13 @@ package com.arcryalis.gwentest.domain.card.impl.di
 
 import com.arcryalis.gwentest.domain.card.AreCardsAvailableUseCase
 import com.arcryalis.gwentest.domain.card.DownloadSchemesUseCase
-import com.arcryalis.gwentest.domain.card.GetCardBackUrl
+import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
 import com.arcryalis.gwentest.domain.card.GetCardSetsUseCase
 import com.arcryalis.gwentest.domain.card.GetAllCardCardInfoUseCase
 import com.arcryalis.gwentest.domain.card.impl.AreCardsAvailableUseCaseImpl
 import com.arcryalis.gwentest.domain.card.impl.DownloadSchemesUseCaseImpl
-import com.arcryalis.gwentest.domain.card.impl.GetCardBackUrlImpl
+import com.arcryalis.gwentest.domain.card.impl.GetCardBackUrlUseCaseImpl
 import com.arcryalis.gwentest.domain.card.impl.GetShuffledCardInfoUseCaseImpl
 import com.arcryalis.gwentest.domain.card.impl.GetCardSetsUseCaseImpl
 import com.arcryalis.gwentest.domain.card.impl.GetAllCardCardInfoUseCaseImpl
@@ -34,7 +34,7 @@ interface HomeUseCaseModule {
     fun bindGetAllCardCardInfoUseCase(getAllCardCardInfoUseCase: GetAllCardCardInfoUseCaseImpl): GetAllCardCardInfoUseCase
 
     @Binds
-    fun bindGetCardBackUrl(getCardBackUrl: GetCardBackUrlImpl): GetCardBackUrl
+    fun bindGetCardBackUrl(getCardBackUrl: GetCardBackUrlUseCaseImpl): GetCardBackUrlUseCase
 
     @Binds
     fun bindAreCardsAvailableUseCase(areCardsAvailableUseCase: AreCardsAvailableUseCaseImpl): AreCardsAvailableUseCase
