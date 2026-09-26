@@ -2,7 +2,6 @@ package com.arcryalis.gwentest.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,24 +9,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -35,7 +32,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -66,7 +64,8 @@ fun HomeScreen(
         onSetSelected = viewModel::onSelectSet,
         onPlayerCountSelected = viewModel::onSelectPlayerCount,
         onLifeTotalSelected = viewModel::onSelectLifeTotal,
-        onRefreshClick = viewModel::onRefresh
+        onRefreshClick = viewModel::onRefresh,
+        onDownloadSchemesClick = viewModel::onDownloadSchemes
     )
 }
 
@@ -79,64 +78,29 @@ fun HomeScreen(
     onSetSelected: (CardSet?) -> Unit = {},
     onPlayerCountSelected: (Int?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
-    onRefreshClick: () -> Unit = {}
+    onRefreshClick: () -> Unit = {},
+    onDownloadSchemesClick: () -> Unit = {}
 ) {
     when (state) {
-        is HomeState.Loading -> LoadingScreen(
+        is HomeState.Initial -> LoadingScreen(
             text = null,
             modifier = modifier
-        )
-
-        is HomeState.Error -> HomeErrorScreen(
-            modifier = modifier,
-            onRefreshClick = onRefreshClick
         )
 
         is HomeState.Ready -> HomeReadyScreen(
             playerCountState = state.playerCount,
             startingLifeState = state.startingLife,
             availableSetsState = state.sets,
+            isRefreshing = state.isRefreshing,
             modifier = modifier,
             onSetSelected = onSetSelected,
             onPlayerCountSelected = onPlayerCountSelected,
             onLifeTotalSelected = onLifeTotalSelected,
             onSubmitClicked = onNavigateToGameScreen,
             onNavigateToSchemeScreen = onNavigateToSchemeScreen,
-            onRefresh = onRefreshClick
+            onRefresh = onRefreshClick,
+            onDownloadSchemesClick = onDownloadSchemesClick
         )
-    }
-}
-
-@Composable
-private fun HomeErrorScreen(
-    modifier: Modifier = Modifier,
-    onRefreshClick: () -> Unit = {}
-) {
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
-        Column(
-            Modifier
-                .align(Alignment.Center)
-                .width(180.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.error_info),
-                textAlign = TextAlign.Center
-            )
-
-            Button(
-                onClick = onRefreshClick,
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(R.string.refresh_button),
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
     }
 }
 
@@ -146,16 +110,18 @@ private fun HomeReadyScreen(
     playerCountState: HomeItemState<Int?>,
     startingLifeState: HomeItemState<Int>,
     availableSetsState: HomeItemState<CardSet?>,
+    isRefreshing: Boolean,
     modifier: Modifier = Modifier,
     onSetSelected: (CardSet?) -> Unit = {},
     onPlayerCountSelected: (Int?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
     onSubmitClicked: (List<Int>?, String?) -> Unit = { _, _ -> },
     onNavigateToSchemeScreen: () -> Unit = {},
-    onRefresh: () -> Unit = {}
+    onRefresh: () -> Unit = {},
+    onDownloadSchemesClick: () -> Unit = {}
 ) {
     PullToRefreshBox(
-        isRefreshing = false, //handled by HomeState instead
+        isRefreshing = isRefreshing,
         onRefresh = onRefresh,
         modifier = modifier,
     ) {
@@ -195,6 +161,7 @@ private fun HomeReadyScreen(
                     HomeCardSetSelector(
                         availableSetsState = availableSetsState,
                         onSetSelected = onSetSelected,
+                        onDownloadSchemesClick = onDownloadSchemesClick,
                         onNavigateToSchemeScreen = onNavigateToSchemeScreen
                     )
                 }
@@ -223,10 +190,12 @@ private fun HomeCardSetSelector(
     availableSetsState: HomeItemState<CardSet?>,
     modifier: Modifier = Modifier,
     onSetSelected: (CardSet?) -> Unit = {},
+    onDownloadSchemesClick: () -> Unit = {},
     onNavigateToSchemeScreen: () -> Unit = {}
 ) {
     Row(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         DropdownMenu(
             items = availableSetsState.items,
@@ -238,22 +207,50 @@ private fun HomeCardSetSelector(
             onItemSelected = onSetSelected
         )
 
+        when (availableSetsState.buttonState) {
+            HomeItemButtonState.NotLoaded -> HomeItemStateIcon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = stringResource(R.string.download_schemes),
+                onClick = onDownloadSchemesClick
+            )
 
-//        CircularProgressIndicator(
-//            modifier = modifier.align(Alignment.CenterHorizontally)
-//        )
+            HomeItemButtonState.Loading -> CircularProgressIndicator(
+                modifier = Modifier.padding(horizontal = 8.dp),
+            )
 
-        Icon(
-            imageVector = Icons.AutoMirrored.Default.ArrowForward,
-            contentDescription = "",
-            modifier = modifier
-                .size(64.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .align(Alignment.CenterVertically)
-                .padding(start = 16.dp)
-                .clickable(onClick = onNavigateToSchemeScreen)
-        )
+            HomeItemButtonState.Available -> HomeItemStateIcon(
+                imageVector = Icons.AutoMirrored.Default.ArrowForward,
+                contentDescription = stringResource(R.string.navigate_schemes),
+                onClick = onNavigateToSchemeScreen
+            )
+
+            else -> HomeItemStateIcon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = stringResource(R.string.download_schemes_error),
+                onClick = onDownloadSchemesClick
+            )
+        }
     }
+}
+
+@Composable
+private fun HomeItemStateIcon(
+    imageVector: ImageVector,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current,
+    onClick: () -> Unit = {},
+) {
+    Icon(
+        imageVector = imageVector,
+        contentDescription = contentDescription,
+        tint = tint,
+        modifier = modifier
+            .size(64.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .padding(start = 8.dp)
+            .clickable(onClick = onClick)
+    )
 }
 
 @Composable
@@ -273,7 +270,8 @@ private fun HomeSubmitButton(
                 selectedSet?.id
             )
         },
-        modifier = modifier
+        modifier = modifier,
+        enabled = selectedPlayerCount != null || selectedSet != null
     ) {
         Text(
             text = stringResource(R.string.select_set_button),
@@ -282,14 +280,6 @@ private fun HomeSubmitButton(
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(vertical = 8.dp)
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeErrorScreenPreview() {
-    GwenTestTheme {
-        HomeErrorScreen()
     }
 }
 
@@ -314,7 +304,8 @@ fun HomeReadyScreenPreview() {
                     CardSet("oe01", "Archenemy: Nicol Bolas Schemes")
                 ),
                 selectedItem = CardSet("dci", "DCI Promos")
-            )
+            ),
+            isRefreshing = false
         )
     }
 }
@@ -340,7 +331,8 @@ fun HomeReadyScreenNoPlayersPreview() {
                     CardSet("oe01", "Archenemy: Nicol Bolas Schemes")
                 ),
                 selectedItem = CardSet("dci", "DCI Promos")
-            )
+            ),
+            isRefreshing = false
         )
     }
 }

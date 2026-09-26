@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CardRepository {
 
-    suspend fun doCardsExistLocally(): Boolean
+    fun doCardsExistLocally(): Flow<Boolean>
 
     suspend fun downloadSchemes(): Boolean
 

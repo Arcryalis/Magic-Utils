@@ -3,15 +3,13 @@ package com.arcryalis.gwentest.home
 import com.arcryalis.gwentest.data.card.model.CardSet
 
 sealed interface HomeState {
-
-    data object Error: HomeState
-
-    data object Loading: HomeState
+    data object Initial: HomeState
 
     data class Ready(
         val playerCount: HomeItemState<Int?>,
         val startingLife: HomeItemState<Int>,
         val sets: HomeItemState<CardSet?>,
+        val isRefreshing: Boolean
     ): HomeState
 }
 
@@ -25,9 +23,11 @@ interface HomeItemButtonState {
 
     data object NoButton: HomeItemButtonState
 
-    data object Loading
+    data object NotLoaded: HomeItemButtonState
 
-    data object Error
+    data object Loading: HomeItemButtonState
 
-    data object Ready
+    data object Error: HomeItemButtonState
+
+    data object Available: HomeItemButtonState
 }

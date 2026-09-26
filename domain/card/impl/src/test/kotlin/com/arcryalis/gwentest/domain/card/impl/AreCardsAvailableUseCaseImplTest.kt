@@ -3,6 +3,7 @@ package com.arcryalis.gwentest.domain.card.impl
 import com.arcryalis.gwentest.data.card.MockCardRepository
 import com.arcryalis.gwentest.domain.card.AreCardsAvailableUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertFalse
@@ -30,7 +31,7 @@ class AreCardsAvailableUseCaseImplTest {
     fun givenCardsExistLocally_whenInvoked_thenReturnsTrue() = runTest {
         setupSut(cardsExist = true)
 
-        val result = sut()
+        val result = sut().first()
 
         assertTrue(result)
     }
@@ -39,7 +40,7 @@ class AreCardsAvailableUseCaseImplTest {
     fun givenNoCardsExist_whenInvoked_thenReturnsFalse() = runTest {
         setupSut(cardsExist = false)
 
-        val result = sut()
+        val result = sut().first()
 
         assertFalse(result)
     }

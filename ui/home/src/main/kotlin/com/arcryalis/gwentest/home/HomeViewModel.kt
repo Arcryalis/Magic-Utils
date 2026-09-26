@@ -3,7 +3,6 @@ package com.arcryalis.gwentest.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcryalis.gwentest.data.card.model.CardSet
-import com.arcryalis.gwentest.domain.card.AreCardsAvailableUseCase
 import com.arcryalis.gwentest.domain.card.DownloadSchemesUseCase
 import com.arcryalis.gwentest.domain.card.GetCardSetsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +16,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val areCardsAvailableUseCase: AreCardsAvailableUseCase,
     private val downloadSchemesUseCase: DownloadSchemesUseCase,
     private val getCardSetsUseCase: GetCardSetsUseCase,
 ): ViewModel() {
@@ -27,17 +25,27 @@ class HomeViewModel @Inject constructor(
         private val LIFE_TOTAL_OPTIONS = listOf(20, 40, 60)
     }
 
-    private val isLoading = MutableStateFlow(true)
-    private val hasError = MutableStateFlow(false)
-
     private val selectedSet = MutableStateFlow<CardSet?>(null)
+    private val cardSetsLoading = MutableStateFlow(false)
+    private val cardSetsError = MutableStateFlow(false)
     val availableSetState = combine(
         getCardSetsUseCase(),
-        selectedSet
-    ) { availableItems, selected ->
+        selectedSet,
+        cardSetsLoading,
+        cardSetsError
+    ) { availableItems, selected, cardsLoading, error ->
         HomeItemState(
             items = listOf(null) + availableItems, // null for no selection
-            selectedItem = selected
+            selectedItem = selected,
+            buttonState = if (error) {
+                HomeItemButtonState.Error
+            } else if (availableItems.isEmpty()) {
+                HomeItemButtonState.NotLoaded
+            } else if (cardsLoading) {
+                HomeItemButtonState.Loading
+            } else {
+                HomeItemButtonState.Available
+            }
         )
     }
 
@@ -57,29 +65,22 @@ class HomeViewModel @Inject constructor(
         )
     }
 
+    val isAnyLoading = cardSetsLoading.map { it }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val state = combine(
-        isLoading,
-        hasError,
+        isAnyLoading,
         availableSetState,
         playerCountState,
         lifeTotalState
-    ) { loading, error, setState, playerState, lifeState ->
-        when (error) {
-            true -> HomeState.Error
-            false -> {
-                when (loading) {
-                    true -> HomeState.Loading
-                    false -> {
-                        HomeState.Ready(
-                            sets = setState,
-                            playerCount = playerState,
-                            startingLife = lifeState
-                        )
-                    }
-                }
-            }
-        }
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState.Loading)
+    ) { loading, setState, playerState, lifeState ->
+        HomeState.Ready(
+            sets = setState,
+            playerCount = playerState,
+            startingLife = lifeState,
+            isRefreshing = loading
+        )
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState.Initial)
 
     fun onSelectSet(set: CardSet?) {
         selectedSet.value = set
@@ -94,28 +95,27 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun fetchSchemes() {
-        isLoading.value = true
-        hasError.value = false
+        cardSetsLoading.value = true
+        cardSetsError.value = false
 
-        val loadSuccessful = downloadSchemesUseCase.invoke()
+        val loadSuccessful = downloadSchemesUseCase()
 
-        hasError.value = !loadSuccessful
-        isLoading.value = false
+        cardSetsError.value = !loadSuccessful
+        cardSetsLoading.value = false
     }
 
-    fun onRefresh() {
-        viewModelScope.launch {
-            fetchSchemes()
+    fun onDownloadSchemes() {
+        if (!cardSetsLoading.value) {
+            viewModelScope.launch {
+                fetchSchemes()
+            }
         }
     }
 
-    init {
-        viewModelScope.launch {
-            val available = areCardsAvailableUseCase()
-            if (!available) {
+    fun onRefresh() {
+        if (!isAnyLoading.value) {
+            viewModelScope.launch {
                 fetchSchemes()
-            } else {
-                isLoading.value = false
             }
         }
     }

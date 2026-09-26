@@ -13,7 +13,7 @@ class MockCardRepository(
     private val cardBackUrl: String = "https://example.com/card_back.png",
 ) : CardRepository {
 
-    override suspend fun doCardsExistLocally(): Boolean = cardsExistLocally
+    override fun doCardsExistLocally(): Flow<Boolean> = flowOf(cardsExistLocally)
 
     override suspend fun downloadSchemes(): Boolean = downloadResult
 

@@ -1,5 +1,7 @@
 package com.arcryalis.gwentest.domain.card
 
+import kotlinx.coroutines.flow.Flow
+
 interface AreCardsAvailableUseCase {
-    suspend operator fun invoke(): Boolean
+    operator fun invoke(): Flow<Boolean>
 }

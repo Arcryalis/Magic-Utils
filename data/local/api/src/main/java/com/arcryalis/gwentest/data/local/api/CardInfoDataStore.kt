@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CardInfoDataStore {
 
-    suspend fun doCardsExistLocally(): Boolean
+    fun doCardsExistLocally(): Flow<Boolean>
 
     suspend fun insertCards(cards: List<CardInfoEntity>)
 

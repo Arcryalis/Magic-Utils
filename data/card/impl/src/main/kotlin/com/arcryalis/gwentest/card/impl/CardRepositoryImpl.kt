@@ -28,7 +28,7 @@ class CardRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : CardRepository {
 
-    override suspend fun doCardsExistLocally(): Boolean = cardInfoStore.doCardsExistLocally()
+    override fun doCardsExistLocally(): Flow<Boolean> = cardInfoStore.doCardsExistLocally()
 
     override suspend fun downloadSchemes(): Boolean {
         imageCacher.queueImageCacheRequest(context.getString(R.string.card_back_url))

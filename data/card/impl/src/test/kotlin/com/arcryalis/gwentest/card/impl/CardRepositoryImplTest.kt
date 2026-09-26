@@ -67,7 +67,7 @@ class CardRepositoryImplTest {
 
     @Test
     fun givenNoLocalCards_whenDoCardsExistLocally_thenReturnsFalse() = runTest {
-        val result = sut.doCardsExistLocally()
+        val result = sut.doCardsExistLocally().first()
 
         assertFalse(result)
     }
@@ -78,7 +78,7 @@ class CardRepositoryImplTest {
         val setId = entity.setId
         storedCards[setId] = mutableListOf(entity)
 
-        val result = sut.doCardsExistLocally()
+        val result = sut.doCardsExistLocally().first()
 
         assertTrue(result)
     }
