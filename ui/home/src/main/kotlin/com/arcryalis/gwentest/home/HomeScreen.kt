@@ -215,7 +215,7 @@ private fun HomeCardSetSelector(
             )
 
             HomeItemButtonState.Loading -> CircularProgressIndicator(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier.padding(start = 16.dp),
             )
 
             HomeItemButtonState.Available -> HomeItemStateIcon(

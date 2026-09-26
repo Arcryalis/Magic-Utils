@@ -23,21 +23,20 @@ fun LoadingScreen(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier.align(Alignment.Center)
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CircularProgressIndicator(
-                modifier = modifier
-                    .size(64.dp)
-                    .align(Alignment.CenterHorizontally)
+                modifier = Modifier.size(64.dp)
             )
 
             if (text != null) {
                 Text(
                     text = text,
-                    modifier = modifier
+                    modifier = Modifier
                         .padding(top = 16.dp)
                         .width(180.dp),
                     textAlign = TextAlign.Center
