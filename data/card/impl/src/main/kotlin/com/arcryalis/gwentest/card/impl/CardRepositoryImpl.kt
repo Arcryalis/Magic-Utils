@@ -87,4 +87,11 @@ class CardRepositoryImpl @Inject constructor(
             entities.toModel(cardBackUrl)
         }
     }
+
+    override fun getAllCards(): Flow<List<CardInfo>> {
+        val cardBackUrl = context.getString(R.string.card_back_url)
+        return cardInfoStore.getAllCards().map { entities ->
+            entities.toModel(cardBackUrl)
+        }
+    }
 }

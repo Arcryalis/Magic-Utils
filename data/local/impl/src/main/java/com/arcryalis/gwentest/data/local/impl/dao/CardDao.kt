@@ -17,6 +17,9 @@ interface CardDao {
     @Query("SELECT * FROM cardInfo WHERE setId = :setId")
     fun getCardSet(setId: String): Flow<List<CardInfoEntity>>
 
+    @Query("SELECT * FROM cardInfo")
+    fun getAllCards(): Flow<List<CardInfoEntity>>
+
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCards(cards: List<CardInfoEntity>)

@@ -24,4 +24,8 @@ class MockCardInfoDataStore(
     override fun getCardSet(setId: String): Flow<List<CardInfoEntity>> = flowOf(
         localCards.getOrDefault(setId, emptyList())
     )
+
+    override fun getAllCards(): Flow<List<CardInfoEntity>> = flowOf(
+        localCards.values.flatten()
+    )
 }

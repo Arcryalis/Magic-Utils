@@ -17,4 +17,6 @@ class CardInfoDataStoreImpl @Inject constructor(
     override suspend fun insertCards(cards: List<CardInfoEntity>) = cardDao.insertCards(cards)
 
     override fun getCardSet(setId: String): Flow<List<CardInfoEntity>> = cardDao.getCardSet(setId)
+
+    override fun getAllCards(): Flow<List<CardInfoEntity>> = cardDao.getAllCards()
 }

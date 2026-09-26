@@ -14,4 +14,6 @@ interface CardRepository {
 
     fun getSet(setId: String): Flow<List<CardInfo>>
 
+    fun getAllCards(): Flow<List<CardInfo>>
+
 }

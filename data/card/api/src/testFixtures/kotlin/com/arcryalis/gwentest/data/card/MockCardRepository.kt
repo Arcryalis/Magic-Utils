@@ -20,4 +20,7 @@ class MockCardRepository(
 
     override fun getSet(setId: String): Flow<List<CardInfo>> =
         flowOf(cardsBySet.getOrDefault(setId, emptyList()))
+
+    override fun getAllCards(): Flow<List<CardInfo>> =
+        flowOf(cardsBySet.values.flatten())
 }

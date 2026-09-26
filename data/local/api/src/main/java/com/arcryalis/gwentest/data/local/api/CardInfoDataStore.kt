@@ -11,4 +11,6 @@ interface CardInfoDataStore {
 
     fun getCardSet(setId: String): Flow<List<CardInfoEntity>>
 
+    fun getAllCards(): Flow<List<CardInfoEntity>>
+
 }
