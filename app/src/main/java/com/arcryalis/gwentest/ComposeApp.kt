@@ -30,10 +30,8 @@ fun ComposeApp(
     val entryProvider = entryProvider {
         entry<HomeRoute> {
             HomeScreen(
-                onNavigateToSchemeScreen = { setId ->
-                    backStack.add(
-                        SchemeRoute(setId)
-                    )
+                onNavigateToSchemeScreen = {
+                    backStack.add(SchemeRoute)
                 },
                 onNavigateToGameScreen = { players, setId,  ->
                     backStack.add(

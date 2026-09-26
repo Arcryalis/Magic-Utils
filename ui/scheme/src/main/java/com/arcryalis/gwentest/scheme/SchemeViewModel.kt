@@ -21,7 +21,7 @@ class SchemeViewModel @AssistedInject constructor(
     private val getShuffledCardInfoUseCase: GetShuffledCardInfoUseCase
 ): ViewModel()  {
 
-    private val setId = route.setId
+//    private val setId = route.setId
 
     private val isLoading = MutableStateFlow(false)
 
@@ -36,14 +36,14 @@ class SchemeViewModel @AssistedInject constructor(
         isLoading,
         ongoingCardList,
         flippedCardList,
-        getShuffledCardInfoUseCase(setId),
+//        getShuffledCardInfoUseCase(setId),
         overlayCard
-    ) { loading, ongoingList, flippedCards, shuffledList, overlay ->
+    ) { loading, ongoingList, flippedCards, overlay ->
         if (loading) {
             SchemeState.Loading
         } else {
             SchemeState.Ready(
-                cards = shuffledList.toUiModel(),
+                cards = emptyList<CardUiInfo>(),
                 faceUpCards = flippedCards,
                 ongoingCards = ongoingList,
                 overlayCard = overlay

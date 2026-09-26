@@ -35,7 +35,7 @@ import com.arcryalis.gwentest.data.card.model.CardSet
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToSchemeScreen: (String) -> Unit = {},
+    onNavigateToSchemeScreen: () -> Unit = {},
     onNavigateToGameScreen: (List<Int>?, String?) -> Unit = { _, _ -> }
 ) {
     val state = viewModel.state.collectAsState()
