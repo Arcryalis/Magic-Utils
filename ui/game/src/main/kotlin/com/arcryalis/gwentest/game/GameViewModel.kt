@@ -46,7 +46,7 @@ class GameViewModel @AssistedInject constructor(
     private val setId = route.setId
     private val startingDeck = (
             setId?.let { getShuffledCardInfoUseCase(setId) } ?: flowOf(emptyList())
-        ).stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    ).stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private var revealedCardIndex = MutableStateFlow<Int?>(null)
     private val revealedCardList = combine(
@@ -67,7 +67,7 @@ class GameViewModel @AssistedInject constructor(
         extraCardList,
         cardbackUrl,
     ) { starting, revealedCards, extraCards, backUrl ->
-        if (starting.isNotEmpty() || backUrl != null) {
+        if (starting.isNotEmpty() && backUrl != null) {
             DeckSettings(
                 nextCardUrl = if (revealedCards.size < starting.size) {
                     backUrl
@@ -132,16 +132,21 @@ class GameViewModel @AssistedInject constructor(
     }
 
     fun increasePlayerLife(index: Int) {
-        lifeTotals.update {
-            lifeTotals.value
-                ?.toMutableList()
-                ?.apply {
-                    this[index] = this[index] + 1
-                }?.toList()
+        val currentLife = lifeTotals.value?.get(index)
+        if (currentLife != null && currentLife < MAX_LIFE) {
+            lifeTotals.update {
+                lifeTotals.value
+                    ?.toMutableList()
+                    ?.apply {
+                        this[index] = this[index] + 1
+                    }?.toList()
+            }
         }
     }
 
     fun decreasePlayerLife(index: Int) {
+        val currentLife = lifeTotals.value?.get(index)
+        if (currentLife != null && currentLife > MIN_LIFE) {
         lifeTotals.update {
             lifeTotals.value
                 ?.toMutableList()
@@ -149,6 +154,7 @@ class GameViewModel @AssistedInject constructor(
                     this[index] = this[index] - 1
                 }?.toList()
         }
+            }
     }
 
     fun revealNextCard() {
