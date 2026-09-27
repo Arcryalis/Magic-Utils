@@ -1,6 +1,5 @@
 package com.arcryalis.gwentest.card.impl.mapper
 
-import com.arcryalis.gwentest.data.local.api.TestCardInfoEntity
 import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
 import com.arcryalis.gwentest.remote.scryfall.TestScryfallDataDto
 import org.junit.Test

@@ -45,7 +45,6 @@ fun GameScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing),
         onPlayerUpClicked = viewModel::increasePlayerLife,
         onPlayerDownClicked = viewModel::decreasePlayerLife,
-        onPlayerLongClicked = {}, //TODO
         onNextClicked = viewModel::revealNextCard,
         onHistoryClicked = viewModel::showRevealedCardsGallery,
         onListItemClicked = viewModel::showCardOnOverlay,
@@ -61,7 +60,6 @@ fun GameScreen(
     modifier: Modifier = Modifier,
     onPlayerUpClicked: (Int) -> Unit = {},
     onPlayerDownClicked: (Int) -> Unit = {},
-    onPlayerLongClicked: (Int) -> Unit = {},
     onNextClicked: () -> Unit = {},
     onHistoryClicked: () -> Unit = {},
     onListItemClicked: (CardInfo) -> Unit = {},
@@ -81,7 +79,6 @@ fun GameScreen(
             modifier = modifier,
             onPlayerUpClicked = onPlayerUpClicked,
             onPlayerDownClicked = onPlayerDownClicked,
-            onPlayerLongClicked = onPlayerLongClicked,
             onNextClicked = onNextClicked,
             onHistoryClicked = onHistoryClicked,
             onListItemClicked = onListItemClicked,
@@ -99,7 +96,6 @@ private fun GameReadyScreen(
     modifier: Modifier = Modifier,
     onPlayerUpClicked: (Int) -> Unit = {},
     onPlayerDownClicked: (Int) -> Unit = {},
-    onPlayerLongClicked: (Int) -> Unit = {},
     onNextClicked: () -> Unit = {},
     onHistoryClicked: () -> Unit = {},
     onListItemClicked: (CardInfo) -> Unit = {},
@@ -116,7 +112,6 @@ private fun GameReadyScreen(
                 .fillMaxSize(),
             onPlayerUpClicked = onPlayerUpClicked,
             onPlayerDownClicked = onPlayerDownClicked,
-            onPlayerLongClicked = onPlayerLongClicked,
             onNextClicked = onNextClicked,
             onHistoryClicked = onHistoryClicked,
             onListItemClicked = onListItemClicked
@@ -142,7 +137,6 @@ private fun GameScreenContent(
     modifier: Modifier = Modifier,
     onPlayerUpClicked: (Int) -> Unit = {},
     onPlayerDownClicked: (Int) -> Unit = {},
-    onPlayerLongClicked: (Int) -> Unit = {},
     onNextClicked: () -> Unit = {},
     onHistoryClicked: () -> Unit = {},
     onListItemClicked: (CardInfo) -> Unit = {}
@@ -157,8 +151,7 @@ private fun GameScreenContent(
                 players = players,
                 modifier = Modifier.weight(if (isPortrait) 3f else 2f),
                 onPlayerUpClicked = onPlayerUpClicked,
-                onPlayerDownClicked = onPlayerDownClicked,
-                onPlayerLongClicked = onPlayerLongClicked
+                onPlayerDownClicked = onPlayerDownClicked
             )
         }
 

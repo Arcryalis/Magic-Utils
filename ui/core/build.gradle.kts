@@ -20,7 +20,6 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(projects.data.card.api)
-    implementation(kotlin("reflect"))
 
     testFixturesImplementation(libs.kotlinx.coroutines.test)
     testFixturesImplementation(libs.junit)

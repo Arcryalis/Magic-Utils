@@ -201,6 +201,7 @@ private fun HomeCardSetSelector(
             items = availableSetsState.items,
             selectedItem = availableSetsState.selectedItem,
             titleLabel = stringResource(R.string.select_set_label),
+            modifier = Modifier.weight(1f),
             fieldLabel = { set ->
                 set?.let { "${set.name} (${set.id.uppercase()})" }
             },

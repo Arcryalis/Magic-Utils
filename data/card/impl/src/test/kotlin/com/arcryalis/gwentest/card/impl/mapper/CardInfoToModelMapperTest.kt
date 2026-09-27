@@ -6,11 +6,9 @@ import com.arcryalis.gwentest.data.local.api.TestCardInfoEntity
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class CardInfoToModelMapperTest {
+    class CardInfoToModelMapperTest {
 
-    private val cardBackUrl = "cardBackUrl"
-
-    @Test
+        @Test
     fun givenCardInfoEntity_whenToModel_thenReturnsCardInfo() {
         val entity = TestCardInfoEntity.entity1
         val expectedModel = CardInfo(

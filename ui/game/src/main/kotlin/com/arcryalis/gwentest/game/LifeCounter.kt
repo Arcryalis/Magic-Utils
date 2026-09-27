@@ -1,11 +1,10 @@
-package com.arcryalis.gwentest.core
+package com.arcryalis.gwentest.game
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
-import com.arcryalis.gwentest.game.R
 
 
 @Composable
@@ -47,7 +45,6 @@ fun LifeCounter(
     arrowsVisible: Boolean = true,
     onUpClicked: () -> Unit = {},
     onDownClicked: () -> Unit = {},
-    onLongClicked: () -> Unit = {},
 ) {
     val haptics = LocalHapticFeedback.current
     var boxHeight by remember { mutableFloatStateOf(0f) }
@@ -60,17 +57,13 @@ fun LifeCounter(
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { tapOffset ->
+                        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
                         handleOnPress(
                             containerHeight = boxHeight,
                             tapYOffset = tapOffset.y,
-                            haptics = haptics,
                             onLowerClicked = onDownClicked,
                             onUpperClicked = onUpClicked
                         )
-                    },
-                    onLongPress = { _ ->
-                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onLongClicked()
                     }
                 )
             }
@@ -105,19 +98,16 @@ fun LifeCounter(
 private fun handleOnPress(
     containerHeight: Float,
     tapYOffset: Float,
-    haptics: HapticFeedback,
     onLowerClicked: () -> Unit = {},
     onUpperClicked: () -> Unit = {}
 ) {
     // check top/bottom. Ignore middle press
-    val lowerThreshold = containerHeight / 4
+    val lowerThreshold = containerHeight / 3
     val upperThreshold = containerHeight - lowerThreshold
 
     if (tapYOffset >= upperThreshold) {
-        haptics.performHapticFeedback(HapticFeedbackType.Confirm) //TODO remove
         onLowerClicked()
     } else if (tapYOffset <= lowerThreshold) {
-        haptics.performHapticFeedback(HapticFeedbackType.Reject)
         onUpperClicked()
     }
 }

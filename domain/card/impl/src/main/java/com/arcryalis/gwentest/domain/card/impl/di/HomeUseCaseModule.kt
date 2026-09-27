@@ -1,12 +1,10 @@
 package com.arcryalis.gwentest.domain.card.impl.di
 
-import com.arcryalis.gwentest.domain.card.AreCardsAvailableUseCase
 import com.arcryalis.gwentest.domain.card.DownloadSchemesUseCase
 import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
 import com.arcryalis.gwentest.domain.card.GetCardSetsUseCase
 import com.arcryalis.gwentest.domain.card.GetAllCardCardInfoUseCase
-import com.arcryalis.gwentest.domain.card.impl.AreCardsAvailableUseCaseImpl
 import com.arcryalis.gwentest.domain.card.impl.DownloadSchemesUseCaseImpl
 import com.arcryalis.gwentest.domain.card.impl.GetCardBackUrlUseCaseImpl
 import com.arcryalis.gwentest.domain.card.impl.GetShuffledCardInfoUseCaseImpl
@@ -35,7 +33,4 @@ interface HomeUseCaseModule {
 
     @Binds
     fun bindGetCardBackUrl(getCardBackUrl: GetCardBackUrlUseCaseImpl): GetCardBackUrlUseCase
-
-    @Binds
-    fun bindAreCardsAvailableUseCase(areCardsAvailableUseCase: AreCardsAvailableUseCaseImpl): AreCardsAvailableUseCase
 }

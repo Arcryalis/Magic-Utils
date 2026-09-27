@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.VerticalDivider
@@ -14,7 +13,6 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
-import com.arcryalis.gwentest.core.LifeCounter
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 
 
@@ -24,7 +22,6 @@ fun LifeComponent(
     modifier: Modifier = Modifier,
     onPlayerUpClicked: (Int) -> Unit = {},
     onPlayerDownClicked: (Int) -> Unit = {},
-    onPlayerLongClicked: (Int) -> Unit = {},
 ) {
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
@@ -36,15 +33,13 @@ fun LifeComponent(
             modifier = modifier,
             onPlayerUpClicked = onPlayerUpClicked,
             onPlayerDownClicked = onPlayerDownClicked,
-            onPlayerLongClicked = onPlayerLongClicked,
         )
         2 -> LifeTwoPlayerSection(
             players = players,
             arrowsVisible = isPortrait,
             modifier = modifier,
             onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked,
-            onPlayerLongClicked = onPlayerLongClicked
+            onPlayerDownClicked = onPlayerDownClicked
         )
 
         3, 4 -> LifeMultiPlayerSection(
@@ -52,8 +47,7 @@ fun LifeComponent(
             arrowsVisible = isPortrait,
             modifier = modifier,
             onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked,
-            onPlayerLongClicked = onPlayerLongClicked
+            onPlayerDownClicked = onPlayerDownClicked
         )
 
         else -> {
@@ -69,8 +63,7 @@ private fun LifeCounterItem(
     arrowsVisible: Boolean,
     modifier: Modifier = Modifier,
     onPlayerUpClicked: (Int) -> Unit = {},
-    onPlayerDownClicked: (Int) -> Unit = {},
-    onPlayerLongClicked: (Int) -> Unit = {}
+    onPlayerDownClicked: (Int) -> Unit = {}
 ) {
     LifeCounter(
         lifeTotal = player.lifeTotal,
@@ -79,7 +72,6 @@ private fun LifeCounterItem(
         modifier = modifier.fillMaxSize(),
         onUpClicked = { onPlayerUpClicked(index) },
         onDownClicked = { onPlayerDownClicked(index) },
-        onLongClicked = { onPlayerLongClicked(index) },
     )
 }
 
@@ -89,8 +81,7 @@ private fun LifeTwoPlayerSection(
     arrowsVisible: Boolean,
     modifier: Modifier = Modifier,
     onPlayerUpClicked: (Int) -> Unit = {},
-    onPlayerDownClicked: (Int) -> Unit = {},
-    onPlayerLongClicked: (Int) -> Unit = {}
+    onPlayerDownClicked: (Int) -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -101,8 +92,7 @@ private fun LifeTwoPlayerSection(
             arrowsVisible = arrowsVisible,
             modifier = Modifier.weight(1f),
             onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked,
-            onPlayerLongClicked = onPlayerLongClicked
+            onPlayerDownClicked = onPlayerDownClicked
         )
 
         VerticalDivider()
@@ -115,8 +105,7 @@ private fun LifeTwoPlayerSection(
                 .weight(1f)
                 .rotate(180f),
             onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked,
-            onPlayerLongClicked = onPlayerLongClicked
+            onPlayerDownClicked = onPlayerDownClicked
         )
     }
 }
@@ -127,8 +116,7 @@ private fun LifeMultiPlayerSection(
     arrowsVisible: Boolean,
     modifier: Modifier = Modifier,
     onPlayerUpClicked: (Int) -> Unit = {},
-    onPlayerDownClicked: (Int) -> Unit = {},
-    onPlayerLongClicked: (Int) -> Unit = {}
+    onPlayerDownClicked: (Int) -> Unit = {}
 ) {
     val isThreePlayer = players.size == 3
 
@@ -146,8 +134,7 @@ private fun LifeMultiPlayerSection(
                 arrowsVisible = arrowsVisible,
                 modifier = Modifier.weight(1f),
                 onPlayerUpClicked = onPlayerUpClicked,
-                onPlayerDownClicked = onPlayerDownClicked,
-                onPlayerLongClicked = onPlayerLongClicked
+                onPlayerDownClicked = onPlayerDownClicked
             )
 
             VerticalDivider()
@@ -158,8 +145,7 @@ private fun LifeMultiPlayerSection(
                 arrowsVisible = arrowsVisible,
                 modifier = Modifier.weight(1f),
                 onPlayerUpClicked = onPlayerUpClicked,
-                onPlayerDownClicked = onPlayerDownClicked,
-                onPlayerLongClicked = onPlayerLongClicked
+                onPlayerDownClicked = onPlayerDownClicked
             )
         }
 
@@ -180,8 +166,7 @@ private fun LifeMultiPlayerSection(
                 arrowsVisible = arrowsVisible,
                 modifier = Modifier.weight(1f),
                 onPlayerUpClicked = onPlayerUpClicked,
-                onPlayerDownClicked = onPlayerDownClicked,
-                onPlayerLongClicked = onPlayerLongClicked
+                onPlayerDownClicked = onPlayerDownClicked
             )
 
             if (isThreePlayer) {
@@ -197,8 +182,7 @@ private fun LifeMultiPlayerSection(
                     arrowsVisible = arrowsVisible,
                     modifier = Modifier.weight(1f),
                     onPlayerUpClicked = onPlayerUpClicked,
-                    onPlayerDownClicked = onPlayerDownClicked,
-                    onPlayerLongClicked = onPlayerLongClicked
+                    onPlayerDownClicked = onPlayerDownClicked
                 )
             }
         }

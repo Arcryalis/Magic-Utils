@@ -27,6 +27,4 @@ dependencies {
     testImplementation(testFixtures(projects.domain.card.api))
     testImplementation(testFixtures(projects.data.card.api))
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.junit)
-    testImplementation(kotlin("test"))
 }
