@@ -9,6 +9,5 @@ data class CardInfo(
 
 data class CardInfoImageUrls(
     val small: String,
-    val large: String,
-    val back: String
+    val large: String
 )

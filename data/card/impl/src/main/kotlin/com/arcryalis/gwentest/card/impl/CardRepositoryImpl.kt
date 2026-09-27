@@ -28,7 +28,7 @@ class CardRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : CardRepository {
 
-    override suspend fun doCardsExistLocally(): Boolean = cardInfoStore.doCardsExistLocally()
+    override fun doCardsExistLocally(): Flow<Boolean> = cardInfoStore.doCardsExistLocally()
 
     override suspend fun downloadSchemes(): Boolean {
         imageCacher.queueImageCacheRequest(context.getString(R.string.card_back_url))
@@ -82,9 +82,16 @@ class CardRepositoryImpl @Inject constructor(
         }
 
     override fun getSet(setId: String): Flow<List<CardInfo>> {
-        val cardBackUrl = context.getString(R.string.card_back_url)
         return cardInfoStore.getCardSet(setId).map { entities ->
-            entities.toModel(cardBackUrl)
+            entities.toModel()
         }
     }
+
+    override fun getAllCards(): Flow<List<CardInfo>> {
+        return cardInfoStore.getAllCards().map { entities ->
+            entities.toModel()
+        }
+    }
+
+    override suspend fun getCardBackUrl(): String = context.getString(R.string.card_back_url)
 }

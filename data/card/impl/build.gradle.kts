@@ -15,7 +15,6 @@ android {
 
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.coil.compose)
 
     implementation(projects.data.card.api)
     implementation(projects.data.local.api)

@@ -12,10 +12,13 @@ import kotlinx.coroutines.flow.Flow
 interface CardDao {
 
     @Query("SELECT EXISTS(SELECT * FROM cardInfo)")
-    suspend fun doCardsExistLocally(): Boolean
+    fun doCardsExistLocally(): Flow<Boolean>
 
     @Query("SELECT * FROM cardInfo WHERE setId = :setId")
     fun getCardSet(setId: String): Flow<List<CardInfoEntity>>
+
+    @Query("SELECT * FROM cardInfo")
+    fun getAllCards(): Flow<List<CardInfoEntity>>
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -14,8 +14,8 @@ android {
 
     defaultConfig {
         applicationId = "com.arcryalis.gwentest"
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
         multiDexEnabled = true
     }
 }
@@ -24,6 +24,7 @@ dependencies {
     implementation(projects.ui.core)
     implementation(projects.ui.home)
     implementation(projects.ui.scheme)
+    implementation(projects.ui.game)
 
     implementation(projects.domain.card.api)
     implementation(projects.domain.card.impl)
@@ -41,14 +42,12 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.coil.compose)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
-    implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
@@ -58,5 +57,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
 }

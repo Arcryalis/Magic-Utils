@@ -1,25 +1,14 @@
 package com.arcryalis.gwentest.scheme
 
+import com.arcryalis.gwentest.data.card.model.CardInfo
+
 sealed interface SchemeState{
     data object Loading: SchemeState
 
+    data object Error: SchemeState
+
     data class Ready(
-        val cards: List<CardUiInfo>,
-        val ongoingCards: List<CardUiInfo>,
-        val faceUpCards: List<CardUiInfo>,
-        val overlayCard: CardUiInfo?
+        val cards: List<CardInfo>,
+        val overlayCard: CardInfo?
     ): SchemeState
 }
-
-data class CardUiInfo(
-    val name: String,
-    val oracleText: String?,
-    val images: CardUiImageUrls,
-    val isOngoing: Boolean,
-)
-
-data class CardUiImageUrls(
-    val small: String,
-    val large: String,
-    val back: String
-)

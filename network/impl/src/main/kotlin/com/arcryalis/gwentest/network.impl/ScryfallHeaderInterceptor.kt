@@ -21,7 +21,7 @@ class ScryfallHeaderInterceptor @Inject constructor(
             chain
                 .request()
                 .newBuilder()
-                .addHeader("User-Agent", "com.arcryalis.gwentest/1.0")
+                .addHeader("User-Agent", "com.arcryalis.gwentest/1.1")
                 .addHeader("Accept", "application/json")
                 .build()
         } catch (e: Exception) {

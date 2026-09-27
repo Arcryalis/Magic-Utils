@@ -1,6 +1,4 @@
 <resources>
     <string name="schemes_loading">Loading</string>
-    <string name="overlay_close">Close</string>
-    <string name="overlay_add">Add</string>
-    <string name="overlay_back">Back</string>
+    <string name="schemes_error">An error occurred</string>
 </resources>

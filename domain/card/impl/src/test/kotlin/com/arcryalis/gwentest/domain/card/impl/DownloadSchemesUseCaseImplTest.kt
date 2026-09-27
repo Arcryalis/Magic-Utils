@@ -1,7 +1,6 @@
 package com.arcryalis.gwentest.domain.card.impl
 
 import com.arcryalis.gwentest.data.card.MockCardRepository
-import com.arcryalis.gwentest.domain.card.AreCardsAvailableUseCase
 import com.arcryalis.gwentest.domain.card.DownloadSchemesUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

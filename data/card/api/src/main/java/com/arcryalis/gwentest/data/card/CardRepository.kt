@@ -6,12 +6,16 @@ import kotlinx.coroutines.flow.Flow
 
 interface CardRepository {
 
-    suspend fun doCardsExistLocally(): Boolean
+    fun doCardsExistLocally(): Flow<Boolean>
 
     suspend fun downloadSchemes(): Boolean
 
     fun getAvailableSets(): Flow<List<CardSet>>
 
     fun getSet(setId: String): Flow<List<CardInfo>>
+
+    fun getAllCards(): Flow<List<CardInfo>>
+
+    suspend fun getCardBackUrl(): String
 
 }

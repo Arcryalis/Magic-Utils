@@ -12,9 +12,11 @@ class CardInfoDataStoreImpl @Inject constructor(
     private val cardDao: CardDao
 ): CardInfoDataStore {
 
-    override suspend fun doCardsExistLocally(): Boolean = cardDao.doCardsExistLocally()
+    override fun doCardsExistLocally(): Flow<Boolean> = cardDao.doCardsExistLocally()
 
     override suspend fun insertCards(cards: List<CardInfoEntity>) = cardDao.insertCards(cards)
 
     override fun getCardSet(setId: String): Flow<List<CardInfoEntity>> = cardDao.getCardSet(setId)
+
+    override fun getAllCards(): Flow<List<CardInfoEntity>> = cardDao.getAllCards()
 }

@@ -6,10 +6,21 @@ plugins {
 
 android {
     namespace = "com.arcryalis.gwentest.core"
+
+    testFixtures {
+        enable = true
+    }
 }
 
 dependencies {
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.material.icons.core)
+    implementation(libs.coil.compose)
+
+    implementation(projects.data.card.api)
+
+    testFixturesImplementation(libs.kotlinx.coroutines.test)
+    testFixturesImplementation(libs.junit)
 }

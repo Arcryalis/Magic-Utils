@@ -8,7 +8,7 @@ class MockCardInfoDataStore(
     private var localCards: MutableMap<String, MutableList<CardInfoEntity>>
 ) : CardInfoDataStore {
 
-    override suspend fun doCardsExistLocally(): Boolean = localCards.isNotEmpty()
+    override fun doCardsExistLocally(): Flow<Boolean> = flowOf(localCards.isNotEmpty())
 
     override suspend fun insertCards(cards: List<CardInfoEntity>) {
         cards.groupBy { it.setId }
@@ -23,5 +23,9 @@ class MockCardInfoDataStore(
 
     override fun getCardSet(setId: String): Flow<List<CardInfoEntity>> = flowOf(
         localCards.getOrDefault(setId, emptyList())
+    )
+
+    override fun getAllCards(): Flow<List<CardInfoEntity>> = flowOf(
+        localCards.values.flatten()
     )
 }

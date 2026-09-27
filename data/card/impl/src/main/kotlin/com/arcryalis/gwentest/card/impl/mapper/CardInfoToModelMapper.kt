@@ -5,17 +5,16 @@ import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
 
 
-fun CardInfoEntity.toModel(cardBackUrl: String): CardInfo = CardInfo(
+fun CardInfoEntity.toModel(): CardInfo = CardInfo(
     name = name,
     oracleText = oracleText,
-    images = toCardInfoImageUrls(cardBackUrl),
+    images = toCardInfoImageUrls(),
     isOngoing = isOngoing
 )
 
-private fun CardInfoEntity.toCardInfoImageUrls(cardBackUrl: String): CardInfoImageUrls = CardInfoImageUrls(
+private fun CardInfoEntity.toCardInfoImageUrls(): CardInfoImageUrls = CardInfoImageUrls(
     small = smallImageUrl,
-    large = largeImageUrl,
-    back = cardBackUrl
+    large = largeImageUrl
 )
 
-fun List<CardInfoEntity>.toModel(cardBackUrl: String) = map { it.toModel(cardBackUrl) }
+fun List<CardInfoEntity>.toModel() = map { it.toModel() }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -15,29 +16,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 
-
 @Composable
 fun LoadingScreen(
-    text: String,
+    text: String?,
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier.align(Alignment.Center)
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CircularProgressIndicator(
-                modifier = modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.size(64.dp)
             )
 
-            Text(
-                text = text,
-                modifier = modifier
-                    .padding(top = 16.dp)
-                    .width(180.dp),
-                textAlign = TextAlign.Center
-            )
+            if (text != null) {
+                Text(
+                    text = text,
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .width(180.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

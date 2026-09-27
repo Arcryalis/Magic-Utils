@@ -67,7 +67,7 @@ class CardRepositoryImplTest {
 
     @Test
     fun givenNoLocalCards_whenDoCardsExistLocally_thenReturnsFalse() = runTest {
-        val result = sut.doCardsExistLocally()
+        val result = sut.doCardsExistLocally().first()
 
         assertFalse(result)
     }
@@ -78,7 +78,7 @@ class CardRepositoryImplTest {
         val setId = entity.setId
         storedCards[setId] = mutableListOf(entity)
 
-        val result = sut.doCardsExistLocally()
+        val result = sut.doCardsExistLocally().first()
 
         assertTrue(result)
     }
@@ -263,8 +263,7 @@ class CardRepositoryImplTest {
             oracleText = entity.oracleText,
             images = CardInfoImageUrls(
                 small = entity.smallImageUrl,
-                large = entity.largeImageUrl,
-                back = context.getString(R.string.card_back_url)
+                large = entity.largeImageUrl
             ),
             isOngoing = entity.isOngoing
         )
@@ -282,5 +281,52 @@ class CardRepositoryImplTest {
         val result = sut.getSet("unknownSetId").first()
 
         assertEquals(emptyList(), result)
+    }
+
+    @Test
+    fun givenStoredCards_whenGetAllCards_thenReturnsAllCardsWithCardBackUrl() = runTest {
+        val entity1 = TestCardInfoEntity.entity1
+        val entity2 = TestCardInfoEntity.entity2
+        storedCards[entity1.setId] = mutableListOf(entity1)
+        storedCards[entity2.setId] = mutableListOf(entity2)
+
+        val expected1 = CardInfo(
+            name = entity1.name,
+            oracleText = entity1.oracleText,
+            images = CardInfoImageUrls(
+                small = entity1.smallImageUrl,
+                large = entity1.largeImageUrl
+            ),
+            isOngoing = entity1.isOngoing
+        )
+        val expected2 = CardInfo(
+            name = entity2.name,
+            oracleText = entity2.oracleText,
+            images = CardInfoImageUrls(
+                small = entity2.smallImageUrl,
+                large = entity2.largeImageUrl
+            ),
+            isOngoing = entity2.isOngoing
+        )
+
+        val result = sut.getAllCards().first()
+
+        assertEquals(listOf(expected1, expected2), result)
+    }
+
+    @Test
+    fun givenNoStoredCards_whenGetAllCards_thenReturnsEmptyList() = runTest {
+        val result = sut.getAllCards().first()
+
+        assertEquals(emptyList(), result)
+    }
+
+    @Test
+    fun whenGetCardBackUrl_thenReturnsStringFromContext() = runTest {
+        val expected = context.getString(R.string.card_back_url)
+
+        val result = sut.getCardBackUrl()
+
+        assertEquals(expected, result)
     }
 }
