@@ -2,10 +2,7 @@ package com.arcryalis.gwentest.scheme
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,7 +13,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.arcryalis.gwentest.core.CardInfoDialog
 import com.arcryalis.gwentest.core.CardInfoGallery
+import com.arcryalis.gwentest.core.DefaultTopNavigationBar
 import com.arcryalis.gwentest.core.FullScreenDialog
+import com.arcryalis.gwentest.core.HandleScreenBars
 import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardInfo
@@ -25,18 +24,24 @@ import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 @Composable
 fun SchemeScreen(
     modifier: Modifier = Modifier,
-    viewModel: SchemeViewModel = hiltViewModel()
+    viewModel: SchemeViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit,
+    setTopBarContent: ((@Composable () -> Unit)?) -> Unit = {}
 ) {
     val state = viewModel.state.collectAsState()
 
-    SchemeScreen(
-        state = state.value,
-        modifier = modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.safeDrawing),
-        onCardClicked = viewModel::onCardClicked,
-        onCloseOverlayClicked = viewModel::onCloseOverlayClicked
-    )
+    HandleScreenBars(
+        modifier = modifier,
+        onNavigateBack = onNavigateBack,
+        setTopContent = setTopBarContent,
+    ) {
+        SchemeScreen(
+            state = state.value,
+            modifier = modifier.fillMaxSize(),
+            onCardClicked = viewModel::onCardClicked,
+            onCloseOverlayClicked = viewModel::onCloseOverlayClicked
+        )
+    }
 }
 @Composable
 fun SchemeScreen(
