@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/" 
+    schedule:
+      interval: "monthly"
+    cooldown:
+      default-days: 7 # Wait for new versions to be out for a week
+    groups:
+      dependency-batch:
+        patterns:
+          - "*"  # Group everything
