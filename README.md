@@ -7,3 +7,6 @@ Downloads all Schemes from Scryfall and allows playing per set. Includes optiona
 To do:
 - Deck creation
 - Player names and color
+
+
+TESTING BITRISE
