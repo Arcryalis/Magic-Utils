@@ -14,9 +14,12 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
@@ -24,7 +27,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -62,10 +67,11 @@ fun HomeScreen(
         onNavigateToGameScreen = onNavigateToGameScreen,
         onNavigateToSchemeScreen = onNavigateToSchemeScreen,
         onSetSelected = viewModel::onSelectSet,
-        onPlayerCountSelected = viewModel::onSelectPlayerCount,
         onLifeTotalSelected = viewModel::onSelectLifeTotal,
         onRefreshClick = viewModel::onRefresh,
-        onDownloadSchemesClick = viewModel::onDownloadSchemes
+        onDownloadSchemesClick = viewModel::onDownloadSchemes,
+        onAddPlayer = viewModel::addPlayer,
+        onRemovePlayer = viewModel::removePlayer
     )
 }
 
@@ -76,10 +82,11 @@ fun HomeScreen(
     onNavigateToGameScreen: (List<Int>?, String?) -> Unit = { _, _ -> },
     onNavigateToSchemeScreen: () -> Unit = {},
     onSetSelected: (CardSet?) -> Unit = {},
-    onPlayerCountSelected: (Int?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
     onRefreshClick: () -> Unit = {},
-    onDownloadSchemesClick: () -> Unit = {}
+    onDownloadSchemesClick: () -> Unit = {},
+    onAddPlayer: () -> Unit = {},
+    onRemovePlayer: (Int) -> Unit = {}
 ) {
     when (state) {
         is HomeState.Initial -> LoadingScreen(
@@ -88,18 +95,19 @@ fun HomeScreen(
         )
 
         is HomeState.Ready -> HomeReadyScreen(
-            playerCountState = state.playerCount,
+            players = state.players,
             startingLifeState = state.startingLife,
             availableSetsState = state.sets,
             isRefreshing = state.isRefreshing,
             modifier = modifier,
             onSetSelected = onSetSelected,
-            onPlayerCountSelected = onPlayerCountSelected,
             onLifeTotalSelected = onLifeTotalSelected,
             onSubmitClicked = onNavigateToGameScreen,
             onNavigateToSchemeScreen = onNavigateToSchemeScreen,
             onRefresh = onRefreshClick,
-            onDownloadSchemesClick = onDownloadSchemesClick
+            onDownloadSchemesClick = onDownloadSchemesClick,
+            onAddPlayer = onAddPlayer,
+            onRemovePlayer = onRemovePlayer
         )
     }
 }
@@ -107,77 +115,49 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeReadyScreen(
-    playerCountState: HomeItemState<Int?>,
+    players: List<String>,
     startingLifeState: HomeItemState<Int>,
     availableSetsState: HomeItemState<CardSet?>,
     isRefreshing: Boolean,
     modifier: Modifier = Modifier,
     onSetSelected: (CardSet?) -> Unit = {},
-    onPlayerCountSelected: (Int?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
     onSubmitClicked: (List<Int>?, String?) -> Unit = { _, _ -> },
     onNavigateToSchemeScreen: () -> Unit = {},
     onRefresh: () -> Unit = {},
-    onDownloadSchemesClick: () -> Unit = {}
+    onDownloadSchemesClick: () -> Unit = {},
+    onAddPlayer: () -> Unit = {},
+    onRemovePlayer: (Int) -> Unit = {}
 ) {
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
-        modifier = modifier,
+        modifier = Modifier,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp)
         ) {
-            LazyColumn(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                item {
-                    DropdownMenu(
-                        items = playerCountState.items,
-                        selectedItem = playerCountState.selectedItem,
-                        titleLabel = stringResource(R.string.select_players_label),
-                        modifier = Modifier.fillMaxWidth(),
-                        onItemSelected = onPlayerCountSelected
-                    )
-                }
-
-                if (playerCountState.selectedItem != null) {
-                    item {
-                        DropdownMenu(
-                            items = startingLifeState.items,
-                            selectedItem = startingLifeState.selectedItem,
-                            titleLabel = stringResource(R.string.select_life_label),
-                            modifier = Modifier.fillMaxWidth(),
-                            onItemSelected = onLifeTotalSelected
-                        )
-                    }
-                }
-
-                item {
-                    HomeCardSetSelector(
-                        availableSetsState = availableSetsState,
-                        onSetSelected = onSetSelected,
-                        onDownloadSchemesClick = onDownloadSchemesClick,
-                        onNavigateToSchemeScreen = onNavigateToSchemeScreen
-                    )
-                }
-            }
+            HomeScreenReadyContent(
+                players = players,
+                startingLifeState = startingLifeState,
+                availableSetsState = availableSetsState,
+                modifier = Modifier,
+                onSetSelected = onSetSelected,
+                onLifeTotalSelected = onLifeTotalSelected,
+                onNavigateToSchemeScreen = onNavigateToSchemeScreen,
+                onDownloadSchemesClick = onDownloadSchemesClick,
+                onAddPlayer = onAddPlayer,
+                onRemovePlayer = onRemovePlayer
+            )
 
             Spacer(Modifier.weight(1f))
 
-            HorizontalDivider(modifier = Modifier)
-
-            HomeSubmitButton(
-                selectedPlayerCount = playerCountState.selectedItem,
-                selectedStartingLife = startingLifeState.selectedItem,
-                selectedSet = availableSetsState.selectedItem,
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .fillMaxWidth(),
+            HomeReadyFooterContent(
+                players = players,
+                startingLifeState = startingLifeState,
+                availableSetsState = availableSetsState,
                 onSubmitClicked = onSubmitClicked
             )
         }
@@ -186,77 +166,31 @@ private fun HomeReadyScreen(
 
 
 @Composable
-private fun HomeCardSetSelector(
+private fun HomeReadyFooterContent(
+    players: List<String>,
+    startingLifeState: HomeItemState<Int>,
     availableSetsState: HomeItemState<CardSet?>,
     modifier: Modifier = Modifier,
-    onSetSelected: (CardSet?) -> Unit = {},
-    onDownloadSchemesClick: () -> Unit = {},
-    onNavigateToSchemeScreen: () -> Unit = {}
+    onSubmitClicked: (List<Int>?, String?) -> Unit = { _, _ -> }
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        DropdownMenu(
-            items = availableSetsState.items,
-            selectedItem = availableSetsState.selectedItem,
-            titleLabel = stringResource(R.string.select_set_label),
-            modifier = Modifier.weight(1f),
-            fieldLabel = { set ->
-                set?.let { "${set.name} (${set.id.uppercase()})" }
-            },
-            onItemSelected = onSetSelected
+    Column(modifier = modifier) {
+        HorizontalDivider(modifier = Modifier)
+
+        HomeSubmitButton(
+            players = players,
+            selectedStartingLife = startingLifeState.selectedItem,
+            selectedSet = availableSetsState.selectedItem,
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .fillMaxWidth(),
+            onSubmitClicked = onSubmitClicked
         )
-
-        when (availableSetsState.buttonState) {
-            HomeItemButtonState.NotLoaded -> HomeItemStateIcon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = stringResource(R.string.download_schemes),
-                onClick = onDownloadSchemesClick
-            )
-
-            HomeItemButtonState.Loading -> CircularProgressIndicator(
-                modifier = Modifier.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
-            )
-
-            HomeItemButtonState.Available -> HomeItemStateIcon(
-                imageVector = Icons.AutoMirrored.Default.ArrowForward,
-                contentDescription = stringResource(R.string.navigate_schemes),
-                onClick = onNavigateToSchemeScreen
-            )
-
-            else -> HomeItemStateIcon(
-                imageVector = Icons.Default.Warning,
-                contentDescription = stringResource(R.string.download_schemes_error),
-                onClick = onDownloadSchemesClick
-            )
-        }
     }
 }
 
 @Composable
-private fun HomeItemStateIcon(
-    imageVector: ImageVector,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current,
-    onClick: () -> Unit = {},
-) {
-    Icon(
-        imageVector = imageVector,
-        contentDescription = contentDescription,
-        tint = tint,
-        modifier = modifier
-            .size(52.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .padding(start = 8.dp)
-            .clickable(onClick = onClick)
-    )
-}
-
-@Composable
 private fun HomeSubmitButton(
-    selectedPlayerCount: Int?,
+    players: List<String>,
     selectedStartingLife: Int,
     selectedSet: CardSet?,
     modifier: Modifier = Modifier,
@@ -265,14 +199,16 @@ private fun HomeSubmitButton(
     Button(
         onClick = {
             onSubmitClicked(
-                selectedPlayerCount?.let { count ->
-                    List(count) { selectedStartingLife }
+                if (players.isNotEmpty()) {
+                    List(players.size) { selectedStartingLife }
+                } else {
+                    null
                 },
                 selectedSet?.id
             )
         },
         modifier = modifier,
-        enabled = selectedPlayerCount != null || selectedSet != null
+        enabled = players.isNotEmpty() || selectedSet != null
     ) {
         Text(
             text = stringResource(R.string.select_set_button),
@@ -289,10 +225,7 @@ private fun HomeSubmitButton(
 fun HomeReadyScreenPreview() {
     GwenTestTheme {
         HomeReadyScreen(
-            playerCountState = HomeItemState(
-                items = listOf(null, 1, 2, 3, 4),
-                selectedItem = 1
-            ),
+            players = listOf("Player 1", "Player 2"),
             startingLifeState = HomeItemState(
                 items = listOf(20, 40, 60),
                 selectedItem = 20
@@ -316,10 +249,7 @@ fun HomeReadyScreenPreview() {
 fun HomeReadyScreenNoPlayersPreview() {
     GwenTestTheme {
         HomeReadyScreen(
-            playerCountState = HomeItemState(
-                items = listOf(null),
-                selectedItem = null
-            ),
+            players = emptyList(),
             startingLifeState = HomeItemState(
                 items = listOf(20, 40, 60),
                 selectedItem = 40

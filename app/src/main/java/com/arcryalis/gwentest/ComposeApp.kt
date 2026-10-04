@@ -58,7 +58,10 @@ fun ComposeApp(
         }
     }
 
-    Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+
+    ) { innerPadding ->
         NavDisplay(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },

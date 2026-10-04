@@ -6,7 +6,7 @@ sealed interface HomeState {
     data object Initial: HomeState
 
     data class Ready(
-        val playerCount: HomeItemState<Int?>,
+        val players: List<String>,
         val startingLife: HomeItemState<Int>,
         val sets: HomeItemState<CardSet?>,
         val isRefreshing: Boolean
