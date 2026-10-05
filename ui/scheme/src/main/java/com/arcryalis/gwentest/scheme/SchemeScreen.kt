@@ -13,10 +13,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.arcryalis.gwentest.core.CardInfoDialog
 import com.arcryalis.gwentest.core.CardInfoGallery
-import com.arcryalis.gwentest.core.DefaultTopNavigationBar
 import com.arcryalis.gwentest.core.FullScreenDialog
-import com.arcryalis.gwentest.core.HandleScreenBars
 import com.arcryalis.gwentest.core.LoadingScreen
+import com.arcryalis.gwentest.core.NavigationScaffold
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
@@ -26,18 +25,16 @@ fun SchemeScreen(
     modifier: Modifier = Modifier,
     viewModel: SchemeViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
-    setTopBarContent: ((@Composable () -> Unit)?) -> Unit = {}
 ) {
     val state = viewModel.state.collectAsState()
 
-    HandleScreenBars(
+    NavigationScaffold(
         modifier = modifier,
         onNavigateBack = onNavigateBack,
-        setTopContent = setTopBarContent,
-    ) {
+    ) { scaffoldModifier ->
         SchemeScreen(
             state = state.value,
-            modifier = modifier.fillMaxSize(),
+            modifier = scaffoldModifier.fillMaxSize(),
             onCardClicked = viewModel::onCardClicked,
             onCloseOverlayClicked = viewModel::onCloseOverlayClicked
         )

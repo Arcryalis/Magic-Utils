@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -19,8 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.arcryalis.gwentest.core.DefaultTopNavigationBar
-import com.arcryalis.gwentest.core.HandleScreenBars
 import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardSet
@@ -31,7 +30,6 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToSchemeScreen: () -> Unit = {},
     onNavigateToGameScreen: (List<Int>?, String?) -> Unit = { _, _ -> },
-    setBottomBarContent: ((@Composable () -> Unit)?) -> Unit = {}
 ) {
     val state = viewModel.state.collectAsState()
 
@@ -46,7 +44,6 @@ fun HomeScreen(
         onDownloadSchemesClick = viewModel::onDownloadSchemes,
         onAddPlayer = viewModel::addPlayer,
         onRemovePlayer = viewModel::removePlayer,
-        onBottomBarContentChanged = setBottomBarContent
     )
 }
 
@@ -62,44 +59,28 @@ fun HomeScreen(
     onDownloadSchemesClick: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {},
-    onBottomBarContentChanged: ((@Composable () -> Unit)?) -> Unit = {}
 ) {
-    HandleScreenBars(
-        modifier = modifier,
-        setBottomContent = onBottomBarContentChanged,
-        bottomContent = if (state is HomeState.Ready) {
-            {
-                HomeReadyFooterContent(
-                    players = state.players,
-                    startingLifeState = state.startingLife,
-                    availableSetsState = state.sets,
-                    modifier = Modifier.padding(horizontal = 32.dp),
-                    onSubmitClicked = onNavigateToGameScreen
-                )
-            }
-        } else {
-            null
-        }
-    ) {
-        when (state) {
-            is HomeState.Initial -> LoadingScreen(
-                text = null
-            )
+    when (state) {
+        is HomeState.Initial -> LoadingScreen(
+            text = null,
+            modifier = modifier
+        )
 
-            is HomeState.Ready -> HomeReadyScreen(
-                players = state.players,
-                startingLifeState = state.startingLife,
-                availableSetsState = state.sets,
-                isRefreshing = state.isRefreshing,
-                onSetSelected = onSetSelected,
-                onLifeTotalSelected = onLifeTotalSelected,
-                onNavigateToSchemeScreen = onNavigateToSchemeScreen,
-                onRefresh = onRefreshClick,
-                onDownloadSchemesClick = onDownloadSchemesClick,
-                onAddPlayer = onAddPlayer,
-                onRemovePlayer = onRemovePlayer
-            )
-        }
+        is HomeState.Ready -> HomeReadyScreen(
+            players = state.players,
+            startingLifeState = state.startingLife,
+            availableSetsState = state.sets,
+            isRefreshing = state.isRefreshing,
+            modifier = modifier,
+            onSubmit = onNavigateToGameScreen,
+            onSetSelected = onSetSelected,
+            onLifeTotalSelected = onLifeTotalSelected,
+            onNavigateToSchemeScreen = onNavigateToSchemeScreen,
+            onRefresh = onRefreshClick,
+            onDownloadSchemesClick = onDownloadSchemesClick,
+            onAddPlayer = onAddPlayer,
+            onRemovePlayer = onRemovePlayer
+        )
     }
 }
 
@@ -111,6 +92,7 @@ private fun HomeReadyScreen(
     availableSetsState: HomeItemState<CardSet?>,
     isRefreshing: Boolean,
     modifier: Modifier = Modifier,
+    onSubmit: (List<Int>?, String?) -> Unit = { _, _ -> },
     onSetSelected: (CardSet?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
     onNavigateToSchemeScreen: () -> Unit = {},
@@ -119,25 +101,40 @@ private fun HomeReadyScreen(
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {}
 ) {
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
+    Scaffold(
         modifier = modifier,
-    ) {
-        HomeScreenReadyContent(
-            players = players,
-            startingLifeState = startingLifeState,
-            availableSetsState = availableSetsState,
+        bottomBar = {
+            HomeReadyFooterContent(
+                players = players,
+                startingLifeState = startingLifeState,
+                availableSetsState = availableSetsState,
+                modifier = Modifier.padding(horizontal = 32.dp),
+                onSubmitClicked = onSubmit
+            )
+        }
+    ) { innerPadding ->
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 32.dp),
-            onSetSelected = onSetSelected,
-            onLifeTotalSelected = onLifeTotalSelected,
-            onNavigateToSchemeScreen = onNavigateToSchemeScreen,
-            onDownloadSchemesClick = onDownloadSchemesClick,
-            onAddPlayer = onAddPlayer,
-            onRemovePlayer = onRemovePlayer
-        )
+                .padding(innerPadding),
+        ) {
+            HomeScreenReadyContent(
+                players = players,
+                startingLifeState = startingLifeState,
+                availableSetsState = availableSetsState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 32.dp),
+                onSetSelected = onSetSelected,
+                onLifeTotalSelected = onLifeTotalSelected,
+                onNavigateToSchemeScreen = onNavigateToSchemeScreen,
+                onDownloadSchemesClick = onDownloadSchemesClick,
+                onAddPlayer = onAddPlayer,
+                onRemovePlayer = onRemovePlayer
+            )
+        }
     }
 }
 
