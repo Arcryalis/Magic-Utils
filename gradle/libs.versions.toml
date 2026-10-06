@@ -4,8 +4,8 @@ coreKtx = "1.19.1"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
-lifecycleRuntimeKtx = "2.6.1"
-activityCompose = "1.8.0"
+lifecycleRuntimeKtx = "2.11.0"
+activityCompose = "1.13.0"
 kotlin = "2.4.20"
 composeBom = "2026.09.00"
 hilt = "2.60.1"
@@ -15,15 +15,14 @@ material = "1.14.0"
 androidxComposeCompiler = "1.5.15"
 kotlinCollectionsImmutable = "0.4.0"
 hiltNavigationCompose = "1.4.0"
-androidNavigation3 = "1.0.0"
+androidNavigation3 = "1.2.0"
 androidNavigation3ViewModel = "2.12.0-alpha04"
 kotlinxSerialization = "1.11.0"
 kotlinxCoroutines = "1.11.0"
-retrofit = "2.11.0"
+retrofit = "3.0.0"
 room = "2.8.5"
 networkResponseAdapter = "5.0.0"
 coil = "2.7.0"
-navigation3Runtime = "1.1.7"
 ui = "1.12.1"
 robolectric = "4.17"
 
@@ -70,7 +69,6 @@ room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", vers
 network-response-adapter = { group = "com.github.haroldadmin", name = "NetworkResponseAdapter", version.ref = "networkResponseAdapter" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3Runtime" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 
 [plugins]
