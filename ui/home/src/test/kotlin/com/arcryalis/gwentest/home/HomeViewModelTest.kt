@@ -148,4 +148,31 @@ class HomeViewModelTest {
         assertIs<HomeState.Ready>(updatedState)
         assertEquals(40, updatedState.startingLife.selectedItem)
     }
+
+    @Test
+    fun whenPlayerNameUpdated_thenUpdatesPlayersList() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        sut.addPlayer()
+        sut.addPlayer()
+
+        sut.updatePlayerName(0, "Some player")
+        sut.updatePlayerName(1, "Different")
+
+        assertEquals(listOf("Some player", "Different"), (sut.state.value as HomeState.Ready).players)
+    }
+
+    @Test
+    fun whenPlayerNameUpdatedWithInvalidIndex_thenDoesNothing() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        sut.addPlayer()
+
+        sut.updatePlayerName(5, "Out of scope")
+        sut.updatePlayerName(-1, "Invalid")
+
+        assertEquals(listOf("Player 1"), (sut.state.value as HomeState.Ready).players)
+    }
 }

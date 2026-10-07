@@ -109,6 +109,18 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun updatePlayerName(index: Int, name: String) {
+        if (index in playersList.value.indices) {
+            playersList.update {
+                playersList.value
+                    .toMutableList()
+                    .apply {
+                        this[index] = name
+                    }.toList()
+            }
+        }
+    }
+
     private suspend fun fetchSchemes() {
         cardSetsLoading.value = true
         cardSetsError.value = false

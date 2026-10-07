@@ -44,6 +44,7 @@ fun HomeScreen(
         onDownloadSchemesClick = viewModel::onDownloadSchemes,
         onAddPlayer = viewModel::addPlayer,
         onRemovePlayer = viewModel::removePlayer,
+        onPlayerNameChange = viewModel::updatePlayerName,
     )
 }
 
@@ -59,6 +60,7 @@ fun HomeScreen(
     onDownloadSchemesClick: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {},
+    onPlayerNameChange: (Int, String) -> Unit = { _, _ -> },
 ) {
     when (state) {
         is HomeState.Initial -> LoadingScreen(
@@ -79,7 +81,8 @@ fun HomeScreen(
             onRefresh = onRefreshClick,
             onDownloadSchemesClick = onDownloadSchemesClick,
             onAddPlayer = onAddPlayer,
-            onRemovePlayer = onRemovePlayer
+            onRemovePlayer = onRemovePlayer,
+            onPlayerNameChange = onPlayerNameChange
         )
     }
 }
@@ -99,7 +102,8 @@ private fun HomeReadyScreen(
     onRefresh: () -> Unit = {},
     onDownloadSchemesClick: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
-    onRemovePlayer: (Int) -> Unit = {}
+    onRemovePlayer: (Int) -> Unit = {},
+    onPlayerNameChange: (Int, String) -> Unit = { _, _ -> }
 ) {
     Scaffold(
         modifier = modifier,
@@ -132,7 +136,8 @@ private fun HomeReadyScreen(
                 onNavigateToSchemeScreen = onNavigateToSchemeScreen,
                 onDownloadSchemesClick = onDownloadSchemesClick,
                 onAddPlayer = onAddPlayer,
-                onRemovePlayer = onRemovePlayer
+                onRemovePlayer = onRemovePlayer,
+                onPlayerNameChange = onPlayerNameChange
             )
         }
     }

@@ -8,4 +8,5 @@
     <string name="navigate_schemes">View all schemes</string>
     <string name="add_player">Add player</string>
     <string name="remove_player">Remove %s</string>
+    <string name="player_name_label">Player %d</string>
 </resources>

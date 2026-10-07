@@ -1,15 +1,15 @@
 package com.arcryalis.gwentest.home
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
@@ -20,11 +20,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -33,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arcryalis.gwentest.core.DropdownMenu
 import com.arcryalis.gwentest.data.card.model.CardSet
-
 
 @Composable
 fun HomeScreenReadyContent(
@@ -46,7 +46,8 @@ fun HomeScreenReadyContent(
     onNavigateToSchemeScreen: () -> Unit = {},
     onDownloadSchemesClick: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
-    onRemovePlayer: (Int) -> Unit = {}
+    onRemovePlayer: (Int) -> Unit = {},
+    onPlayerNameChange: (Int, String) -> Unit = { _, _ -> }
 ) {
     LazyColumn(
         modifier = modifier,
@@ -56,7 +57,9 @@ fun HomeScreenReadyContent(
     ) {
         item {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -65,9 +68,11 @@ fun HomeScreenReadyContent(
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.sp
                 )
+
                 IconButton(
                     onClick = onAddPlayer,
-                    enabled = players.size < 4
+                    enabled = players.size < 4,
+                    modifier = Modifier.width(36.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -80,15 +85,28 @@ fun HomeScreenReadyContent(
         itemsIndexed(players) { index, playerName ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = playerName,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                val label = stringResource(R.string.player_name_label, index + 1)
+
+                OutlinedTextField(
+                    value = playerName,
+                    onValueChange = { newName -> onPlayerNameChange(index, newName) },
+                    placeholder = {
+                        Text(
+                            text = label,
+                            modifier = Modifier.alpha(0.5f)
+                        )
+                    },
+                    label = { Text(text = label) },
+                    singleLine = true,
+                    modifier = Modifier.weight(1f)
                 )
+
                 IconButton(
-                    onClick = { onRemovePlayer(index) }
+                    onClick = { onRemovePlayer(index) },
+                    modifier = Modifier.width(36.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
@@ -99,14 +117,16 @@ fun HomeScreenReadyContent(
             }
         }
 
-        item {
-            DropdownMenu(
-                items = startingLifeState.items,
-                selectedItem = startingLifeState.selectedItem,
-                titleLabel = stringResource(R.string.select_life_label),
-                modifier = Modifier.fillMaxWidth(),
-                onItemSelected = onLifeTotalSelected
-            )
+        if (players.isNotEmpty()) {
+            item {
+                DropdownMenu(
+                    items = startingLifeState.items,
+                    selectedItem = startingLifeState.selectedItem,
+                    titleLabel = stringResource(R.string.select_life_label),
+                    modifier = Modifier.fillMaxWidth(),
+                    onItemSelected = onLifeTotalSelected
+                )
+            }
         }
 
         item {
@@ -131,7 +151,8 @@ private fun HomeCardSetSelector(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         DropdownMenu(
             items = availableSetsState.items,
@@ -139,33 +160,37 @@ private fun HomeCardSetSelector(
             titleLabel = stringResource(R.string.select_set_label),
             modifier = Modifier.weight(1f),
             fieldLabel = { set ->
-                set?.let { " ()" }
+                set?.let { "${it.name} (${it.id.uppercase()} )" }
             },
             onItemSelected = onSetSelected
         )
 
-        when (availableSetsState.buttonState) {
-            HomeItemButtonState.NotLoaded -> HomeItemStateIcon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = stringResource(R.string.download_schemes),
-                onClick = onDownloadSchemesClick
-            )
+        Box(
+            modifier = Modifier.width(36.dp)
+        ) {
+            when (availableSetsState.buttonState) {
+                HomeItemButtonState.NotLoaded -> HomeItemStateIcon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = stringResource(R.string.download_schemes),
+                    onClick = onDownloadSchemesClick,
+                )
 
-            HomeItemButtonState.Loading -> CircularProgressIndicator(
-                modifier = Modifier.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
-            )
+                HomeItemButtonState.Loading -> CircularProgressIndicator(
+                    modifier = Modifier.fillMaxSize()
+                )
 
-            HomeItemButtonState.Available -> HomeItemStateIcon(
-                imageVector = Icons.AutoMirrored.Default.ArrowForward,
-                contentDescription = stringResource(R.string.navigate_schemes),
-                onClick = onNavigateToSchemeScreen
-            )
+                HomeItemButtonState.Available -> HomeItemStateIcon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowForward,
+                    contentDescription = stringResource(R.string.navigate_schemes),
+                    onClick = onNavigateToSchemeScreen
+                )
 
-            else -> HomeItemStateIcon(
-                imageVector = Icons.Default.Warning,
-                contentDescription = stringResource(R.string.download_schemes_error),
-                onClick = onDownloadSchemesClick
-            )
+                else -> HomeItemStateIcon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = stringResource(R.string.download_schemes_error),
+                    onClick = onDownloadSchemesClick
+                )
+            }
         }
     }
 }
@@ -178,14 +203,14 @@ private fun HomeItemStateIcon(
     tint: Color = LocalContentColor.current,
     onClick: () -> Unit = {},
 ) {
-    Icon(
-        imageVector = imageVector,
-        contentDescription = contentDescription,
-        tint = tint,
+    IconButton(
+        onClick = onClick,
         modifier = modifier
-            .size(52.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .padding(start = 8.dp)
-            .clickable(onClick = onClick)
-    )
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = contentDescription,
+            tint = tint
+        )
+    }
 }
