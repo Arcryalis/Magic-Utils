@@ -5,7 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
-import com.arcryalis.gwentest.game.navigation.GameRoute
+import com.arcryalis.gwentest.core.navigation.GameRoute
+import com.arcryalis.gwentest.game.mapper.toModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -32,15 +33,8 @@ class GameViewModel @AssistedInject constructor(
         private const val MIN_LIFE = -99
     }
 
-    private val startingLifeTotals = route.playerLifeTotals
-    private val lifeTotals: MutableStateFlow<List<Int>?> = MutableStateFlow(startingLifeTotals)
-    private val playerInfo = lifeTotals.map {
-        it?.map { lifeTotal ->
-            PlayerInfo(
-                lifeTotal = lifeTotal.toString()
-            )
-        }
-    }
+    private val initialPlayerSettings = route.playerSettings
+    private val playerInfo: MutableStateFlow<List<PlayerInfo>?> = MutableStateFlow(initialPlayerSettings?.toModel())
 
     private val setId = route.setId
     private val startingDeck = (
@@ -131,29 +125,29 @@ class GameViewModel @AssistedInject constructor(
     }
 
     fun increasePlayerLife(index: Int) {
-        val currentLife = lifeTotals.value?.get(index)
+        val currentLife = playerInfo.value?.get(index)?.lifeTotal
         if (currentLife != null && currentLife < MAX_LIFE) {
-            lifeTotals.update {
-                lifeTotals.value
+            playerInfo.update {
+                playerInfo.value
                     ?.toMutableList()
                     ?.apply {
-                        this[index] = this[index] + 1
+                        this[index] = this[index].copy(lifeTotal = currentLife + 1)
                     }?.toList()
             }
         }
     }
 
     fun decreasePlayerLife(index: Int) {
-        val currentLife = lifeTotals.value?.get(index)
+        val currentLife = playerInfo.value?.get(index)?.lifeTotal
         if (currentLife != null && currentLife > MIN_LIFE) {
-        lifeTotals.update {
-            lifeTotals.value
+            playerInfo.update {
+                playerInfo.value
                 ?.toMutableList()
                 ?.apply {
-                    this[index] = this[index] - 1
+                    this[index] = this[index].copy(lifeTotal = currentLife - 1)
                 }?.toList()
-        }
             }
+        }
     }
 
     fun revealNextCard() {

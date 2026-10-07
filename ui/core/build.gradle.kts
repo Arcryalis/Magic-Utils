@@ -18,6 +18,7 @@ dependencies {
     api(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.material.icons.core)
     implementation(libs.coil.compose)
+    implementation(libs.androidx.navigation3.runtime)
 
     implementation(projects.data.card.api)
 

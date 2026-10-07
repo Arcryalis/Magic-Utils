@@ -20,12 +20,12 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.arcryalis.gwentest.game.GameScreen
 import com.arcryalis.gwentest.game.GameViewModel
-import com.arcryalis.gwentest.game.navigation.GameRoute
+import com.arcryalis.gwentest.core.navigation.GameRoute
 import com.arcryalis.gwentest.home.HomeScreen
-import com.arcryalis.gwentest.home.navigation.HomeRoute
+import com.arcryalis.gwentest.core.navigation.HomeRoute
 import com.arcryalis.gwentest.scheme.SchemeScreen
 import com.arcryalis.gwentest.scheme.SchemeViewModel
-import com.arcryalis.gwentest.scheme.navigation.SchemeRoute
+import com.arcryalis.gwentest.core.navigation.SchemeRoute
 
 const val NAV_ANIMATION_DURATION = 300
 
@@ -41,10 +41,8 @@ fun ComposeApp(
                 onNavigateToSchemeScreen = {
                     backStack.add(SchemeRoute)
                 },
-                onNavigateToGameScreen = { players, setId ->
-                    backStack.add(
-                        GameRoute(players, setId)
-                    )
+                onNavigateToGameScreen = { route ->
+                    backStack.add(route)
                 }
             )
         }

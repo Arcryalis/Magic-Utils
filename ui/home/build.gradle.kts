@@ -15,7 +15,6 @@ dependencies {
     api(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.navigation3.runtime)
     implementation(libs.material.icons.core)
 
     implementation(projects.ui.core)

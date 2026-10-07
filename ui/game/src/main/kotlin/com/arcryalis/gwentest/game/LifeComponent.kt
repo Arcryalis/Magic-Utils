@@ -66,7 +66,8 @@ private fun LifeCounterItem(
     onPlayerDownClicked: (Int) -> Unit = {}
 ) {
     LifeCounter(
-        lifeTotal = player.lifeTotal,
+        lifeTotal = player.lifeTotal.toString(),
+        playerName = player.name,
         backgroundColor = player.backgroundColor,
         arrowsVisible = arrowsVisible,
         modifier = modifier.fillMaxSize(),
@@ -195,7 +196,7 @@ fun LifeCounterOnePlayerPreview() {
     GwenTestTheme {
         LifeComponent(
             players = listOf(
-                PlayerInfo(lifeTotal = "20")
+                PlayerInfo(name = "Player 1", lifeTotal = 20)
             )
         )
     }
@@ -207,8 +208,8 @@ fun LifeCounterTwoPlayerPreview() {
     GwenTestTheme {
         LifeComponent(
             players = listOf(
-                PlayerInfo(lifeTotal = "20"),
-                PlayerInfo(lifeTotal = "25"),
+                PlayerInfo(name = "Player 1", lifeTotal = 20),
+                PlayerInfo(name = "Player 2", lifeTotal = 25),
             )
         )
     }
@@ -221,19 +222,22 @@ fun LifeCounterThreePlayerPreview() {
         LifeComponent(
             players = listOf(
                 PlayerInfo(
-                    lifeTotal = "20",
+                    name = "Player 1",
+                    lifeTotal = 20,
                     backgroundColor = Color.Red.copy(
                         alpha = 0.3f
                     )
                 ),
                 PlayerInfo(
-                    lifeTotal = "25",
+                    name = "",
+                    lifeTotal = 25,
                     Color.Blue.copy(
                         alpha = 0.3f
                     )
                 ),
                 PlayerInfo(
-                    lifeTotal = "40",
+                    name = "Player 3",
+                    lifeTotal = 40,
                     Color.Green.copy(
                         alpha = 0.3f
                     )
@@ -249,10 +253,10 @@ fun LifeCounterFourPlayerPreview() {
     GwenTestTheme {
         LifeComponent(
             players = listOf(
-                PlayerInfo(lifeTotal = "20",),
-                PlayerInfo(lifeTotal = "25"),
-                PlayerInfo(lifeTotal = "40"),
-                PlayerInfo(lifeTotal = "100"),
+                PlayerInfo(name = "Player 1", lifeTotal = 20),
+                PlayerInfo(name = "A secret", lifeTotal = 25),
+                PlayerInfo(name = "", lifeTotal = 40),
+                PlayerInfo(name = "", lifeTotal = 100),
             )
         )
     }

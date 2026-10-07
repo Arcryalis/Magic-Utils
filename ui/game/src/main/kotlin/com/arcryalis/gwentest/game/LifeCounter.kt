@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -40,6 +41,7 @@ import com.arcryalis.gwentest.core.theme.GwenTestTheme
 @Composable
 fun LifeCounter(
     lifeTotal: String,
+    playerName: String,
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color.LightGray,
     arrowsVisible: Boolean = true,
@@ -77,14 +79,30 @@ fun LifeCounter(
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
 
-        Text(
-            text = lifeTotal,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            fontSize = 48.sp,
-        )
+        Column (
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text(
+                text = lifeTotal,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                fontSize = 48.sp,
+            )
+
+            if (playerName.isNotEmpty()) {
+                Text(
+                    text = playerName,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 4.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    maxLines = 1,
+                    fontWeight = FontWeight.Thin
+                )
+            }
+        }
 
         LifeCounterArrow(
             imageVector = Icons.Default.KeyboardArrowDown,
@@ -141,18 +159,32 @@ fun LifeCounterPreview() {
     GwenTestTheme {
         LifeCounter(
             lifeTotal = "100",
+            playerName = "Someone",
             backgroundColor = Color.Red
         )
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
 fun LifeCounterWithoutArrowsPreview() {
     GwenTestTheme {
         LifeCounter(
-            lifeTotal = "100",
+            lifeTotal = "9",
+            playerName = "Player 1",
             arrowsVisible = false
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LifeCounterWithoutNamePreview() {
+    GwenTestTheme {
+        LifeCounter(
+            lifeTotal = "-10",
+            playerName = "",
         )
     }
 }

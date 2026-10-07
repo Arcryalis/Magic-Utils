@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.arcryalis.gwentest.core.LoadingScreen
+import com.arcryalis.gwentest.core.navigation.GameRoute
+import com.arcryalis.gwentest.core.navigation.RoutePlayerInfo
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardSet
 
@@ -29,7 +31,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToSchemeScreen: () -> Unit = {},
-    onNavigateToGameScreen: (List<Int>?, String?) -> Unit = { _, _ -> },
+    onNavigateToGameScreen: (GameRoute) -> Unit = { _ -> },
 ) {
     val state = viewModel.state.collectAsState()
 
@@ -52,7 +54,7 @@ fun HomeScreen(
 fun HomeScreen(
     state: HomeState,
     modifier: Modifier = Modifier,
-    onNavigateToGameScreen: (List<Int>?, String?) -> Unit = { _, _ -> },
+    onNavigateToGameScreen: (GameRoute) -> Unit = { _ -> },
     onNavigateToSchemeScreen: () -> Unit = {},
     onSetSelected: (CardSet?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
@@ -95,7 +97,7 @@ private fun HomeReadyScreen(
     availableSetsState: HomeItemState<CardSet?>,
     isRefreshing: Boolean,
     modifier: Modifier = Modifier,
-    onSubmit: (List<Int>?, String?) -> Unit = { _, _ -> },
+    onSubmit: (GameRoute) -> Unit = { _ -> },
     onSetSelected: (CardSet?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
     onNavigateToSchemeScreen: () -> Unit = {},
@@ -149,7 +151,7 @@ fun HomeReadyFooterContent(
     startingLifeState: HomeItemState<Int>,
     availableSetsState: HomeItemState<CardSet?>,
     modifier: Modifier = Modifier,
-    onSubmitClicked: (List<Int>?, String?) -> Unit = { _, _ -> }
+    onSubmitClicked: (GameRoute) -> Unit = { _ -> }
 ) {
     Column(modifier = modifier) {
         HorizontalDivider(modifier = Modifier)
@@ -172,17 +174,24 @@ private fun HomeSubmitButton(
     selectedStartingLife: Int,
     selectedSet: CardSet?,
     modifier: Modifier = Modifier,
-    onSubmitClicked: (List<Int>?, String?) -> Unit = { _, _ -> }
+    onSubmitClicked: (GameRoute) -> Unit = { _ -> }
 ) {
     Button(
         onClick = {
             onSubmitClicked(
-                if (players.isNotEmpty()) {
-                    List(players.size) { selectedStartingLife }
-                } else {
-                    null
-                },
-                selectedSet?.id
+                GameRoute(
+                    playerSettings = if (players.isNotEmpty()) {
+                        players.map {
+                            RoutePlayerInfo(
+                                name = it,
+                                lifeTotal = selectedStartingLife
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                    setId = selectedSet?.id
+                )
             )
         },
         modifier = modifier,
