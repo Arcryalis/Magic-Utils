@@ -93,13 +93,12 @@ fun HomeScreenReadyContent(
                 OutlinedTextField(
                     value = playerName,
                     onValueChange = { newName -> onPlayerNameChange(index, newName) },
-                    placeholder = {
+                    label = {
                         Text(
                             text = label,
-                            modifier = Modifier.alpha(0.5f)
+                            modifier = Modifier.alpha(if (playerName.isEmpty()) 0.5f else 1f)
                         )
                     },
-                    label = { Text(text = label) },
                     singleLine = true,
                     modifier = Modifier.weight(1f)
                 )

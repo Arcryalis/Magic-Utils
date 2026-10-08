@@ -91,7 +91,7 @@ class HomeViewModel @Inject constructor(
                 playersList.value
                     .toMutableList()
                     .apply {
-                        this.add("Player ${playersList.value.size + 1}")
+                        this.add("")
                     }.toList()
             }
         }

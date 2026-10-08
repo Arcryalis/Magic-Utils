@@ -76,7 +76,7 @@ class HomeViewModelTest {
         assertEquals(20, currentState.startingLife.selectedItem)
     }
     @Test
-    fun whenPlayerAdded_thenUpdatesPlayersListWithDefaultNames() {
+    fun whenPlayerAdded_thenUpdatesPlayersListWithEmptyNames() {
         sut = createSut()
         testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
@@ -85,10 +85,10 @@ class HomeViewModelTest {
         assertEquals(emptyList(), initialState.players)
 
         sut.addPlayer()
-        assertEquals(listOf("Player 1"), sut.state.value.let { val r = it as HomeState.Ready; r.players })
+        assertEquals(listOf(""), sut.state.value.let { val r = it as HomeState.Ready; r.players })
 
         sut.addPlayer()
-        assertEquals(listOf("Player 1", "Player 2"), sut.state.value.let { val r = it as HomeState.Ready; r.players })
+        assertEquals(listOf("", ""), sut.state.value.let { val r = it as HomeState.Ready; r.players })
     }
 
     @Test
@@ -116,7 +116,7 @@ class HomeViewModelTest {
         sut.addPlayer()
 
         sut.removePlayer(1)
-        assertEquals(listOf("Player 1", "Player 3"), (sut.state.value as HomeState.Ready).players)
+        assertEquals(listOf("", ""), (sut.state.value as HomeState.Ready).players)
     }
 
     @Test
@@ -126,10 +126,10 @@ class HomeViewModelTest {
 
         sut.addPlayer()
         sut.removePlayer(5)
-        assertEquals(listOf("Player 1"), (sut.state.value as HomeState.Ready).players)
+        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players)
 
         sut.removePlayer(-1)
-        assertEquals(listOf("Player 1"), (sut.state.value as HomeState.Ready).players)
+        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players)
     }
 
     @Test
@@ -172,6 +172,6 @@ class HomeViewModelTest {
         sut.updatePlayerName(5, "Out of scope")
         sut.updatePlayerName(-1, "Invalid")
 
-        assertEquals(listOf("Player 1"), (sut.state.value as HomeState.Ready).players)
+        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players)
     }
 }
