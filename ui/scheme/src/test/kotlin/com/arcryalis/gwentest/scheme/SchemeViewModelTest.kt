@@ -1,10 +1,10 @@
 package com.arcryalis.gwentest.scheme
 
 import com.arcryalis.gwentest.core.BaseDispatchRule
+import com.arcryalis.gwentest.core.navigation.SchemeRoute
 import com.arcryalis.gwentest.data.card.TestCardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.domain.card.MockGetAllCardCardInfoUseCase
-import com.arcryalis.gwentest.scheme.navigation.SchemeRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope

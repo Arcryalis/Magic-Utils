@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.domain.card.GetAllCardCardInfoUseCase
-import com.arcryalis.gwentest.scheme.navigation.SchemeRoute
+import com.arcryalis.gwentest.core.navigation.SchemeRoute
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

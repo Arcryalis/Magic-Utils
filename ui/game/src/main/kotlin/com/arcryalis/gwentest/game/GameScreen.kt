@@ -3,11 +3,8 @@ package com.arcryalis.gwentest.game
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -40,9 +37,7 @@ fun GameScreen(
 
     GameScreen(
         state = state.value,
-        modifier = modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.safeDrawing),
+        modifier = modifier.fillMaxSize(),
         onPlayerUpClicked = viewModel::increasePlayerLife,
         onPlayerDownClicked = viewModel::decreasePlayerLife,
         onNextClicked = viewModel::revealNextCard,
@@ -232,10 +227,10 @@ fun GameScreenLifePreview() {
         GameScreen(
             state = GameState.Ready(
                 players = listOf(
-                    PlayerInfo(lifeTotal = "20",),
-                    PlayerInfo(lifeTotal = "25"),
-                    PlayerInfo(lifeTotal = "40"),
-                    PlayerInfo(lifeTotal = "100")
+                    PlayerInfo(name = "Player 1", lifeTotal = 20),
+                    PlayerInfo(name = "Someone", lifeTotal = 25),
+                    PlayerInfo(name = "", lifeTotal = 40),
+                    PlayerInfo(name = "Another", lifeTotal = 100)
                 ),
                 deckSettings = null,
                 overlayState = OverlayState.Hidden
@@ -269,8 +264,8 @@ fun GameScreenFullPreview() {
         GameScreen(
             state = GameState.Ready(
                 players = listOf(
-                    PlayerInfo(lifeTotal = "100"),
-                    PlayerInfo(lifeTotal = "100"),
+                    PlayerInfo(name = "Player 1", lifeTotal = 100),
+                    PlayerInfo(name = "Player 2", lifeTotal = 100),
                 ),
                 deckSettings = DeckSettings(
                     nextCardUrl = "https://backs.scryfall.io/large/1/b/1b2396d4-9048-439d-96bd-354288518841.jpg?1665006146",

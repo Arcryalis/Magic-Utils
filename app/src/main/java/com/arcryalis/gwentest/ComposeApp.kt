@@ -1,5 +1,11 @@
 package com.arcryalis.gwentest
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,12 +20,14 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.arcryalis.gwentest.game.GameScreen
 import com.arcryalis.gwentest.game.GameViewModel
-import com.arcryalis.gwentest.game.navigation.GameRoute
+import com.arcryalis.gwentest.core.navigation.GameRoute
 import com.arcryalis.gwentest.home.HomeScreen
-import com.arcryalis.gwentest.home.navigation.HomeRoute
+import com.arcryalis.gwentest.core.navigation.HomeRoute
 import com.arcryalis.gwentest.scheme.SchemeScreen
 import com.arcryalis.gwentest.scheme.SchemeViewModel
-import com.arcryalis.gwentest.scheme.navigation.SchemeRoute
+import com.arcryalis.gwentest.core.navigation.SchemeRoute
+
+const val NAV_ANIMATION_DURATION = 300
 
 @Composable
 fun ComposeApp(
@@ -33,10 +41,8 @@ fun ComposeApp(
                 onNavigateToSchemeScreen = {
                     backStack.add(SchemeRoute)
                 },
-                onNavigateToGameScreen = { players, setId ->
-                    backStack.add(
-                        GameRoute(players, setId)
-                    )
+                onNavigateToGameScreen = { route ->
+                    backStack.add(route)
                 }
             )
         }
@@ -46,7 +52,10 @@ fun ComposeApp(
                     factory.create(route)
                 }
             )
-            SchemeScreen(viewModel = viewModel)
+            SchemeScreen(
+                viewModel = viewModel,
+                onNavigateBack = { backStack.removeLastOrNull() },
+            )
         }
         entry<GameRoute> { route ->
             val viewModel = hiltViewModel<GameViewModel, GameViewModel.Factory>(
@@ -58,7 +67,9 @@ fun ComposeApp(
         }
     }
 
-    Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+    ) { innerPadding ->
         NavDisplay(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
@@ -67,6 +78,16 @@ fun ComposeApp(
                 rememberViewModelStoreNavEntryDecorator()
             ),
             entryProvider = entryProvider,
+            transitionSpec = {
+                // Slide in from right
+                (slideInHorizontally(animationSpec = tween(NAV_ANIMATION_DURATION)) { fullWidth -> fullWidth } + fadeIn(animationSpec = tween(NAV_ANIMATION_DURATION))) togetherWith
+                        (slideOutHorizontally(animationSpec = tween(NAV_ANIMATION_DURATION)) { fullWidth -> -fullWidth } + fadeOut(animationSpec = tween(NAV_ANIMATION_DURATION)))
+            },
+            popTransitionSpec = {
+                // Slide in from left
+                (slideInHorizontally(animationSpec = tween(400)) { fullWidth -> -fullWidth } + fadeIn(animationSpec = tween(NAV_ANIMATION_DURATION))) togetherWith
+                        (slideOutHorizontally(animationSpec = tween(400)) { fullWidth -> fullWidth } + fadeOut(animationSpec = tween(NAV_ANIMATION_DURATION)))
+            },
             modifier = Modifier
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding),

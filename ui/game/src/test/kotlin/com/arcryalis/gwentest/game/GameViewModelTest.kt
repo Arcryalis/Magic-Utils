@@ -7,7 +7,8 @@ import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
 import com.arcryalis.gwentest.domain.card.MockGetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.MockGetShuffledCardInfoUseCase
-import com.arcryalis.gwentest.game.navigation.GameRoute
+import com.arcryalis.gwentest.core.navigation.GameRoute
+import com.arcryalis.gwentest.core.navigation.RoutePlayerInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -36,17 +37,20 @@ class GameViewModelTest {
     private lateinit var sut: GameViewModel
 
     fun setUpSut(
-        lifeTotals: List<Int>? = listOf(20, 20),
+        playerSettings: List<RoutePlayerInfo>? = listOf(
+            RoutePlayerInfo("Player 1", 20),
+            RoutePlayerInfo("Player 2", 20),
+        ),
         setId: String = DEFAULT_SET_ID,
         shuffledCards: Map<String, List<CardInfo>> = mapOf(
             setId to listOf(
                 TestCardInfo.info1,
-                 TestCardInfo.info2
+                TestCardInfo.info2,
             )
         )
     ) {
         route = GameRoute(
-            playerLifeTotals = lifeTotals,
+            playerSettings = playerSettings,
             setId = setId,
         )
 
@@ -69,8 +73,10 @@ class GameViewModelTest {
         assertIs<GameState.Ready>(state)
 
         assertEquals(2, state.players?.size)
-        assertEquals("20", state.players?.get(0)?.lifeTotal)
-        assertEquals("20", state.players?.get(1)?.lifeTotal)
+        assertEquals("Player 1", state.players?.get(0)?.name)
+        assertEquals(20, state.players?.get(0)?.lifeTotal)
+        assertEquals("Player 2", state.players?.get(1)?.name)
+        assertEquals(20, state.players?.get(1)?.lifeTotal)
 
         assertNotNull(state.deckSettings)
         assertEquals(emptyList(), state.deckSettings.revealedCards)
@@ -81,41 +87,61 @@ class GameViewModelTest {
     }
 
     @Test
+    fun whenInitializedWithCustomPlayerNames_thenPlayersHaveCorrectNames() {
+        setUpSut(
+            playerSettings = listOf(
+                RoutePlayerInfo("Them", 30),
+                RoutePlayerInfo("Alternative", 40)
+            )
+        )
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        val state = sut.state.value
+        assertIs<GameState.Ready>(state)
+
+        assertEquals(2, state.players?.size)
+        assertEquals("Them", state.players?.get(0)?.name)
+        assertEquals(30, state.players?.get(0)?.lifeTotal)
+        assertEquals("Alternative", state.players?.get(1)?.name)
+        assertEquals(40, state.players?.get(1)?.lifeTotal)
+    }
+
+    @Test
     fun whenIncreaseAndDecreasePlayerLife_thenLifeTotalsUpdate() {
         setUpSut()
         testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.increasePlayerLife(0)
         var state = sut.state.value as GameState.Ready
-        assertEquals("21", state.players?.get(0)?.lifeTotal)
+        assertEquals(21, state.players?.get(0)?.lifeTotal)
 
         sut.decreasePlayerLife(1)
         state = sut.state.value as GameState.Ready
-        assertEquals("19", state.players?.get(1)?.lifeTotal)
+        assertEquals(19, state.players?.get(1)?.lifeTotal)
     }
 
     @Test
     fun givenLifeAtMax_whenIncreasePlayerLife_thenLifeStaysAtMax() {
         setUpSut(
-            lifeTotals = listOf(999)
+            playerSettings = listOf(RoutePlayerInfo("Player 1", 999))
         )
         testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.increasePlayerLife(0)
         val state = sut.state.value as GameState.Ready
-        assertEquals("999", state.players?.get(0)?.lifeTotal)
+        assertEquals(999, state.players?.get(0)?.lifeTotal)
     }
 
     @Test
     fun givenLifeAtMin_whenDecreasePlayerLife_thenLifeStaysAtMin() {
         setUpSut(
-            lifeTotals = listOf(-99)
+            playerSettings = listOf(RoutePlayerInfo("Player 1", -99))
         )
         testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.decreasePlayerLife(0)
         val state = sut.state.value as GameState.Ready
-        assertEquals("-99", state.players?.get(0)?.lifeTotal)
+        assertEquals(-99, state.players?.get(0)?.lifeTotal)
     }
 
     @Test

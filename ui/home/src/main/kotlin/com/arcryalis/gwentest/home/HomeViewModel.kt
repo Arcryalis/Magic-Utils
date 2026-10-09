@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,13 +22,15 @@ class HomeViewModel @Inject constructor(
 ): ViewModel() {
 
     companion object {
-        private val PLAYER_COUNT_OPTIONS = listOf(1, 2, 3, 4)
+        private const val MAX_PLAYERS = 4
         private val LIFE_TOTAL_OPTIONS = listOf(20, 40, 60)
     }
 
     private val selectedSet = MutableStateFlow<CardSet?>(null)
     private val cardSetsLoading = MutableStateFlow(false)
     private val cardSetsError = MutableStateFlow(false)
+    private val playersList = MutableStateFlow<List<String>>(emptyList())
+
     val availableSetState = combine(
         getCardSetsUseCase(),
         selectedSet,
@@ -35,7 +38,7 @@ class HomeViewModel @Inject constructor(
         cardSetsError
     ) { availableItems, selected, cardsLoading, error ->
         HomeItemState(
-            items = listOf(null) + availableItems, // null for no selection
+            items = listOf(null) + availableItems,
             selectedItem = selected,
             buttonState = if (error) {
                 HomeItemButtonState.Error
@@ -46,14 +49,6 @@ class HomeViewModel @Inject constructor(
             } else {
                 HomeItemButtonState.Available
             }
-        )
-    }
-
-    private val selectedPlayerCount = MutableStateFlow<Int?>(null)
-    val playerCountState = selectedPlayerCount.map {
-        HomeItemState(
-            items = listOf(null) + PLAYER_COUNT_OPTIONS, // null for no selection
-            selectedItem = it
         )
     }
 
@@ -71,12 +66,12 @@ class HomeViewModel @Inject constructor(
     val state = combine(
         isAnyLoading,
         availableSetState,
-        playerCountState,
+        playersList,
         lifeTotalState
-    ) { loading, setState, playerState, lifeState ->
+    ) { loading, setState, players, lifeState ->
         HomeState.Ready(
             sets = setState,
-            playerCount = playerState,
+            players = players,
             startingLife = lifeState,
             isRefreshing = loading
         )
@@ -86,37 +81,63 @@ class HomeViewModel @Inject constructor(
         selectedSet.value = set
     }
 
-    fun onSelectPlayerCount(count: Int?) {
-        selectedPlayerCount.value = count
-    }
-
     fun onSelectLifeTotal(life: Int) {
         selectedLifeTotal.value = life
+    }
+
+    fun addPlayer() {
+        if (playersList.value.size < MAX_PLAYERS) {
+            playersList.update { _ ->
+                playersList.value
+                    .toMutableList()
+                    .apply {
+                        this.add("")
+                    }.toList()
+            }
+        }
+    }
+
+    fun removePlayer(index: Int) {
+        if (index >= 0 && index < playersList.value.size) {
+            playersList.update {
+                playersList.value
+                    .toMutableList()
+                    .apply {
+                        this.removeAt(index)
+                    }.toList()
+            }
+        }
+    }
+
+    fun updatePlayerName(index: Int, name: String) {
+        if (index in playersList.value.indices) {
+            playersList.update {
+                playersList.value
+                    .toMutableList()
+                    .apply {
+                        this[index] = name
+                    }.toList()
+            }
+        }
     }
 
     private suspend fun fetchSchemes() {
         cardSetsLoading.value = true
         cardSetsError.value = false
-
         val loadSuccessful = downloadSchemesUseCase()
-
         cardSetsError.value = !loadSuccessful
         cardSetsLoading.value = false
     }
 
     fun onDownloadSchemes() {
         if (!cardSetsLoading.value) {
-            viewModelScope.launch {
-                fetchSchemes()
-            }
+            viewModelScope.launch { fetchSchemes() }
         }
     }
 
     fun onRefresh() {
         if (!isAnyLoading.value) {
-            viewModelScope.launch {
-                fetchSchemes()
-            }
+            viewModelScope.launch { fetchSchemes() }
         }
     }
 }

@@ -10,7 +10,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -71,150 +70,66 @@ class HomeViewModelTest {
         assertEquals(null, currentState.sets.selectedItem)
         assertEquals(HomeItemButtonState.Available, currentState.sets.buttonState)
 
-        assertEquals(listOf(null, 1, 2, 3, 4), currentState.playerCount.items)
-        assertEquals(null, currentState.playerCount.selectedItem)
+        assertEquals(emptyList(), currentState.players)
 
         assertEquals(listOf(20, 40, 60), currentState.startingLife.items)
         assertEquals(20, currentState.startingLife.selectedItem)
     }
-
     @Test
-    fun givenEmptyCardSets_whenInitialized_thenButtonStateIsNotLoaded() {
-        sut = createSut(cardSets = emptyList())
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        val currentState = sut.state.value
-        assertIs<HomeState.Ready>(currentState)
-        assertEquals(HomeItemButtonState.NotLoaded, currentState.sets.buttonState)
-    }
-
-    @Test
-    fun givenDownloadSucceeds_whenInitializedWithEmptyCards_thenDownloadsSchemesAndStateIsReady() {
-        sut = createSut(cardSets = emptyList(), downloadResult = true)
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        sut.onDownloadSchemes()
-
-        val currentState = sut.state.value
-        assertIs<HomeState.Ready>(currentState)
-        assertEquals(1, testDownloadSchemesUseCase.invokeCount)
-    }
-
-    @Test
-    fun givenDownloadFails_whenDownloadSchemes_thenButtonStateIsError() {
-        sut = createSut(cardSets = emptyList(), downloadResult = false)
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        sut.onDownloadSchemes()
-
-        val currentState = sut.state.value
-        assertIs<HomeState.Ready>(currentState)
-        assertEquals(HomeItemButtonState.Error, currentState.sets.buttonState)
-        assertEquals(1, testDownloadSchemesUseCase.invokeCount)
-    }
-
-    @Test
-    fun givenNotLoading_whenOnDownloadSchemes_thenInvokesDownloadSchemes() {
-        sut = createSut(cardSets = emptyList(), downloadResult = true)
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        sut.onDownloadSchemes()
-
-        assertEquals(1, testDownloadSchemesUseCase.invokeCount)
-    }
-
-    @Test
-    fun givenAlreadyLoading_whenOnDownloadSchemes_thenDoesNotInvokeAgain() = testScope.runTest {
-        testDownloadSchemesUseCase = TestDownloadSchemesUseCase(downloadResult = true).apply {
-            shouldSuspend = true
-        }
-        sut = HomeViewModel(
-            downloadSchemesUseCase = testDownloadSchemesUseCase,
-            getCardSetsUseCase = MockGetCardSetsUseCase(cardSets = emptyList()),
-        )
-        backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        // Start first download (suspends)
-        sut.onDownloadSchemes()
-        assertEquals(1, testDownloadSchemesUseCase.invokeCount)
-
-        // Try second download while loading
-        sut.onDownloadSchemes()
-        assertEquals(1, testDownloadSchemesUseCase.invokeCount)
-    }
-
-    @Test
-    fun givenNotLoading_whenOnRefresh_thenInvokesDownloadSchemes() {
-        sut = createSut(cardSets = listOf(TestCardSet.set1), downloadResult = true)
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        sut.onRefresh()
-
-        assertEquals(1, testDownloadSchemesUseCase.invokeCount)
-    }
-
-    @Test
-    fun givenAlreadyLoading_whenOnRefresh_thenDoesNotInvokeAgain() = testScope.runTest {
-        testDownloadSchemesUseCase = TestDownloadSchemesUseCase(downloadResult = true).apply {
-            shouldSuspend = true
-        }
-        sut = HomeViewModel(
-            downloadSchemesUseCase = testDownloadSchemesUseCase,
-            getCardSetsUseCase = MockGetCardSetsUseCase(cardSets = listOf(TestCardSet.set1)),
-        )
-        backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        // Start first refresh (suspends)
-        sut.onRefresh()
-        assertEquals(1, testDownloadSchemesUseCase.invokeCount)
-
-        // Try second refresh while loading
-        sut.onRefresh()
-        assertEquals(1, testDownloadSchemesUseCase.invokeCount)
-    }
-
-    @Test
-    fun whenSetSelected_thenUpdatesSetState() {
+    fun whenPlayerAdded_thenUpdatesPlayersListWithEmptyNames() {
         sut = createSut()
         testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         val initialState = sut.state.value
         assertIs<HomeState.Ready>(initialState)
-        assertEquals(null, initialState.sets.selectedItem)
+        assertEquals(emptyList(), initialState.players)
 
-        sut.onSelectSet(TestCardSet.set1)
+        sut.addPlayer()
+        assertEquals(listOf(""), sut.state.value.let { val r = it as HomeState.Ready; r.players })
 
-        val updatedState = sut.state.value
-        assertIs<HomeState.Ready>(updatedState)
-        assertEquals(TestCardSet.set1, updatedState.sets.selectedItem)
-
-        sut.onSelectSet(null)
-
-        val finalState = sut.state.value
-        assertIs<HomeState.Ready>(finalState)
-        assertEquals(null, finalState.sets.selectedItem)
+        sut.addPlayer()
+        assertEquals(listOf("", ""), sut.state.value.let { val r = it as HomeState.Ready; r.players })
     }
 
     @Test
-    fun whenPlayerCountSelected_thenUpdatesPlayerCountState() {
+    fun whenPlayerAddedAtMax_thenDoesNotAddMore() {
         sut = createSut()
         testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
-        val initialState = sut.state.value
-        assertIs<HomeState.Ready>(initialState)
-        assertEquals(null, initialState.playerCount.selectedItem)
+        sut.addPlayer()
+        sut.addPlayer()
+        sut.addPlayer()
+        sut.addPlayer()
+        assertEquals(4, (sut.state.value as HomeState.Ready).players.size)
 
-        sut.onSelectPlayerCount(3)
+        sut.addPlayer()
+        assertEquals(4, (sut.state.value as HomeState.Ready).players.size)
+    }
 
-        val updatedState = sut.state.value
-        assertIs<HomeState.Ready>(updatedState)
-        assertEquals(3, updatedState.playerCount.selectedItem)
+    @Test
+    fun whenPlayerRemoved_thenUpdatesPlayersList() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
-        sut.onSelectPlayerCount(null)
+        sut.addPlayer()
+        sut.addPlayer()
+        sut.addPlayer()
 
-        val finalState = sut.state.value
-        assertIs<HomeState.Ready>(finalState)
-        assertEquals(null, finalState.playerCount.selectedItem)
+        sut.removePlayer(1)
+        assertEquals(listOf("", ""), (sut.state.value as HomeState.Ready).players)
+    }
+
+    @Test
+    fun whenPlayerRemovedWithInvalidIndex_thenDoesNothing() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        sut.addPlayer()
+        sut.removePlayer(5)
+        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players)
+
+        sut.removePlayer(-1)
+        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players)
     }
 
     @Test
@@ -231,5 +146,32 @@ class HomeViewModelTest {
         val updatedState = sut.state.value
         assertIs<HomeState.Ready>(updatedState)
         assertEquals(40, updatedState.startingLife.selectedItem)
+    }
+
+    @Test
+    fun whenPlayerNameUpdated_thenUpdatesPlayersList() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        sut.addPlayer()
+        sut.addPlayer()
+
+        sut.updatePlayerName(0, "Some player")
+        sut.updatePlayerName(1, "Different")
+
+        assertEquals(listOf("Some player", "Different"), (sut.state.value as HomeState.Ready).players)
+    }
+
+    @Test
+    fun whenPlayerNameUpdatedWithInvalidIndex_thenDoesNothing() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        sut.addPlayer()
+
+        sut.updatePlayerName(5, "Out of scope")
+        sut.updatePlayerName(-1, "Invalid")
+
+        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players)
     }
 }

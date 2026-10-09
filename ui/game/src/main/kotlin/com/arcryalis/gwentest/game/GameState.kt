@@ -30,7 +30,8 @@ sealed interface OverlayState {
 }
 
 data class PlayerInfo(
-    val lifeTotal: String,
+    val name: String,
+    val lifeTotal: Int,
     val backgroundColor: Color = Color.LightGray
 )
 

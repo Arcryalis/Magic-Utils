@@ -1,9 +1,12 @@
 <resources>
     <string name="select_set_label">Archenemy Set</string>
     <string name="select_set_button">Start</string>
-    <string name="select_players_label">Life Counter Num Players</string>
+    <string name="select_players_label">Players</string>
     <string name="select_life_label">Starting Life Total</string>
     <string name="download_schemes">Download schemes</string>
     <string name="download_schemes_error">Error downloading schemes</string>
     <string name="navigate_schemes">View all schemes</string>
+    <string name="add_player">Add player</string>
+    <string name="remove_player">Remove %s</string>
+    <string name="player_name_label">Player %d</string>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="navigation_back">Back</string>
     <string name="card_info_close">Remove</string>
     <string name="card_info_add">Add</string>
     <string name="card_info_back">Back</string>
