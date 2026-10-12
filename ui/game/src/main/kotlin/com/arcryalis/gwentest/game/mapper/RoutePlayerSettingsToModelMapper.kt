@@ -5,7 +5,8 @@ import com.arcryalis.gwentest.game.PlayerInfo
 
 fun RoutePlayerInfo.toModel(): PlayerInfo = PlayerInfo(
     name = name,
-    lifeTotal = lifeTotal
+    lifeTotal = lifeTotal,
+    backgroundColor = color,
 )
 
 fun List<RoutePlayerInfo>.toModel(): List<PlayerInfo> = map { it.toModel() }

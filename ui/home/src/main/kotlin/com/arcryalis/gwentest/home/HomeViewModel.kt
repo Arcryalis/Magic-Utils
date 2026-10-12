@@ -1,5 +1,6 @@
 package com.arcryalis.gwentest.home
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcryalis.gwentest.data.card.model.CardSet
@@ -24,14 +25,22 @@ class HomeViewModel @Inject constructor(
     companion object {
         private const val MAX_PLAYERS = 4
         private val LIFE_TOTAL_OPTIONS = listOf(20, 40, 60)
-
         private const val MAX_PLAYER_NAME_LENGTH = 16
+        private const val PLAYER_COLOR_ALPHA = 0.2f
+        private val PLAYER_COLOR_OPTIONS = listOf(
+            Color.Unspecified,
+            Color.LightGray.copy(alpha = PLAYER_COLOR_ALPHA),
+            Color.Red.copy(alpha = PLAYER_COLOR_ALPHA),
+            Color.Blue.copy(alpha = PLAYER_COLOR_ALPHA),
+            Color.Green.copy(alpha = PLAYER_COLOR_ALPHA),
+            Color.Magenta .copy(alpha = PLAYER_COLOR_ALPHA),
+        ) //TODO move into design system
     }
 
     private val selectedSet = MutableStateFlow<CardSet?>(null)
     private val cardSetsLoading = MutableStateFlow(false)
     private val cardSetsError = MutableStateFlow(false)
-    private val playersList = MutableStateFlow<List<String>>(emptyList())
+    private val playersList = MutableStateFlow<List<HomePlayerInfo>>(emptyList())
 
     val availableSetState = combine(
         getCardSetsUseCase(),
@@ -72,9 +81,10 @@ class HomeViewModel @Inject constructor(
         lifeTotalState
     ) { loading, setState, players, lifeState ->
         HomeState.Ready(
-            sets = setState,
             players = players,
+            playerColorOptions = PLAYER_COLOR_OPTIONS,
             startingLife = lifeState,
+            sets = setState,
             isRefreshing = loading
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState.Initial)
@@ -93,7 +103,7 @@ class HomeViewModel @Inject constructor(
                 playersList.value
                     .toMutableList()
                     .apply {
-                        this.add("")
+                        this.add(HomePlayerInfo())
                     }.toList()
             }
         }
@@ -117,7 +127,19 @@ class HomeViewModel @Inject constructor(
                 playersList.value
                     .toMutableList()
                     .apply {
-                        this[index] = name
+                        this[index] = this[index].copy(name = name)
+                    }.toList()
+            }
+        }
+    }
+
+    fun updatePlayerColor(index: Int, color: Color) {
+        if (index in playersList.value.indices && color in PLAYER_COLOR_OPTIONS) {
+            playersList.update {
+                playersList.value
+                    .toMutableList()
+                    .apply {
+                        this[index] = this[index].copy(color = color)
                     }.toList()
             }
         }

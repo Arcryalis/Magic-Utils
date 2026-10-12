@@ -53,9 +53,10 @@ import com.arcryalis.gwentest.data.card.model.CardSet
 
 @Composable
 fun HomeScreenReadyContent(
-    players: List<String>,
+    players: List<HomePlayerInfo>,
     startingLifeState: HomeItemState<Int>,
     availableSetsState: HomeItemState<CardSet?>,
+    availablePlayerColors: List<Color>,
     modifier: Modifier = Modifier,
     onSetSelected: (CardSet?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
@@ -63,7 +64,8 @@ fun HomeScreenReadyContent(
     onDownloadSchemesClick: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {},
-    onPlayerNameChange: (Int, String) -> Unit = { _, _ -> }
+    onPlayerNameChange: (Int, String) -> Unit = { _, _ -> },
+    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> }
 ) {
     LazyColumn(
         modifier = modifier,
@@ -73,9 +75,7 @@ fun HomeScreenReadyContent(
     ) {
         item {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 4.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -88,7 +88,7 @@ fun HomeScreenReadyContent(
                 IconButton(
                     onClick = onAddPlayer,
                     enabled = players.size < 4,
-                    modifier = Modifier.width(36.dp)
+                    modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -98,7 +98,7 @@ fun HomeScreenReadyContent(
             }
         }
 
-        itemsIndexed(players) { index, playerName ->
+        itemsIndexed(players) { index, playerInfo ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -107,12 +107,12 @@ fun HomeScreenReadyContent(
                 val label = stringResource(R.string.player_name_label, index + 1)
 
                 OutlinedTextField(
-                    value = playerName,
+                    value = playerInfo.name,
                     onValueChange = { newName -> onPlayerNameChange(index, newName) },
                     label = {
                         Text(
                             text = label,
-                            modifier = Modifier.alpha(if (playerName.isEmpty()) 0.5f else 1f)
+                            modifier = Modifier.alpha(if (playerInfo.name.isEmpty()) 0.5f else 1f)
                         )
                     },
                     singleLine = true,
@@ -120,12 +120,14 @@ fun HomeScreenReadyContent(
                 )
 
                 HomeColorSelector(
-                    availableColors = listOf(Color.Red, Color.Green, Color.Blue, Color.Yellow),
-                    selectedColor = Color.Red,
+                    availableColors = availablePlayerColors,
+                    selectedColor = playerInfo.color,
                     modifier = Modifier
                         .width(72.dp)
                         .align(Alignment.CenterVertically),
-                    onClickItem = { }, //TODO
+                    onClickItem = { newColor ->
+                        onPlayerColorChange(index, newColor)
+                    }
                 )
 
                 IconButton(
@@ -134,7 +136,7 @@ fun HomeScreenReadyContent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.remove_player, playerName),
+                        contentDescription = stringResource(R.string.remove_player, playerInfo),
                         tint = Color.Red
                     )
                 }
@@ -154,9 +156,17 @@ fun HomeScreenReadyContent(
         }
 
         item {
-            HorizontalDivider(modifier = Modifier)
+            HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
         }
-        
+
+        item {
+            Text(
+                text = stringResource(R.string.select_archenemy_label),
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         item {
             HomeCardSetSelector(

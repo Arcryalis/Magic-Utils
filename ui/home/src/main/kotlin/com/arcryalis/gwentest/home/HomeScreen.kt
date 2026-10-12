@@ -13,6 +13,8 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +49,7 @@ fun HomeScreen(
         onAddPlayer = viewModel::addPlayer,
         onRemovePlayer = viewModel::removePlayer,
         onPlayerNameChange = viewModel::updatePlayerName,
+        onPlayerColorChange = viewModel::updatePlayerColor
     )
 }
 
@@ -63,6 +66,7 @@ fun HomeScreen(
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {},
     onPlayerNameChange: (Int, String) -> Unit = { _, _ -> },
+    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> }
 ) {
     when (state) {
         is HomeState.Initial -> LoadingScreen(
@@ -75,6 +79,7 @@ fun HomeScreen(
             startingLifeState = state.startingLife,
             availableSetsState = state.sets,
             isRefreshing = state.isRefreshing,
+            availablePlayerColors = state.playerColorOptions,
             modifier = modifier,
             onSubmit = onNavigateToGameScreen,
             onSetSelected = onSetSelected,
@@ -84,7 +89,8 @@ fun HomeScreen(
             onDownloadSchemesClick = onDownloadSchemesClick,
             onAddPlayer = onAddPlayer,
             onRemovePlayer = onRemovePlayer,
-            onPlayerNameChange = onPlayerNameChange
+            onPlayerNameChange = onPlayerNameChange,
+            onPlayerColorChange = onPlayerColorChange
         )
     }
 }
@@ -92,10 +98,11 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeReadyScreen(
-    players: List<String>,
+    players: List<HomePlayerInfo>,
     startingLifeState: HomeItemState<Int>,
     availableSetsState: HomeItemState<CardSet?>,
     isRefreshing: Boolean,
+    availablePlayerColors: List<Color>,
     modifier: Modifier = Modifier,
     onSubmit: (GameRoute) -> Unit = { _ -> },
     onSetSelected: (CardSet?) -> Unit = {},
@@ -105,7 +112,8 @@ private fun HomeReadyScreen(
     onDownloadSchemesClick: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {},
-    onPlayerNameChange: (Int, String) -> Unit = { _, _ -> }
+    onPlayerNameChange: (Int, String) -> Unit = { _, _ -> },
+    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> }
 ) {
     Scaffold(
         modifier = modifier,
@@ -130,6 +138,7 @@ private fun HomeReadyScreen(
                 players = players,
                 startingLifeState = startingLifeState,
                 availableSetsState = availableSetsState,
+                availablePlayerColors = availablePlayerColors,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 32.dp),
@@ -139,7 +148,8 @@ private fun HomeReadyScreen(
                 onDownloadSchemesClick = onDownloadSchemesClick,
                 onAddPlayer = onAddPlayer,
                 onRemovePlayer = onRemovePlayer,
-                onPlayerNameChange = onPlayerNameChange
+                onPlayerNameChange = onPlayerNameChange,
+                onPlayerColorChange = onPlayerColorChange
             )
         }
     }
@@ -147,7 +157,7 @@ private fun HomeReadyScreen(
 
 @Composable
 fun HomeReadyFooterContent(
-    players: List<String>,
+    players: List<HomePlayerInfo>,
     startingLifeState: HomeItemState<Int>,
     availableSetsState: HomeItemState<CardSet?>,
     modifier: Modifier = Modifier,
@@ -170,7 +180,7 @@ fun HomeReadyFooterContent(
 
 @Composable
 private fun HomeSubmitButton(
-    players: List<String>,
+    players: List<HomePlayerInfo>,
     selectedStartingLife: Int,
     selectedSet: CardSet?,
     modifier: Modifier = Modifier,
@@ -183,8 +193,9 @@ private fun HomeSubmitButton(
                     playerSettings = if (players.isNotEmpty()) {
                         players.map {
                             RoutePlayerInfo(
-                                name = it,
-                                lifeTotal = selectedStartingLife
+                                name = it.name,
+                                lifeTotal = selectedStartingLife,
+                                color = it.color
                             )
                         }
                     } else {
@@ -212,7 +223,11 @@ private fun HomeSubmitButton(
 fun HomeReadyScreenPreview() {
     GwenTestTheme {
         HomeReadyScreen(
-            players = listOf("Player 1", "Player 2"),
+            players = listOf(
+                HomePlayerInfo("Player 1", Color.Red),
+                HomePlayerInfo("Player 2", Color.Blue)
+            ),
+            availablePlayerColors = listOf(Color.Red, Color.Blue, Color.Green, Color.Yellow),
             startingLifeState = HomeItemState(
                 items = listOf(20, 40, 60),
                 selectedItem = 20
@@ -237,6 +252,7 @@ fun HomeReadyScreenNoPlayersPreview() {
     GwenTestTheme {
         HomeReadyScreen(
             players = emptyList(),
+            availablePlayerColors = listOf(Color.Red, Color.Blue, Color.Green, Color.Yellow),
             startingLifeState = HomeItemState(
                 items = listOf(20, 40, 60),
                 selectedItem = 40
