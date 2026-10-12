@@ -24,6 +24,8 @@ class HomeViewModel @Inject constructor(
     companion object {
         private const val MAX_PLAYERS = 4
         private val LIFE_TOTAL_OPTIONS = listOf(20, 40, 60)
+
+        private const val MAX_PLAYER_NAME_LENGTH = 16
     }
 
     private val selectedSet = MutableStateFlow<CardSet?>(null)
@@ -110,7 +112,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun updatePlayerName(index: Int, name: String) {
-        if (index in playersList.value.indices) {
+        if (index in playersList.value.indices && name.length <= MAX_PLAYER_NAME_LENGTH) {
             playersList.update {
                 playersList.value
                     .toMutableList()

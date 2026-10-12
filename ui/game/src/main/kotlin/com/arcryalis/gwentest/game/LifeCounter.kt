@@ -99,7 +99,6 @@ fun LifeCounter(
                     textAlign = TextAlign.Center,
                     fontSize = 16.sp,
                     maxLines = 1,
-                    fontWeight = FontWeight.Thin
                 )
             }
         }

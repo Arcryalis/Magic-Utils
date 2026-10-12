@@ -1,5 +1,7 @@
 package com.arcryalis.gwentest.home
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,9 +9,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
@@ -17,12 +21,23 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -30,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arcryalis.gwentest.core.DropdownMenu
@@ -103,6 +119,15 @@ fun HomeScreenReadyContent(
                     modifier = Modifier.weight(1f)
                 )
 
+                HomeColorSelector(
+                    availableColors = listOf(Color.Red, Color.Green, Color.Blue, Color.Yellow),
+                    selectedColor = Color.Red,
+                    modifier = Modifier
+                        .width(72.dp)
+                        .align(Alignment.CenterVertically),
+                    onClickItem = { }, //TODO
+                )
+
                 IconButton(
                     onClick = { onRemovePlayer(index) },
                     modifier = Modifier.width(36.dp)
@@ -127,6 +152,11 @@ fun HomeScreenReadyContent(
                 )
             }
         }
+
+        item {
+            HorizontalDivider(modifier = Modifier)
+        }
+        
 
         item {
             HomeCardSetSelector(
@@ -212,4 +242,77 @@ private fun HomeItemStateIcon(
             tint = tint
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeColorSelector(
+    availableColors: List<Color>,
+    selectedColor: Color,
+    modifier: Modifier = Modifier,
+    onClickItem: (Color) -> Unit = {},
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = modifier
+    ) {
+        OutlinedTextField(
+            value = "",
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("") },
+            leadingIcon = {
+                ColorCircle(color = selectedColor)
+            },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            availableColors.forEach { color ->
+                DropdownMenuItem(
+                    text = {
+                        ColorCircle(color = color)
+                    },
+                    onClick = {
+                        onClickItem(color)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ColorCircle(
+    color: Color,
+    modifier: Modifier = Modifier,
+    size: Dp = 20.dp
+) {
+    Box(
+        modifier = modifier
+            .size(size)
+            .background(
+                color = if (color == Color.Unspecified) Color.Transparent else color,
+                shape = CircleShape
+            )
+            .then(
+                if (color == Color.Unspecified) {
+                    Modifier.border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                } else {
+                    Modifier.border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), CircleShape)
+                }
+            )
+    )
 }
