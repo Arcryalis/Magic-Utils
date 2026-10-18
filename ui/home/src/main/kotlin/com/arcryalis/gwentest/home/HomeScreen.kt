@@ -4,17 +4,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -116,32 +120,51 @@ private fun HomeReadyScreen(
     onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> }
 ) {
     Scaffold(
-        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = {
+                    // No title
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            //TODO
+                        },
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PhotoCamera,
+                            contentDescription = stringResource(R.string.open_camera)
+                        )
+                    }
+                }
+            )
+        },
         bottomBar = {
             HomeReadyFooterContent(
                 players = players,
                 startingLifeState = startingLifeState,
                 availableSetsState = availableSetsState,
-                modifier = Modifier.padding(horizontal = 32.dp),
+                modifier = Modifier,
                 onSubmitClicked = onSubmit
             )
-        }
+        },
+        modifier = modifier.fillMaxSize()
     ) { innerPadding ->
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .padding(horizontal = 20.dp),
         ) {
             HomeScreenReadyContent(
                 players = players,
                 startingLifeState = startingLifeState,
                 availableSetsState = availableSetsState,
                 availablePlayerColors = availablePlayerColors,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 32.dp),
+                modifier = Modifier.fillMaxSize(),
                 onSetSelected = onSetSelected,
                 onLifeTotalSelected = onLifeTotalSelected,
                 onNavigateToSchemeScreen = onNavigateToSchemeScreen,
@@ -225,7 +248,8 @@ fun HomeReadyScreenPreview() {
         HomeReadyScreen(
             players = listOf(
                 HomePlayerInfo("Player 1", Color.Red),
-                HomePlayerInfo("Player 2", Color.Blue)
+                HomePlayerInfo("", Color.Unspecified),
+                HomePlayerInfo("Another player with a long name", Color.Blue)
             ),
             availablePlayerColors = listOf(Color.Red, Color.Blue, Color.Green, Color.Yellow),
             startingLifeState = HomeItemState(
