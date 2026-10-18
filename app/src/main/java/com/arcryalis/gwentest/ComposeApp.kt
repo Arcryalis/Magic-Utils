@@ -1,5 +1,6 @@
 package com.arcryalis.gwentest
 
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,6 +29,13 @@ import com.arcryalis.gwentest.scheme.SchemeViewModel
 import com.arcryalis.gwentest.core.navigation.SchemeRoute
 
 const val NAV_ANIMATION_DURATION = 300
+
+/** Slides the new screen in from the right (direction 1) or left (direction -1). */
+private fun slideTransition(direction: Int): ContentTransform =
+    (slideInHorizontally(tween(NAV_ANIMATION_DURATION)) { it * direction } +
+            fadeIn(tween(NAV_ANIMATION_DURATION))) togetherWith
+            (slideOutHorizontally(tween(NAV_ANIMATION_DURATION)) { -it * direction } +
+                    fadeOut(tween(NAV_ANIMATION_DURATION)))
 
 @Composable
 fun ComposeApp(
@@ -78,16 +86,8 @@ fun ComposeApp(
                 rememberViewModelStoreNavEntryDecorator()
             ),
             entryProvider = entryProvider,
-            transitionSpec = {
-                // Slide in from right
-                (slideInHorizontally(animationSpec = tween(NAV_ANIMATION_DURATION)) { fullWidth -> fullWidth } + fadeIn(animationSpec = tween(NAV_ANIMATION_DURATION))) togetherWith
-                        (slideOutHorizontally(animationSpec = tween(NAV_ANIMATION_DURATION)) { fullWidth -> -fullWidth } + fadeOut(animationSpec = tween(NAV_ANIMATION_DURATION)))
-            },
-            popTransitionSpec = {
-                // Slide in from left
-                (slideInHorizontally(animationSpec = tween(400)) { fullWidth -> -fullWidth } + fadeIn(animationSpec = tween(NAV_ANIMATION_DURATION))) togetherWith
-                        (slideOutHorizontally(animationSpec = tween(400)) { fullWidth -> fullWidth } + fadeOut(animationSpec = tween(NAV_ANIMATION_DURATION)))
-            },
+            transitionSpec = { slideTransition(direction = 1) },
+            popTransitionSpec = { slideTransition(direction = -1) },
             modifier = Modifier
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding),

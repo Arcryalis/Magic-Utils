@@ -4,9 +4,9 @@ import com.arcryalis.gwentest.data.card.model.CardInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class MockGetAllCardCardInfoUseCase(
+class MockGetAllCardInfoUseCase(
     private val cardInfo: List<CardInfo>
-): GetAllCardCardInfoUseCase {
+): GetAllCardInfoUseCase {
 
     override fun invoke(): Flow<List<CardInfo>> = flowOf(cardInfo)
 }

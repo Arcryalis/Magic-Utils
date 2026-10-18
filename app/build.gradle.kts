@@ -1,9 +1,7 @@
 plugins {
     alias(libs.plugins.gwentest.android.application)
     alias(libs.plugins.gwentest.android.application.compose)
-    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.gwentest.android.hilt)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -16,7 +14,6 @@ android {
         applicationId = "com.arcryalis.gwentest"
         versionCode = 2
         versionName = "1.1"
-        multiDexEnabled = true
     }
 }
 
@@ -48,12 +45,6 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
-    testImplementation(libs.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)

@@ -145,7 +145,7 @@ private fun HomeReadyScreen(
                 players = players,
                 startingLifeState = startingLifeState,
                 availableSetsState = availableSetsState,
-                modifier = Modifier,
+                modifier = Modifier.padding(20.dp),
                 onSubmitClicked = onSubmit
             )
         },

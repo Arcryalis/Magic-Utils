@@ -3,7 +3,7 @@ package com.arcryalis.gwentest.domain.card.impl
 import com.arcryalis.gwentest.data.card.MockCardRepository
 import com.arcryalis.gwentest.data.card.TestCardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfo
-import com.arcryalis.gwentest.domain.card.GetAllCardCardInfoUseCase
+import com.arcryalis.gwentest.domain.card.GetAllCardInfoUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -11,14 +11,14 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GetAllCardCardInfoUseCaseImplTest {
+class GetAllCardInfoUseCaseImplTest {
 
-    private lateinit var sut: GetAllCardCardInfoUseCase
+    private lateinit var sut: GetAllCardInfoUseCase
 
     private fun setupSut(
         cardsBySet: Map<String, List<CardInfo>>
     ) {
-        sut = GetAllCardCardInfoUseCaseImpl(
+        sut = GetAllCardInfoUseCaseImpl(
             MockCardRepository(
                 availableSets = emptyList(),
                 cardsBySet = cardsBySet,

@@ -4,7 +4,7 @@ import com.arcryalis.gwentest.core.BaseDispatchRule
 import com.arcryalis.gwentest.core.navigation.SchemeRoute
 import com.arcryalis.gwentest.data.card.TestCardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfo
-import com.arcryalis.gwentest.domain.card.MockGetAllCardCardInfoUseCase
+import com.arcryalis.gwentest.domain.card.MockGetAllCardInfoUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -33,7 +33,7 @@ class SchemeViewModelTest {
 
         sut = SchemeViewModel(
             route = route,
-            getAllCardCardInfoUseCase = MockGetAllCardCardInfoUseCase(cardInfo = cards),
+            getAllCardInfoUseCase = MockGetAllCardInfoUseCase(cardInfo = cards),
         )
     }
 
