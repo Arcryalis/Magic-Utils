@@ -4,6 +4,7 @@ import android.content.Context
 import coil.ImageLoader
 import com.arcryalis.gwentest.network.CoilImageCacher
 import com.arcryalis.gwentest.network.impl.CoilImageCacherImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,21 +15,19 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-object CoilModule {
+interface CoilModule {
 
-    @Provides
-    @Singleton
-    fun provideCoilImageLoader(
-        @ApplicationContext context: Context,
-        httpClient: OkHttpClient
-    ): ImageLoader = ImageLoader.Builder(context)
-        .okHttpClient(httpClient)
-        .build()
+    @Binds
+    fun bindCoilImageCacher(coilImageCacher: CoilImageCacherImpl): CoilImageCacher
 
-    @Provides
-    @Singleton
-    fun provideCoilImageCacher(
-        @ApplicationContext context: Context,
-    ): CoilImageCacher = CoilImageCacherImpl(context)
-
+    companion object {
+        @Provides
+        @Singleton
+        fun provideCoilImageLoader(
+            @ApplicationContext context: Context,
+            httpClient: OkHttpClient
+        ): ImageLoader = ImageLoader.Builder(context)
+            .okHttpClient(httpClient)
+            .build()
+    }
 }

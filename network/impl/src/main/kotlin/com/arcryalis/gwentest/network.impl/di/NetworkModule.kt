@@ -14,12 +14,13 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 object NetworkModule {
+
+    private val retroJson = Json { ignoreUnknownKeys = true }
 
     @Provides
     @Singleton
@@ -38,9 +39,6 @@ object NetworkModule {
             .baseUrl(context.getString(R.string.scryfall_base_url))
             .client(client)
             .addCallAdapterFactory(NetworkResponseAdapterFactory())
-            .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(retroJson.asConverterFactory("application/json".toMediaType()))
             .build()
-
-    private val retroJson = Json { ignoreUnknownKeys = true }
 }
