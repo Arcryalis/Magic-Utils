@@ -83,9 +83,27 @@ class HomeViewModel @Inject constructor(
             playerColorOptions = PLAYER_COLOR_OPTIONS,
             startingLife = lifeState,
             sets = setState,
-            isRefreshing = loading
+            isRefreshing = loading,
+            canStartGame = canStartGame(players, setState.selectedItem)
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState.Initial)
+
+    private fun canStartGame(players: List<HomePlayerInfo>, set: CardSet?): Boolean =
+        players.isNotEmpty() || set != null
+
+    fun buildGameSettings(): HomeGameSettings? {
+        val players = playersList.value
+        val set = selectedSet.value
+        return if (canStartGame(players, set)) {
+            HomeGameSettings(
+                players = players,
+                startingLife = selectedLifeTotal.value,
+                setId = set?.id
+            )
+        } else {
+            null
+        }
+    }
 
     fun onSelectSet(set: CardSet?) {
         selectedSet.value = set

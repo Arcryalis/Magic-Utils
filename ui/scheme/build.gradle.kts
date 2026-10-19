@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.gwentest.android.library)
     alias(libs.plugins.gwentest.android.library.compose)
     alias(libs.plugins.gwentest.android.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -16,7 +17,9 @@ dependencies {
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.material.icons.core)
-    
+    api(libs.androidx.navigation3.runtime)
+    implementation(libs.kotlinx.serialization.json)
+
     implementation(projects.ui.core)
     implementation(projects.domain.card.api)
     implementation(projects.data.card.api)

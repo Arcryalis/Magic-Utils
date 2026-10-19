@@ -7,8 +7,8 @@ import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
 import com.arcryalis.gwentest.domain.card.MockGetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.MockGetShuffledCardInfoUseCase
-import com.arcryalis.gwentest.core.navigation.GameRoute
-import com.arcryalis.gwentest.core.navigation.RoutePlayerInfo
+import com.arcryalis.gwentest.game.navigation.GameRoute
+import com.arcryalis.gwentest.game.navigation.RoutePlayerInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope

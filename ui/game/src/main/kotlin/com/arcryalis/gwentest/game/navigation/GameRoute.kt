@@ -1,4 +1,4 @@
-package com.arcryalis.gwentest.core.navigation
+package com.arcryalis.gwentest.game.navigation
 
 import androidx.compose.ui.graphics.Color
 import androidx.navigation3.runtime.NavKey

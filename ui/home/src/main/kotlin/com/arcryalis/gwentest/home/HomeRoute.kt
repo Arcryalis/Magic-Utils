@@ -1,7 +1,7 @@
-package com.arcryalis.gwentest.core.navigation
+package com.arcryalis.gwentest.home
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object SchemeRoute : NavKey
+data object HomeRoute : NavKey

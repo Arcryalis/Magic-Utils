@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
-import com.arcryalis.gwentest.core.navigation.GameRoute
+import com.arcryalis.gwentest.game.navigation.GameRoute
 import com.arcryalis.gwentest.game.mapper.toModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

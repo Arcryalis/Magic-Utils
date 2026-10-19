@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -36,7 +37,9 @@ fun GameScreen(
 
     GameScreen(
         state = state.value,
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .safeDrawingPadding(),
         onPlayerUpClicked = viewModel::increasePlayerLife,
         onPlayerDownClicked = viewModel::decreasePlayerLife,
         onNextClicked = viewModel::revealNextCard,

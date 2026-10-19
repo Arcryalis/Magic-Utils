@@ -11,7 +11,8 @@ sealed interface HomeState {
         val playerColorOptions: List<Int?>,
         val startingLife: HomeItemState<Int>,
         val sets: HomeItemState<CardSet?>,
-        val isRefreshing: Boolean
+        val isRefreshing: Boolean,
+        val canStartGame: Boolean
     ): HomeState
 }
 
