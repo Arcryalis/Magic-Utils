@@ -118,6 +118,7 @@ fun HomeScreenReadyContent(
                 DropdownMenu(
                     items = playerColors,
                     selectedItem = playerInfo.color,
+                    titleLabel = "",
                     modifier = Modifier
                         .width(72.dp)
                         .align(Alignment.CenterVertically),
