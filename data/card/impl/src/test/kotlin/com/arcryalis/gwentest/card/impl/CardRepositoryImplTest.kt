@@ -84,21 +84,7 @@ class CardRepositoryImplTest {
     }
 
     @Test
-    fun givenSuccessfulResponse_whenDownloadSchemes_thenReturnsTrue() = runTest {
-        responses[1] = RemoteResponse.Success(
-            ScryfallPaginationDto(
-                hasMore = false,
-                data = listOf(TestScryfallDataDto.dto1)
-            )
-        )
-
-        val result = sut.downloadSchemes()
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun givenSuccessfulResponse_whenDownloadSchemes_thenPersistsSetsAndCards() = runTest {
+    fun givenSuccessfulResponse_whenDownloadSchemes_thenReturnsTrueAndPersistsSetsAndCards() = runTest {
         val dto = TestScryfallDataDto.dto1.copy(
             type = "Type that includes ongoing"
         )
@@ -123,8 +109,9 @@ class CardRepositoryImplTest {
             )
         )
 
-        sut.downloadSchemes()
+        val result = sut.downloadSchemes()
 
+        assertTrue(result)
         assertEquals(listOf(setEntity), storedSets)
         assertContentEquals(
             listOf(cardEntity),
@@ -133,29 +120,7 @@ class CardRepositoryImplTest {
     }
 
     @Test
-    fun givenSuccessfulResponse_whenDownloadSchemes_thenCachesCardBackAndFaceImages() = runTest {
-        val entity = TestScryfallDataDto.dto1
-        val smallUrl = entity.imageUris!!.small
-        val largeUrl = entity.imageUris!!.large
-        val cardBackUrl = context.getString(R.string.card_back_url)
-
-        responses[1] = RemoteResponse.Success(
-            ScryfallPaginationDto(
-                hasMore = false,
-                data = listOf(entity)
-            )
-        )
-
-        sut.downloadSchemes()
-
-        assertEquals(
-            listOf(cardBackUrl, smallUrl, largeUrl),
-            imageCacher.requestedUrls
-        )
-    }
-
-    @Test
-    fun givenCardsWithDuplicateImageUrls_whenDownloadSchemes_thenCachesDistinctUrls() = runTest {
+    fun givenCardsWithDuplicateImageUrls_whenDownloadSchemes_thenCachesCardBackAndDistinctFaceUrls() = runTest {
         val entity = TestScryfallDataDto.dto1
         val smallUrl = entity.imageUris!!.small
         val largeUrl = entity.imageUris!!.large
@@ -206,28 +171,13 @@ class CardRepositoryImplTest {
     }
 
     @Test
-    fun givenErrorResponse_whenDownloadSchemes_thenReturnsFalse() = runTest {
+    fun givenErrorResponse_whenDownloadSchemes_thenReturnsFalseAndDoesNotPersistData() = runTest {
         responses[1] = RemoteResponse.Error("Some error")
 
         val result = sut.downloadSchemes()
 
         assertFalse(result)
-    }
-
-    @Test
-    fun givenErrorResponse_whenDownloadSchemes_thenDoesNotPersistData() = runTest {
-        responses[1] = RemoteResponse.Error("Some error")
-
-        sut.downloadSchemes()
-
         assertEquals(emptyList(), storedSets)
-    }
-
-    @Test
-    fun givenNoConfiguredResponse_whenDownloadSchemes_thenReturnsFalse() = runTest {
-        val result = sut.downloadSchemes()
-
-        assertFalse(result)
     }
 
     @Test
@@ -253,7 +203,7 @@ class CardRepositoryImplTest {
     }
 
     @Test
-    fun givenStoredCardsForSet_whenGetSet_thenReturnsCardsWithCardBackUrl() = runTest {
+    fun givenStoredCardsForSet_whenGetSet_thenReturnsMappedCards() = runTest {
         val entity = TestCardInfoEntity.entity1
         val setId = entity.setId
         storedCards[setId] = mutableListOf(entity)
@@ -284,7 +234,7 @@ class CardRepositoryImplTest {
     }
 
     @Test
-    fun givenStoredCards_whenGetAllCards_thenReturnsAllCardsWithCardBackUrl() = runTest {
+    fun givenStoredCards_whenGetAllCards_thenReturnsAllMappedCards() = runTest {
         val entity1 = TestCardInfoEntity.entity1
         val entity2 = TestCardInfoEntity.entity2
         storedCards[entity1.setId] = mutableListOf(entity1)

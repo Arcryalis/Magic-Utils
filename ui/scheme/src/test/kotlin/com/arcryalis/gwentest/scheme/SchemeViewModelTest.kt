@@ -30,12 +30,12 @@ class SchemeViewModelTest {
         sut = SchemeViewModel(
             getAllCardInfoUseCase = MockGetAllCardInfoUseCase(cardInfo = cards),
         )
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
     }
 
     @Test
     fun whenInitializedWithEmptyCards_thenStateIsLoading() {
         setupSut(cards = emptyList())
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         val state = sut.state.value
         assertIs<SchemeState.Loading>(state)
@@ -44,7 +44,6 @@ class SchemeViewModelTest {
     @Test
     fun whenInitializedWithCards_thenStateIsReadyWithCardsAndNullOverlay() {
         setupSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         val state = sut.state.value
         assertIs<SchemeState.Ready>(state)
@@ -53,21 +52,8 @@ class SchemeViewModelTest {
     }
 
     @Test
-    fun whenCardClicked_thenOverlayCardIsSet() {
+    fun whenCardClickedThenOverlayClosed_thenOverlayCardIsSetThenCleared() {
         setupSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        sut.onCardClicked(TestCardInfo.info1)
-
-        val state = sut.state.value
-        assertIs<SchemeState.Ready>(state)
-        assertEquals(TestCardInfo.info1, state.overlayCard)
-    }
-
-    @Test
-    fun whenCloseOverlayClicked_thenOverlayCardBecomesNull() {
-        setupSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.onCardClicked(TestCardInfo.info1)
         var state = sut.state.value as SchemeState.Ready

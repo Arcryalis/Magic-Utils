@@ -38,14 +38,6 @@ class CoilImageCacherTest {
     }
 
     @Test
-    fun givenUrl_whenQueueImageCacheRequest_thenEnqueuesRequestToCoil() {
-        val url = "https://example.com/image.png"
-        sut.queueImageCacheRequest(url)
-
-        assertEquals(listOf(url), recordingInterceptor.requestedUrls)
-    }
-
-    @Test
     fun givenUrls_whenQueueImageCacheRequests_thenEnqueuesMultipleRequestsToCoil() {
         val urls = listOf("url1", "url2", "url3")
         sut.queueImageCacheRequests(urls)

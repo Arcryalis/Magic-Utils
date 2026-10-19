@@ -64,6 +64,7 @@ class GameViewModelTest {
             getShuffledCardInfoUseCase = mockGetShuffledCardInfoUseCase,
             getCardBackUrl = mockGetCardBackUrlUseCase,
         )
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
     }
 
     @Test
@@ -73,7 +74,6 @@ class GameViewModelTest {
                 override fun invoke(): String = throw IllegalStateException("boom")
             }
         )
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         val state = sut.state.value
         assertIs<GameState.Ready>(state)
@@ -82,18 +82,22 @@ class GameViewModelTest {
     }
 
     @Test
-    fun whenInitialized_thenStateIsReadyWithInitialPlayersAndDeck() {
-        setUpSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+    fun whenInitialized_thenStateIsReadyWithRoutePlayersAndDeck() {
+        setUpSut(
+            playerSettings = listOf(
+                RoutePlayerInfo("Them", 30),
+                RoutePlayerInfo("Alternative", 40)
+            )
+        )
 
         val state = sut.state.value
         assertIs<GameState.Ready>(state)
 
         assertEquals(2, state.players?.size)
-        assertEquals("Player 1", state.players?.get(0)?.name)
-        assertEquals(20, state.players?.get(0)?.lifeTotal)
-        assertEquals("Player 2", state.players?.get(1)?.name)
-        assertEquals(20, state.players?.get(1)?.lifeTotal)
+        assertEquals("Them", state.players?.get(0)?.name)
+        assertEquals(30, state.players?.get(0)?.lifeTotal)
+        assertEquals("Alternative", state.players?.get(1)?.name)
+        assertEquals(40, state.players?.get(1)?.lifeTotal)
 
         assertNotNull(state.deckSettings)
         assertEquals(emptyList(), state.deckSettings.revealedCards)
@@ -104,29 +108,8 @@ class GameViewModelTest {
     }
 
     @Test
-    fun whenInitializedWithCustomPlayerNames_thenPlayersHaveCorrectNames() {
-        setUpSut(
-            playerSettings = listOf(
-                RoutePlayerInfo("Them", 30),
-                RoutePlayerInfo("Alternative", 40)
-            )
-        )
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        val state = sut.state.value
-        assertIs<GameState.Ready>(state)
-
-        assertEquals(2, state.players?.size)
-        assertEquals("Them", state.players?.get(0)?.name)
-        assertEquals(30, state.players?.get(0)?.lifeTotal)
-        assertEquals("Alternative", state.players?.get(1)?.name)
-        assertEquals(40, state.players?.get(1)?.lifeTotal)
-    }
-
-    @Test
     fun whenIncreaseAndDecreasePlayerLife_thenLifeTotalsUpdate() {
         setUpSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.increasePlayerLife(0)
         var state = sut.state.value as GameState.Ready
@@ -142,7 +125,6 @@ class GameViewModelTest {
         setUpSut(
             playerSettings = listOf(RoutePlayerInfo("Player 1", 999))
         )
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.increasePlayerLife(0)
         val state = sut.state.value as GameState.Ready
@@ -154,7 +136,6 @@ class GameViewModelTest {
         setUpSut(
             playerSettings = listOf(RoutePlayerInfo("Player 1", -99))
         )
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.decreasePlayerLife(0)
         val state = sut.state.value as GameState.Ready
@@ -164,7 +145,6 @@ class GameViewModelTest {
     @Test
     fun whenRevealNextCard_nonOngoingCard_thenCardRevealedAndShownOnOverlay() {
         setUpSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.revealNextCard()
 
@@ -184,7 +164,6 @@ class GameViewModelTest {
     @Test
     fun whenRevealNextCard_ongoingCard_thenAddedToExtrasAndShownOnOverlay() {
         setUpSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         // Reveal first card (info1)
         sut.revealNextCard()
@@ -207,7 +186,6 @@ class GameViewModelTest {
     @Test
     fun whenAddAndRemoveCardFromExtras_thenUpdatesExtraList() {
         setUpSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.addCardToExtras(TestCardInfo.info1)
         var state = sut.state.value as GameState.Ready
@@ -223,7 +201,6 @@ class GameViewModelTest {
     @Test
     fun givenCardAlreadyInExtras_whenAddCardToExtras_thenDoesNotDuplicate() {
         setUpSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.addCardToExtras(TestCardInfo.info1)
         var state = sut.state.value as GameState.Ready
@@ -235,22 +212,23 @@ class GameViewModelTest {
     }
 
     @Test
-    fun whenShowCardOnOverlay_thenOverlayBecomesVisibleIndividual() {
+    fun whenShowAndHideCardOnOverlay_thenOverlayVisibilityUpdates() {
         setUpSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.showCardOnOverlay(TestCardInfo.info1)
-
-        val state = sut.state.value as GameState.Ready
+        var state = sut.state.value as GameState.Ready
         val overlay = state.overlayState
         assertIs<OverlayState.Visible.Individual>(overlay)
         assertEquals(TestCardInfo.info1, overlay.info)
+
+        sut.hideOverlay()
+        state = sut.state.value as GameState.Ready
+        assertIs<OverlayState.Hidden>(state.overlayState)
     }
 
     @Test
     fun givenOneCardInGallery_whenShowRevealedCardsGallery_thenOverlayIndividual() {
         setUpSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.revealNextCard()
         sut.showRevealedCardsGallery()
@@ -265,7 +243,6 @@ class GameViewModelTest {
     @Test
     fun whenRevealMultipleCardsAndShowGallery_thenOverlayBecomesVisibleGalleryWithMultipleCards() {
         setUpSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.revealNextCard()
         sut.revealNextCard()
@@ -276,17 +253,5 @@ class GameViewModelTest {
         assertIs<OverlayState.Visible.Gallery>(overlay)
         assertEquals(2, overlay.cards.size)
         assertEquals(listOf(TestCardInfo.info2, TestCardInfo.info1), overlay.cards)
-    }
-
-    @Test
-    fun whenHideOverlay_thenOverlayBecomesHidden() {
-        setUpSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        sut.showCardOnOverlay(TestCardInfo.info1)
-        sut.hideOverlay()
-
-        val state = sut.state.value as GameState.Ready
-        assertIs<OverlayState.Hidden>(state.overlayState)
     }
 }

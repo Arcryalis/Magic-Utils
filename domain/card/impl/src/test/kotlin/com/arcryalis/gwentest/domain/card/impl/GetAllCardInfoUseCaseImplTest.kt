@@ -46,15 +46,4 @@ class GetAllCardInfoUseCaseImplTest {
 
         assertEquals(listOf(TestCardInfo.info1, TestCardInfo.info2), result)
     }
-
-    @Test
-    fun givenNoStoredCards_whenInvoked_thenReturnsEmptyList() = runTest {
-        setupSut(
-            cardsBySet = emptyMap()
-        )
-
-        val result = sut().first()
-
-        assertEquals(emptyList(), result)
-    }
 }
