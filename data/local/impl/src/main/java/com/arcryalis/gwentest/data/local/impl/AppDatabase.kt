@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
 import com.arcryalis.gwentest.data.local.api.entity.CardSetEntity
-import com.arcryalis.gwentest.data.local.impl.dao.CardDao
+import com.arcryalis.gwentest.data.local.impl.dao.CardInfoDao
 import com.arcryalis.gwentest.data.local.impl.dao.CardSetDao
 
 @Database(
@@ -12,11 +12,11 @@ import com.arcryalis.gwentest.data.local.impl.dao.CardSetDao
         CardInfoEntity::class,
         CardSetEntity::class
     ],
-    version = 1
+    version = 2
 )
-abstract class Database : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun getCardDao(): CardDao
+    abstract fun getCardInfoDao(): CardInfoDao
 
     abstract fun getCardSetDao(): CardSetDao
 }

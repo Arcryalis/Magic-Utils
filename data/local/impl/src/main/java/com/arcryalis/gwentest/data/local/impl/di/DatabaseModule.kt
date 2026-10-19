@@ -2,7 +2,7 @@ package com.arcryalis.gwentest.data.local.impl.di
 
 import android.content.Context
 import androidx.room.Room
-import com.arcryalis.gwentest.data.local.impl.Database
+import com.arcryalis.gwentest.data.local.impl.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,8 +16,8 @@ class DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): Database =
-        Room.databaseBuilder(context, Database::class.java, "gwentest.db")
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "gwentest.db")
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
 
