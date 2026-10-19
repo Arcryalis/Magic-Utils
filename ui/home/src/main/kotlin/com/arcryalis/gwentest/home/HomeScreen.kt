@@ -125,22 +125,9 @@ private fun HomeReadyScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    // No title
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            //TODO
-                        },
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PhotoCamera,
-                            contentDescription = stringResource(R.string.open_camera)
-                        )
-                    }
+            HomeTopBarContent(
+                onCameraClick = {
+                    // TODO
                 }
             )
         },
@@ -220,6 +207,31 @@ private fun HomeSubmitButton(
             modifier = Modifier.padding(vertical = 8.dp)
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeTopBarContent(
+    modifier: Modifier = Modifier,
+    onCameraClick: () -> Unit = {}
+) {
+    TopAppBar(
+        title = {
+            // No title
+        },
+        actions = {
+            IconButton(
+                onClick = onCameraClick,
+                modifier = Modifier.padding(end = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PhotoCamera,
+                    contentDescription = stringResource(R.string.open_camera)
+                )
+            }
+        },
+        modifier = modifier
+    )
 }
 
 @Preview(showBackground = true)
