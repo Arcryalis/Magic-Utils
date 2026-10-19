@@ -25,7 +25,7 @@ interface CoilModule {
         @Singleton
         fun provideCoilImageLoader(
             @ApplicationContext context: Context,
-            httpClient: OkHttpClient
+            @ImageHttpClient httpClient: OkHttpClient
         ): ImageLoader = ImageLoader.Builder(context)
             .okHttpClient(httpClient)
             .build()

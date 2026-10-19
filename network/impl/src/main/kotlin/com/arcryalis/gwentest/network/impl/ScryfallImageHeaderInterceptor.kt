@@ -6,14 +6,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ScryfallHeaderInterceptor @Inject constructor() : Interceptor {
+class ScryfallImageHeaderInterceptor @Inject constructor(
+    private val scryfallUserAgentProvider: ScryfallUserAgentProvider
+) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain
-            .request()
+        val request = chain.request()
             .newBuilder()
-            .addHeader("User-Agent", "com.arcryalis.gwentest/1.1")
-            .addHeader("Accept", "application/json")
+            .header("User-Agent", scryfallUserAgentProvider.scryfallUserAgent)
             .build()
 
         return chain.proceed(request)
