@@ -18,6 +18,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GameViewModelTest {
@@ -47,7 +48,8 @@ class GameViewModelTest {
                 TestCardInfo.info1,
                 TestCardInfo.info2,
             )
-        )
+        ),
+        cardBackUseCase: GetCardBackUrlUseCase? = null
     ) {
         route = GameRoute(
             playerSettings = playerSettings,
@@ -55,13 +57,28 @@ class GameViewModelTest {
         )
 
         mockGetShuffledCardInfoUseCase = MockGetShuffledCardInfoUseCase(shuffledCards)
-        mockGetCardBackUrlUseCase = MockGetCardBackUrlUseCase("cardbackUrl")
+        mockGetCardBackUrlUseCase = cardBackUseCase ?: MockGetCardBackUrlUseCase("cardbackUrl")
 
         sut = GameViewModel(
             route = route,
             getShuffledCardInfoUseCase = mockGetShuffledCardInfoUseCase,
             getCardBackUrl = mockGetCardBackUrlUseCase,
         )
+    }
+
+    @Test
+    fun givenCardBackUrlFails_whenInitialized_thenStateIsReadyWithoutDeck() {
+        setUpSut(
+            cardBackUseCase = object : GetCardBackUrlUseCase {
+                override fun invoke(): String = throw IllegalStateException("boom")
+            }
+        )
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        val state = sut.state.value
+        assertIs<GameState.Ready>(state)
+        assertEquals(2, state.players?.size)
+        assertNull(state.deckSettings)
     }
 
     @Test

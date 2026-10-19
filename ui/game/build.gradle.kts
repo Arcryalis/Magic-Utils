@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.gwentest.android.library)
     alias(libs.plugins.gwentest.android.library.compose)
     alias(libs.plugins.gwentest.android.hilt)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {

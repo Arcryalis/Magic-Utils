@@ -1,6 +1,6 @@
 package com.arcryalis.gwentest.game
 
-import android.content.res.Configuration
+import com.arcryalis.gwentest.core.isPortrait
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 
@@ -23,7 +22,7 @@ fun LifeComponent(
     onPlayerUpClicked: (Int) -> Unit = {},
     onPlayerDownClicked: (Int) -> Unit = {},
 ) {
-    val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
+    val isPortrait = isPortrait()
 
     when (players.size) {
         1 -> LifeCounterItem(

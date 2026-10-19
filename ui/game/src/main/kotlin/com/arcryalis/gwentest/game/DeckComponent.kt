@@ -1,9 +1,9 @@
 package com.arcryalis.gwentest.game
 
-import android.content.res.Configuration
+import com.arcryalis.gwentest.core.isPortrait
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,16 +15,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -92,16 +89,13 @@ private fun ExtraCardListCard(
     modifier: Modifier = Modifier,
     onListItemClicked: (CardInfo) -> Unit = {}
 ) {
-    val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
-    var boxWidth by remember { mutableFloatStateOf(0f) }
+    val pagePeekFraction = if (isPortrait()) 1f / 20 else 1f / 12
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .drawBehind(
-                onDraw = { boxWidth = size.width }
-            )
+    BoxWithConstraints(
+        modifier = modifier.fillMaxSize()
     ) {
+        val pagePeek = maxWidth * pagePeekFraction
+
         Card(
             modifier = Modifier
                 .fillMaxSize()
@@ -115,11 +109,7 @@ private fun ExtraCardListCard(
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = if (isPortrait) {
-                        (boxWidth / 20).dp
-                    } else {
-                        (boxWidth / 12).dp
-                    })
+                    contentPadding = PaddingValues(horizontal = pagePeek)
                 ) { index ->
                     val card = cards[index]
                     AsyncImage(

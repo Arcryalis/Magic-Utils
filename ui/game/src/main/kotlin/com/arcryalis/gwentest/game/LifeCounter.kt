@@ -22,12 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -53,9 +53,7 @@ fun LifeCounter(
     Column(
         modifier = modifier
             .background(backgroundColor)
-            .drawBehind(
-                onDraw = { boxHeight = size.height }
-            )
+            .onSizeChanged { boxHeight = it.height.toFloat() }
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { tapOffset ->

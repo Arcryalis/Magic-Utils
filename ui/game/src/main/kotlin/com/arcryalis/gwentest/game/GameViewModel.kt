@@ -11,12 +11,11 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -54,13 +53,15 @@ class GameViewModel @AssistedInject constructor(
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
     private val extraCardList = MutableStateFlow<List<CardInfo>>(emptyList())
     private val cardbackUrl = MutableStateFlow<String?>(null)
+    private val hasError = MutableStateFlow(false)
     private val deckState = combine(
         startingDeck,
         revealedCardList,
         extraCardList,
         cardbackUrl,
-    ) { starting, revealedCards, extraCards, backUrl ->
-        if (starting.isNotEmpty() && backUrl != null) {
+        hasError,
+    ) { starting, revealedCards, extraCards, backUrl, error ->
+        if (!error && starting.isNotEmpty() && backUrl != null) {
             DeckSettings(
                 nextCardUrl = if (revealedCards.size < starting.size) {
                     backUrl
@@ -75,25 +76,18 @@ class GameViewModel @AssistedInject constructor(
         }
     }
 
-    private val overlayCards = MutableStateFlow<List<CardInfo>>(emptyList())
+    private val overlayRequest = MutableStateFlow<OverlayRequest>(OverlayRequest.None)
     private val overlayState = combine(
-        overlayCards,
+        overlayRequest,
         extraCardList
-    ) { overlayCards, extraList ->
-        when (overlayCards.size) {
-            0 -> OverlayState.Hidden
-            1 -> {
-                val card = overlayCards.firstOrNull()
-                if (card != null) {
-                    OverlayState.Visible.Individual(
-                        info = card,
-                        showRemove = extraList.contains(card)
-                    )
-                } else {
-                    OverlayState.Hidden
-                }
-            }
-            else -> OverlayState.Visible.Gallery(overlayCards)
+    ) { request, extraList ->
+        when (request) {
+            OverlayRequest.None -> OverlayState.Hidden
+            is OverlayRequest.Card -> OverlayState.Visible.Individual(
+                info = request.card,
+                showRemove = extraList.contains(request.card)
+            )
+            is OverlayRequest.Gallery -> OverlayState.Visible.Gallery(request.cards)
         }
     }
 
@@ -118,9 +112,15 @@ class GameViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            isLoading.value = true
-            cardbackUrl.value = getCardBackUrl()
-            isLoading.value = false
+            try {
+                cardbackUrl.value = getCardBackUrl()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                hasError.value = true
+            } finally {
+                isLoading.value = false
+            }
         }
     }
 
@@ -185,21 +185,30 @@ class GameViewModel @AssistedInject constructor(
     }
 
     fun showCardOnOverlay(cardInfo: CardInfo) {
-        overlayCards.value = listOf(cardInfo)
+        overlayRequest.value = OverlayRequest.Card(cardInfo)
     }
 
     fun showRevealedCardsGallery() {
-        viewModelScope.launch {
-            overlayCards.value = revealedCardList.first()
+        val revealed = revealedCardList.value
+        overlayRequest.value = when (revealed.size) {
+            0 -> OverlayRequest.None
+            1 -> OverlayRequest.Card(revealed.first())
+            else -> OverlayRequest.Gallery(revealed)
         }
     }
 
     fun hideOverlay() {
-        overlayCards.value = emptyList()
+        overlayRequest.value = OverlayRequest.None
     }
 
     @AssistedFactory
     interface Factory {
         fun create(route: GameRoute): GameViewModel
     }
+}
+
+private sealed interface OverlayRequest {
+    data object None : OverlayRequest
+    data class Card(val card: CardInfo) : OverlayRequest
+    data class Gallery(val cards: List<CardInfo>) : OverlayRequest
 }
