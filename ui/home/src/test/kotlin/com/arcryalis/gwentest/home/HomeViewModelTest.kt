@@ -75,6 +75,7 @@ class HomeViewModelTest {
         assertEquals(listOf(20, 40, 60), currentState.startingLife.items)
         assertEquals(20, currentState.startingLife.selectedItem)
     }
+
     @Test
     fun whenPlayerAdded_thenUpdatesPlayersListWithEmptyNames() {
         sut = createSut()
