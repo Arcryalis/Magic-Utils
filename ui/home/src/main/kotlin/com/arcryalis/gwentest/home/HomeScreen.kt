@@ -37,6 +37,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToSchemeScreen: () -> Unit = {},
+    onNavigateToCameraScreen: () -> Unit = {},
     onNavigateToGameScreen: (HomeGameSettings) -> Unit = { _ -> },
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -48,6 +49,7 @@ fun HomeScreen(
             viewModel.buildGameSettings()?.let(onNavigateToGameScreen)
         },
         onNavigateToSchemeScreen = onNavigateToSchemeScreen,
+        onNavigateToCameraScreen = onNavigateToCameraScreen,
         onSetSelected = viewModel::onSelectSet,
         onLifeTotalSelected = viewModel::onSelectLifeTotal,
         onRefreshClick = viewModel::onRefresh,
@@ -65,6 +67,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     onStartGameClick: () -> Unit = {},
     onNavigateToSchemeScreen: () -> Unit = {},
+    onNavigateToCameraScreen: () -> Unit = {},
     onSetSelected: (CardSet?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
     onRefreshClick: () -> Unit = {},
@@ -92,6 +95,7 @@ fun HomeScreen(
             onSetSelected = onSetSelected,
             onLifeTotalSelected = onLifeTotalSelected,
             onNavigateToSchemeScreen = onNavigateToSchemeScreen,
+            onNavigateToCameraScreen = onNavigateToCameraScreen,
             onRefresh = onRefreshClick,
             onDownloadSchemesClick = onDownloadSchemesClick,
             onAddPlayer = onAddPlayer,
@@ -116,6 +120,7 @@ private fun HomeReadyScreen(
     onSetSelected: (CardSet?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
     onNavigateToSchemeScreen: () -> Unit = {},
+    onNavigateToCameraScreen: () -> Unit = {},
     onRefresh: () -> Unit = {},
     onDownloadSchemesClick: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
@@ -126,9 +131,7 @@ private fun HomeReadyScreen(
     Scaffold(
         topBar = {
             HomeTopBarContent(
-                onCameraClick = {
-                    // TODO
-                }
+                onCameraClick = onNavigateToCameraScreen
             )
         },
         bottomBar = {

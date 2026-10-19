@@ -35,6 +35,7 @@ include(":ui:core")
 include(":ui:home")
 include(":ui:scheme")
 include(":ui:game")
+include(":ui:camera")
 
 include(":domain:card:api")
 include(":domain:card:impl")

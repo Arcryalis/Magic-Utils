@@ -18,6 +18,8 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.arcryalis.gwentest.camera.CameraRoute
+import com.arcryalis.gwentest.camera.CameraScreen
 import com.arcryalis.gwentest.game.GameScreen
 import com.arcryalis.gwentest.game.GameViewModel
 import com.arcryalis.gwentest.game.navigation.GameRoute
@@ -50,6 +52,9 @@ fun ComposeApp(
                 onNavigateToSchemeScreen = {
                     navigator.navigate(SchemeRoute)
                 },
+                onNavigateToCameraScreen = {
+                    navigator.navigate(CameraRoute)
+                },
                 onNavigateToGameScreen = { settings ->
                     navigator.navigate(settings.toGameRoute())
                 }
@@ -57,6 +62,11 @@ fun ComposeApp(
         }
         entry<SchemeRoute> {
             SchemeScreen(
+                onNavigateBack = navigator::navigateBack,
+            )
+        }
+        entry<CameraRoute> {
+            CameraScreen(
                 onNavigateBack = navigator::navigateBack,
             )
         }

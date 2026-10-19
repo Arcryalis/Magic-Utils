@@ -1,0 +1,5 @@
+<resources>
+    <string name="camera_permission_title">Permission required</string>
+    <string name="camera_permission_subtitle">Camera permissions are required to scan cards</string>
+    <string name="camera_permission_request">Request</string>
+</resources>
