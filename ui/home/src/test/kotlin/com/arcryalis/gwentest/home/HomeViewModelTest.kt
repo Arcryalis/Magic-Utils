@@ -1,5 +1,6 @@
 package com.arcryalis.gwentest.home
 
+import androidx.compose.ui.graphics.Color
 import com.arcryalis.gwentest.core.BaseDispatchRule
 import com.arcryalis.gwentest.data.card.TestCardSet
 import com.arcryalis.gwentest.data.card.model.CardSet
@@ -13,7 +14,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -177,5 +181,106 @@ class HomeViewModelTest {
         sut.updatePlayerName(-1, "Invalid")
 
         assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players.map { it.name })
+    }
+
+    @Test
+    fun givenNoPlayersAndNoSet_whenInitialized_thenCannotStartGame() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        assertFalse((sut.state.value as HomeState.Ready).canStartGame)
+        assertNull(sut.buildGameSettings())
+    }
+
+    @Test
+    fun whenPlayerAdded_thenCanStartGame() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        sut.addPlayer()
+
+        assertTrue((sut.state.value as HomeState.Ready).canStartGame)
+    }
+
+    @Test
+    fun whenSetSelected_thenCanStartGame() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        sut.onSelectSet(TestCardSet.set1)
+
+        assertTrue((sut.state.value as HomeState.Ready).canStartGame)
+    }
+
+    @Test
+    fun whenLastPlayerRemovedWithNoSet_thenCannotStartGame() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        sut.addPlayer()
+        sut.removePlayer(0)
+
+        assertFalse((sut.state.value as HomeState.Ready).canStartGame)
+        assertNull(sut.buildGameSettings())
+    }
+
+    @Test
+    fun givenPlayersLifeTotalAndSet_whenBuildGameSettings_thenReturnsSelectedSettings() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        sut.addPlayer()
+        sut.addPlayer()
+        sut.updatePlayerName(0, "Player 1")
+        sut.updatePlayerColor(0, Color.Red)
+        sut.updatePlayerName(1, "Player 2")
+        sut.onSelectLifeTotal(40)
+        sut.onSelectSet(TestCardSet.set2)
+
+        assertEquals(
+            HomeGameSettings(
+                players = listOf(
+                    HomePlayerInfo("Player 1", Color.Red),
+                    HomePlayerInfo("Player 2"),
+                ),
+                startingLife = 40,
+                setId = TestCardSet.set2.id
+            ),
+            sut.buildGameSettings()
+        )
+    }
+
+    @Test
+    fun givenSetOnly_whenBuildGameSettings_thenReturnsNoPlayers() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        sut.onSelectSet(TestCardSet.set1)
+
+        assertEquals(
+            HomeGameSettings(
+                players = emptyList(),
+                startingLife = 20,
+                setId = TestCardSet.set1.id
+            ),
+            sut.buildGameSettings()
+        )
+    }
+
+    @Test
+    fun givenPlayersOnly_whenBuildGameSettings_thenReturnsNoSet() {
+        sut = createSut()
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
+
+        sut.addPlayer()
+
+        assertEquals(
+            HomeGameSettings(
+                players = listOf(HomePlayerInfo()),
+                startingLife = 20,
+                setId = null
+            ),
+            sut.buildGameSettings()
+        )
     }
 }
