@@ -1,10 +1,8 @@
 package com.arcryalis.gwentest.remote.scryfall.dto
 
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@InternalSerializationApi
 @Serializable
 data class ScryfallPaginationDto(
     @SerialName("has_more")
@@ -13,7 +11,6 @@ data class ScryfallPaginationDto(
     val data: List<ScryfallDataDto>
 )
 
-@InternalSerializationApi
 @Serializable
 data class ScryfallDataDto(
     val id: String,
@@ -30,7 +27,6 @@ data class ScryfallDataDto(
     val setName: String
 )
 
-@InternalSerializationApi
 @Serializable
 data class ScryfallImageUrlsDto(
     val small: String,
