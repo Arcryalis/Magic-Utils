@@ -15,6 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 
 
+private typealias PlayerSlot = @Composable (index: Int, modifier: Modifier) -> Unit
+
 @Composable
 fun LifeComponent(
     players: List<PlayerInfo>,
@@ -22,31 +24,25 @@ fun LifeComponent(
     onPlayerUpClicked: (Int) -> Unit = {},
     onPlayerDownClicked: (Int) -> Unit = {},
 ) {
-    val isPortrait = isPortrait()
+    val arrowsVisible = isPortrait()
+    val playerSlot: PlayerSlot = { index, slotModifier ->
+        LifeCounterItem(
+            player = players[index],
+            index = index,
+            arrowsVisible = arrowsVisible,
+            modifier = slotModifier,
+            onPlayerUpClicked = onPlayerUpClicked,
+            onPlayerDownClicked = onPlayerDownClicked
+        )
+    }
 
     when (players.size) {
-        1 -> LifeCounterItem(
-            player = players[0],
-            index = 0,
-            arrowsVisible = isPortrait,
-            modifier = modifier,
-            onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked,
-        )
-        2 -> LifeTwoPlayerSection(
-            players = players,
-            arrowsVisible = isPortrait,
-            modifier = modifier,
-            onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked
-        )
-
+        1 -> playerSlot(0, modifier)
+        2 -> LifeTwoPlayerSection(modifier = modifier, playerSlot = playerSlot)
         3, 4 -> LifeMultiPlayerSection(
-            players = players,
-            arrowsVisible = isPortrait,
+            isThreePlayer = players.size == 3,
             modifier = modifier,
-            onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked
+            playerSlot = playerSlot
         )
 
         else -> {
@@ -77,113 +73,52 @@ private fun LifeCounterItem(
 
 @Composable
 private fun LifeTwoPlayerSection(
-    players: List<PlayerInfo>,
-    arrowsVisible: Boolean,
+    playerSlot: PlayerSlot,
     modifier: Modifier = Modifier,
-    onPlayerUpClicked: (Int) -> Unit = {},
-    onPlayerDownClicked: (Int) -> Unit = {}
 ) {
-    Row(
-        modifier = modifier
-    ) {
-        LifeCounterItem(
-            player = players[0],
-            index = 0,
-            arrowsVisible = arrowsVisible,
-            modifier = Modifier.weight(1f),
-            onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked
-        )
+    Row(modifier = modifier) {
+        playerSlot(0, Modifier.weight(1f))
 
         VerticalDivider()
 
-        LifeCounterItem(
-            player = players[1],
-            index = 1,
-            arrowsVisible = arrowsVisible,
-            modifier = Modifier
-                .weight(1f)
-                .rotate(180f),
-            onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked
-        )
+        playerSlot(1, Modifier.weight(1f).rotate(180f))
     }
 }
 
 @Composable
 private fun LifeMultiPlayerSection(
-    players: List<PlayerInfo>,
-    arrowsVisible: Boolean,
+    isThreePlayer: Boolean,
+    playerSlot: PlayerSlot,
     modifier: Modifier = Modifier,
-    onPlayerUpClicked: (Int) -> Unit = {},
-    onPlayerDownClicked: (Int) -> Unit = {}
 ) {
-    val isThreePlayer = players.size == 3
-
-    Column(
-        modifier = modifier
-    ) {
+    Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .weight(1f)
                 .rotate(180f)
         ) {
-            LifeCounterItem(
-                player = players[0],
-                index = 0,
-                arrowsVisible = arrowsVisible,
-                modifier = Modifier.weight(1f),
-                onPlayerUpClicked = onPlayerUpClicked,
-                onPlayerDownClicked = onPlayerDownClicked
-            )
+            playerSlot(0, Modifier.weight(1f))
 
             VerticalDivider()
 
-            LifeCounterItem(
-                player = players[1],
-                index = 1,
-                arrowsVisible = arrowsVisible,
-                modifier = Modifier.weight(1f),
-                onPlayerUpClicked = onPlayerUpClicked,
-                onPlayerDownClicked = onPlayerDownClicked
-            )
+            playerSlot(1, Modifier.weight(1f))
         }
 
         HorizontalDivider()
 
-        Row(
-            modifier = Modifier.weight(1f)
-        ) {
+        Row(modifier = Modifier.weight(1f)) {
             if (isThreePlayer) {
-                Box(
-                    modifier = Modifier.weight(0.5f)
-                )
+                Box(modifier = Modifier.weight(0.5f))
             }
 
-            LifeCounterItem(
-                player = players[2],
-                index = 2,
-                arrowsVisible = arrowsVisible,
-                modifier = Modifier.weight(1f),
-                onPlayerUpClicked = onPlayerUpClicked,
-                onPlayerDownClicked = onPlayerDownClicked
-            )
+            playerSlot(2, Modifier.weight(1f))
 
             if (isThreePlayer) {
-                Box(
-                    modifier = Modifier.weight(0.5f)
-                )
+                Box(modifier = Modifier.weight(0.5f))
             } else {
                 VerticalDivider()
 
-                LifeCounterItem(
-                    player = players[3],
-                    index = 3,
-                    arrowsVisible = arrowsVisible,
-                    modifier = Modifier.weight(1f),
-                    onPlayerUpClicked = onPlayerUpClicked,
-                    onPlayerDownClicked = onPlayerDownClicked
-                )
+                playerSlot(3, Modifier.weight(1f))
             }
         }
     }
