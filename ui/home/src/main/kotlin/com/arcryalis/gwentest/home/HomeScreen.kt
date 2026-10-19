@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -26,7 +25,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcryalis.gwentest.core.LoadingScreen
+import com.arcryalis.gwentest.core.R as CoreR
 import com.arcryalis.gwentest.core.navigation.GameRoute
 import com.arcryalis.gwentest.core.navigation.RoutePlayerInfo
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
@@ -39,7 +40,7 @@ fun HomeScreen(
     onNavigateToSchemeScreen: () -> Unit = {},
     onNavigateToGameScreen: (GameRoute) -> Unit = { _ -> },
 ) {
-    val state = viewModel.state.collectAsState()
+    val state = viewModel.state.collectAsStateWithLifecycle()
 
     HomeScreen(
         state = state.value,
@@ -106,7 +107,7 @@ private fun HomeReadyScreen(
     startingLifeState: HomeItemState<Int>,
     availableSetsState: HomeItemState<CardSet?>,
     isRefreshing: Boolean,
-    availablePlayerColors: List<Color>,
+    availablePlayerColors: List<Int?>,
     modifier: Modifier = Modifier,
     onSubmit: (GameRoute) -> Unit = { _ -> },
     onSetSelected: (CardSet?) -> Unit = {},
@@ -251,7 +252,7 @@ fun HomeReadyScreenPreview() {
                 HomePlayerInfo("", Color.Unspecified),
                 HomePlayerInfo("Another player with a long name", Color.Blue)
             ),
-            availablePlayerColors = listOf(Color.Red, Color.Blue, Color.Green, Color.Yellow),
+            availablePlayerColors = listOf(null, CoreR.color.player_color_red, CoreR.color.player_color_blue, CoreR.color.player_color_green),
             startingLifeState = HomeItemState(
                 items = listOf(20, 40, 60),
                 selectedItem = 20
@@ -276,7 +277,7 @@ fun HomeReadyScreenNoPlayersPreview() {
     GwenTestTheme {
         HomeReadyScreen(
             players = emptyList(),
-            availablePlayerColors = listOf(Color.Red, Color.Blue, Color.Green, Color.Yellow),
+            availablePlayerColors = listOf(null, CoreR.color.player_color_red, CoreR.color.player_color_blue, CoreR.color.player_color_green),
             startingLifeState = HomeItemState(
                 items = listOf(20, 40, 60),
                 selectedItem = 40

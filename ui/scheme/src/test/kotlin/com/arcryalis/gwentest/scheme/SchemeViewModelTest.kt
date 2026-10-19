@@ -1,7 +1,6 @@
 package com.arcryalis.gwentest.scheme
 
 import com.arcryalis.gwentest.core.BaseDispatchRule
-import com.arcryalis.gwentest.core.navigation.SchemeRoute
 import com.arcryalis.gwentest.data.card.TestCardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.domain.card.MockGetAllCardInfoUseCase
@@ -23,16 +22,12 @@ class SchemeViewModelTest {
 
     private val testScope = TestScope(mainDispatcher.testDispatcher)
 
-    private lateinit var route: SchemeRoute
     private lateinit var sut: SchemeViewModel
 
     private fun setupSut(
         cards: List<CardInfo> = listOf(TestCardInfo.info1, TestCardInfo.info2),
     ) {
-        route = SchemeRoute
-
         sut = SchemeViewModel(
-            route = route,
             getAllCardInfoUseCase = MockGetAllCardInfoUseCase(cardInfo = cards),
         )
     }

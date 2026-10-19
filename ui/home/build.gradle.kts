@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.gwentest.android.library)
     alias(libs.plugins.gwentest.android.library.compose)
     alias(libs.plugins.gwentest.android.hilt)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -15,6 +14,7 @@ dependencies {
     api(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.material.icons.extended)
 
     implementation(projects.ui.core)

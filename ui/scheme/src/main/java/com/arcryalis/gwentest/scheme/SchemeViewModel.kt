@@ -4,19 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.domain.card.GetAllCardInfoUseCase
-import com.arcryalis.gwentest.core.navigation.SchemeRoute
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-@HiltViewModel(assistedFactory = SchemeViewModel.Factory::class)
-class SchemeViewModel @AssistedInject constructor(
-    @Assisted private val route: SchemeRoute,
+@HiltViewModel
+class SchemeViewModel @Inject constructor(
     private val getAllCardInfoUseCase: GetAllCardInfoUseCase
 ): ViewModel()  {
 
@@ -42,10 +38,5 @@ class SchemeViewModel @AssistedInject constructor(
 
     fun onCardClicked(card: CardInfo) {
         overlayCard.value = card
-    }
-
-    @AssistedFactory
-    interface Factory {
-        fun create(route: SchemeRoute): SchemeViewModel
     }
 }

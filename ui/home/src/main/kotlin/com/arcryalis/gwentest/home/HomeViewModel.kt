@@ -3,6 +3,7 @@ package com.arcryalis.gwentest.home
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcryalis.gwentest.core.R as CoreR
 import com.arcryalis.gwentest.data.card.model.CardSet
 import com.arcryalis.gwentest.domain.card.DownloadSchemesUseCase
 import com.arcryalis.gwentest.domain.card.GetCardSetsUseCase
@@ -26,15 +27,15 @@ class HomeViewModel @Inject constructor(
         private const val MAX_PLAYERS = 4
         private val LIFE_TOTAL_OPTIONS = listOf(20, 40, 60)
         private const val MAX_PLAYER_NAME_LENGTH = 16
-        private const val PLAYER_COLOR_ALPHA = 0.2f
-        private val PLAYER_COLOR_OPTIONS = listOf(
-            Color.Unspecified,
-            Color.LightGray.copy(alpha = PLAYER_COLOR_ALPHA),
-            Color.Red.copy(alpha = PLAYER_COLOR_ALPHA),
-            Color.Blue.copy(alpha = PLAYER_COLOR_ALPHA),
-            Color.Green.copy(alpha = PLAYER_COLOR_ALPHA),
-            Color.Magenta .copy(alpha = PLAYER_COLOR_ALPHA),
-        ) //TODO move into design system
+        // Color resources defined in ui:core. null means "no color".
+        private val PLAYER_COLOR_OPTIONS: List<Int?> = listOf(
+            null,
+            CoreR.color.player_color_gray,
+            CoreR.color.player_color_red,
+            CoreR.color.player_color_blue,
+            CoreR.color.player_color_green,
+            CoreR.color.player_color_magenta,
+        )
     }
 
     private val selectedSet = MutableStateFlow<CardSet?>(null)
@@ -42,7 +43,7 @@ class HomeViewModel @Inject constructor(
     private val cardSetsError = MutableStateFlow(false)
     private val playersList = MutableStateFlow<List<HomePlayerInfo>>(emptyList())
 
-    val availableSetState = combine(
+    private val availableSetState = combine(
         getCardSetsUseCase(),
         selectedSet,
         cardSetsLoading,
@@ -64,18 +65,15 @@ class HomeViewModel @Inject constructor(
     }
 
     private val selectedLifeTotal = MutableStateFlow(20)
-    val lifeTotalState = selectedLifeTotal.map {
+    private val lifeTotalState = selectedLifeTotal.map {
         HomeItemState(
             items = LIFE_TOTAL_OPTIONS,
             selectedItem = it
         )
     }
 
-    val isAnyLoading = cardSetsLoading.map { it }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
     val state = combine(
-        isAnyLoading,
+        cardSetsLoading,
         availableSetState,
         playersList,
         lifeTotalState
@@ -134,7 +132,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun updatePlayerColor(index: Int, color: Color) {
-        if (index in playersList.value.indices && color in PLAYER_COLOR_OPTIONS) {
+        if (index in playersList.value.indices) {
             playersList.update {
                 playersList.value
                     .toMutableList()
@@ -160,7 +158,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onRefresh() {
-        if (!isAnyLoading.value) {
+        if (!cardSetsLoading.value) {
             viewModelScope.launch { fetchSchemes() }
         }
     }

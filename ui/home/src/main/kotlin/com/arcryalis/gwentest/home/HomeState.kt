@@ -8,7 +8,7 @@ sealed interface HomeState {
 
     data class Ready(
         val players: List<HomePlayerInfo>,
-        val playerColorOptions: List<Color>,
+        val playerColorOptions: List<Int?>,
         val startingLife: HomeItemState<Int>,
         val sets: HomeItemState<CardSet?>,
         val isRefreshing: Boolean
@@ -26,7 +26,7 @@ data class HomePlayerInfo(
     val color: Color = Color.Unspecified
 )
 
-interface HomeItemButtonState {
+sealed interface HomeItemButtonState {
 
     data object NoButton: HomeItemButtonState
 

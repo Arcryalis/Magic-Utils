@@ -25,7 +25,6 @@ import com.arcryalis.gwentest.core.navigation.GameRoute
 import com.arcryalis.gwentest.home.HomeScreen
 import com.arcryalis.gwentest.core.navigation.HomeRoute
 import com.arcryalis.gwentest.scheme.SchemeScreen
-import com.arcryalis.gwentest.scheme.SchemeViewModel
 import com.arcryalis.gwentest.core.navigation.SchemeRoute
 
 const val NAV_ANIMATION_DURATION = 300
@@ -54,14 +53,8 @@ fun ComposeApp(
                 }
             )
         }
-        entry<SchemeRoute> { route ->
-            val viewModel = hiltViewModel<SchemeViewModel, SchemeViewModel.Factory>(
-                creationCallback = { factory ->
-                    factory.create(route)
-                }
-            )
+        entry<SchemeRoute> {
             SchemeScreen(
-                viewModel = viewModel,
                 onNavigateBack = { backStack.removeLastOrNull() },
             )
         }

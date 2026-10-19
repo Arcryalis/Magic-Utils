@@ -21,11 +21,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,15 +29,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -56,7 +48,7 @@ fun HomeScreenReadyContent(
     players: List<HomePlayerInfo>,
     startingLifeState: HomeItemState<Int>,
     availableSetsState: HomeItemState<CardSet?>,
-    availablePlayerColors: List<Color>,
+    availablePlayerColors: List<Int?>,
     modifier: Modifier = Modifier,
     onSetSelected: (CardSet?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
@@ -67,6 +59,10 @@ fun HomeScreenReadyContent(
     onPlayerNameChange: (Int, String) -> Unit = { _, _ -> },
     onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> }
 ) {
+    val playerColors = availablePlayerColors.map { colorRes ->
+        colorRes?.let { colorResource(it) } ?: Color.Unspecified
+    }
+
     LazyColumn(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -119,15 +115,15 @@ fun HomeScreenReadyContent(
                     modifier = Modifier.weight(1f)
                 )
 
-                HomeColorSelector(
-                    availableColors = availablePlayerColors,
-                    selectedColor = playerInfo.color,
+                DropdownMenu(
+                    items = playerColors,
+                    selectedItem = playerInfo.color,
                     modifier = Modifier
                         .width(72.dp)
                         .align(Alignment.CenterVertically),
-                    onClickItem = { newColor ->
-                        onPlayerColorChange(index, newColor)
-                    }
+                    fieldLabel = { "" },
+                    leadingContent = { color -> ColorCircle(color = color) },
+                    onItemSelected = { newColor -> onPlayerColorChange(index, newColor) }
                 )
 
                 IconButton(
@@ -136,7 +132,10 @@ fun HomeScreenReadyContent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.remove_player),
+                        contentDescription = stringResource(
+                            R.string.remove_player,
+                            playerInfo.name.ifEmpty { label }
+                        ),
                         tint = Color.Red
                     )
                 }
@@ -224,11 +223,13 @@ private fun HomeCardSetSelector(
                     onClick = onNavigateToSchemeScreen
                 )
 
-                else -> HomeItemStateIcon(
+                HomeItemButtonState.Error -> HomeItemStateIcon(
                     imageVector = Icons.Default.Warning,
                     contentDescription = stringResource(R.string.download_schemes_error),
                     onClick = onDownloadSchemesClick
                 )
+
+                HomeItemButtonState.NoButton -> Unit
             }
         }
     }
@@ -251,56 +252,6 @@ private fun HomeItemStateIcon(
             contentDescription = contentDescription,
             tint = tint
         )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun HomeColorSelector(
-    availableColors: List<Color>,
-    selectedColor: Color,
-    modifier: Modifier = Modifier,
-    onClickItem: (Color) -> Unit = {},
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = it },
-        modifier = modifier
-    ) {
-        OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            readOnly = true,
-            label = { Text("") },
-            leadingIcon = {
-                ColorCircle(color = selectedColor)
-            },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            availableColors.forEach { color ->
-                DropdownMenuItem(
-                    text = {
-                        ColorCircle(color = color)
-                    },
-                    onClick = {
-                        onClickItem(color)
-                        expanded = false
-                    }
-                )
-            }
-        }
     }
 }
 

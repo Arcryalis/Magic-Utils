@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Selectable player background colors (20% alpha). "No color" is represented in code. -->
+    <color name="player_color_gray">#33CCCCCC</color>
+    <color name="player_color_red">#33FF0000</color>
+    <color name="player_color_blue">#330000FF</color>
+    <color name="player_color_green">#3300FF00</color>
+    <color name="player_color_magenta">#33FF00FF</color>
+</resources>

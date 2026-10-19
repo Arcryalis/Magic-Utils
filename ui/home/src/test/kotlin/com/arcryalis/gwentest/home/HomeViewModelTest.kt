@@ -82,13 +82,16 @@ class HomeViewModelTest {
 
         val initialState = sut.state.value
         assertIs<HomeState.Ready>(initialState)
-        assertEquals(emptyList(), initialState.players)
+        assertEquals(emptyList<HomePlayerInfo>(), initialState.players)
 
         sut.addPlayer()
-        assertEquals(listOf(""), sut.state.value.let { val r = it as HomeState.Ready; r.players })
+        val result = (sut.state.value as? HomeState.Ready)?.players?.map { it.name }
+
+        assertEquals(listOf(""), result)
 
         sut.addPlayer()
-        assertEquals(listOf("", ""), sut.state.value.let { val r = it as HomeState.Ready; r.players })
+        val updatedResult = (sut.state.value as? HomeState.Ready)?.players?.map { it.name }
+        assertEquals(listOf("", ""), updatedResult)
     }
 
     @Test
@@ -116,7 +119,7 @@ class HomeViewModelTest {
         sut.addPlayer()
 
         sut.removePlayer(1)
-        assertEquals(listOf("", ""), (sut.state.value as HomeState.Ready).players)
+        assertEquals(listOf("", ""), (sut.state.value as HomeState.Ready).players.map { it.name })
     }
 
     @Test
@@ -126,10 +129,10 @@ class HomeViewModelTest {
 
         sut.addPlayer()
         sut.removePlayer(5)
-        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players)
+        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players.map { it.name })
 
         sut.removePlayer(-1)
-        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players)
+        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players.map { it.name })
     }
 
     @Test
@@ -159,7 +162,7 @@ class HomeViewModelTest {
         sut.updatePlayerName(0, "Some player")
         sut.updatePlayerName(1, "Different")
 
-        assertEquals(listOf("Some player", "Different"), (sut.state.value as HomeState.Ready).players)
+        assertEquals(listOf("Some player", "Different"), (sut.state.value as HomeState.Ready).players.map { it.name })
     }
 
     @Test
@@ -172,6 +175,6 @@ class HomeViewModelTest {
         sut.updatePlayerName(5, "Out of scope")
         sut.updatePlayerName(-1, "Invalid")
 
-        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players)
+        assertEquals(listOf(""), (sut.state.value as HomeState.Ready).players.map { it.name })
     }
 }
