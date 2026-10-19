@@ -136,7 +136,7 @@ fun HomeScreenReadyContent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.remove_player, playerInfo),
+                        contentDescription = stringResource(R.string.remove_player),
                         tint = Color.Red
                     )
                 }

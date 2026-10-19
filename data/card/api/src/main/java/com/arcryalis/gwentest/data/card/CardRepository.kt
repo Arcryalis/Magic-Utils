@@ -16,6 +16,6 @@ interface CardRepository {
 
     fun getAllCards(): Flow<List<CardInfo>>
 
-    suspend fun getCardBackUrl(): String
+    fun getCardBackUrl(): String
 
 }

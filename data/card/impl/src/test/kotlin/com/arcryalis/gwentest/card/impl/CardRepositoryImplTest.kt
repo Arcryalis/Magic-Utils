@@ -179,7 +179,7 @@ class CardRepositoryImplTest {
         sut.downloadSchemes()
 
         assertContentEquals(
-            listOf(cardBackUrl, smallUrl, smallUrl2, largeUrl),
+            listOf(cardBackUrl, smallUrl, largeUrl, smallUrl2),
             imageCacher.requestedUrls
         )
     }

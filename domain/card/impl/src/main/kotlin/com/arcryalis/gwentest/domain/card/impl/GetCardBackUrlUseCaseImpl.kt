@@ -7,5 +7,5 @@ import javax.inject.Inject
 class GetCardBackUrlUseCaseImpl @Inject constructor(
     private val cardRepo: CardRepository
 ) : GetCardBackUrlUseCase {
-    override suspend operator fun invoke(): String = cardRepo.getCardBackUrl()
+    override operator fun invoke(): String = cardRepo.getCardBackUrl()
 }

@@ -25,5 +25,5 @@ class MockCardRepository(
     override fun getAllCards(): Flow<List<CardInfo>> =
         flowOf(cardsBySet.values.flatten())
 
-    override suspend fun getCardBackUrl(): String = cardBackUrl
+    override fun getCardBackUrl(): String = cardBackUrl
 }
