@@ -108,6 +108,17 @@ class CameraViewModelTest {
     }
 
     @Test
+    fun whenCameraError_thenStateIsReadyWithoutCamera() {
+        setupSut()
+
+        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+        sut.onCameraError()
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertFalse(state.showCamera)
+    }
+
+    @Test
     fun whenInputChanged_thenStateHasInput() {
         setupSut()
 

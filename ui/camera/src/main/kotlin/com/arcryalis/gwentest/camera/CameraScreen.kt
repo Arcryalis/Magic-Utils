@@ -18,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,7 +29,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcryalis.gwentest.core.LoadingScreen
 import com.arcryalis.gwentest.core.NavigationScaffold
@@ -44,27 +42,19 @@ fun CameraScreen(
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val currentState = state.value
-    if (currentState is CameraState.Ready && currentState.showCamera) {
-        LaunchedEffect(lifecycleOwner) {
-            viewModel.bindToCamera(context.applicationContext, lifecycleOwner)
-        }
-    }
-
     NavigationScaffold(
         modifier = modifier,
         onNavigateBack = onNavigateBack,
     ) { scaffoldModifier ->
         CameraScreen(
-            state = currentState,
+            state = state.value,
             modifier = scaffoldModifier
                 .fillMaxSize()
                 .consumeWindowInsets(WindowInsets.navigationBars)
                 .imePadding(),
             onUseManualInputClick = viewModel::onUseManualInputClick,
             onInputChange = viewModel::onInputChange,
+            onCameraError = viewModel::onCameraError,
             onCameraStatusChecked = viewModel::onCameraStatusChecked,
             onPermissionResult = viewModel::onPermissionResult
         )
@@ -77,6 +67,7 @@ fun CameraScreen(
     modifier: Modifier = Modifier,
     onUseManualInputClick: () -> Unit = {},
     onInputChange: (String) -> Unit = {},
+    onCameraError: () -> Unit = {},
     onCameraStatusChecked: (hasCamera: Boolean, permissionGranted: Boolean) -> Unit = { _, _ -> },
     onPermissionResult: (granted: Boolean, shouldShowRationale: Boolean) -> Unit = { _, _ -> }
 ) {
@@ -99,7 +90,8 @@ fun CameraScreen(
         is CameraState.Ready -> CameraReadyScreen(
             state = state,
             modifier = modifier,
-            onInputChange = onInputChange
+            onInputChange = onInputChange,
+            onCameraError = onCameraError
         )
     }
 }
@@ -214,7 +206,6 @@ fun CameraReadyPreview() {
         CameraScreen(
             state = CameraState.Ready(
                 showCamera = true,
-                surfaceRequest = null,
                 cardName = "Card name"
             )
         )
@@ -228,7 +219,6 @@ fun CameraReadyLandscapePreview() {
         CameraScreen(
             state = CameraState.Ready(
                 showCamera = true,
-                surfaceRequest = null,
                 cardName = ""
             )
         )
@@ -242,7 +232,6 @@ fun CameraReadyManualInputPreview() {
         CameraScreen(
             state = CameraState.Ready(
                 showCamera = false,
-                surfaceRequest = null,
                 cardName = ""
             )
         )
