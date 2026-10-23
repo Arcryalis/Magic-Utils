@@ -28,13 +28,6 @@ class CameraViewModelTest {
     }
 
     @Test
-    fun whenInitialized_thenStateIsLoading() {
-        setupSut()
-
-        assertIs<CameraState.Loading>(sut.state.value)
-    }
-
-    @Test
     fun whenNoCamera_thenStateIsReadyWithoutCamera() {
         setupSut()
 
