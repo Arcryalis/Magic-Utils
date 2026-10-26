@@ -7,6 +7,12 @@ plugins {
 
 android {
     namespace = "com.arcryalis.gwentest.camera"
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -25,7 +31,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(projects.ui.core)
+    implementation(projects.domain.ocr.api)
 
     testImplementation(testFixtures(projects.ui.core))
+    testImplementation(testFixtures(projects.domain.ocr.api))
+    testImplementation(libs.robolectric)
     testImplementation(libs.kotlinx.coroutines.test)
 }

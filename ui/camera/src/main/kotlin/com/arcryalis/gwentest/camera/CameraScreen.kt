@@ -2,6 +2,7 @@ package com.arcryalis.gwentest.camera
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -56,7 +57,9 @@ fun CameraScreen(
             onInputChange = viewModel::onInputChange,
             onCameraError = viewModel::onCameraError,
             onCameraStatusChecked = viewModel::onCameraStatusChecked,
-            onPermissionResult = viewModel::onPermissionResult
+            onPermissionResult = viewModel::onPermissionResult,
+            onFrame = viewModel::onFrame,
+            onScanClick = viewModel::onScanClick
         )
     }
 }
@@ -69,7 +72,9 @@ fun CameraScreen(
     onInputChange: (String) -> Unit = {},
     onCameraError: () -> Unit = {},
     onCameraStatusChecked: (hasCamera: Boolean, permissionGranted: Boolean) -> Unit = { _, _ -> },
-    onPermissionResult: (granted: Boolean, shouldShowRationale: Boolean) -> Unit = { _, _ -> }
+    onPermissionResult: (granted: Boolean, shouldShowRationale: Boolean) -> Unit = { _, _ -> },
+    onFrame: (Bitmap, () -> Unit) -> Unit = { _, onProcessed -> onProcessed() },
+    onScanClick: () -> Unit = {}
 ) {
     HandleCameraPermission(
         onCameraStatusChecked = onCameraStatusChecked
@@ -91,7 +96,9 @@ fun CameraScreen(
             state = state,
             modifier = modifier,
             onInputChange = onInputChange,
-            onCameraError = onCameraError
+            onCameraError = onCameraError,
+            onFrame = onFrame,
+            onScanClick = onScanClick
         )
     }
 }
@@ -206,7 +213,22 @@ fun CameraReadyPreview() {
         CameraScreen(
             state = CameraState.Ready(
                 showCamera = true,
-                cardName = "Card name"
+                cardName = "Card name",
+                isScanning = false
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CameraReadyScanningPreview() {
+    GwenTestTheme {
+        CameraScreen(
+            state = CameraState.Ready(
+                showCamera = true,
+                cardName = "",
+                isScanning = true
             )
         )
     }
@@ -219,7 +241,8 @@ fun CameraReadyLandscapePreview() {
         CameraScreen(
             state = CameraState.Ready(
                 showCamera = true,
-                cardName = ""
+                cardName = "",
+                isScanning = false
             )
         )
     }
@@ -232,7 +255,8 @@ fun CameraReadyManualInputPreview() {
         CameraScreen(
             state = CameraState.Ready(
                 showCamera = false,
-                cardName = ""
+                cardName = "",
+                isScanning = false
             )
         )
     }

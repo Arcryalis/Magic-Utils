@@ -26,6 +26,8 @@ dependencies {
 
     implementation(projects.domain.card.api)
     implementation(projects.domain.card.impl)
+    implementation(projects.domain.ocr.api)
+    implementation(projects.domain.ocr.impl)
     implementation(projects.data.card.api)
     implementation(projects.data.card.impl)
     implementation(projects.data.local.api)

@@ -6,5 +6,6 @@ sealed interface CameraState {
     data class Ready(
         val showCamera: Boolean,
         val cardName: String,
+        val isScanning: Boolean,
     ) : CameraState
 }
