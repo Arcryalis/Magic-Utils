@@ -15,6 +15,7 @@ import com.arcryalis.gwentest.network.MockCoilImageCacher
 import com.arcryalis.gwentest.remote.RemoteResponse
 import com.arcryalis.gwentest.remote.scryfall.MockScryfallDataSource
 import com.arcryalis.gwentest.remote.scryfall.TestScryfallDataDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallCatalogDto
 import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallPaginationDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -278,5 +279,26 @@ class CardRepositoryImplTest {
         val result = sut.getCardBackUrl()
 
         assertEquals(expected, result)
+    }
+
+    @Test
+    fun givenSuccessfulAutocompleteResponse_whenAutocompleteCardNames_thenReturnsNames() = runTest {
+        val names = listOf("Scheme One", "Scheme Two")
+        dataSource.autocompleteResponse = RemoteResponse.Success(ScryfallCatalogDto(names))
+
+        val result = sut.autocompleteCardNames("Scheme")
+
+        assertEquals(names, result.getOrNull())
+        assertEquals("Scheme", dataSource.lastAutocompleteQuery)
+    }
+
+    @Test
+    fun givenErrorAutocompleteResponse_whenAutocompleteCardNames_thenReturnsFailure() = runTest {
+        dataSource.autocompleteResponse = RemoteResponse.Error("Some error")
+
+        val result = sut.autocompleteCardNames("Scheme")
+
+        assertTrue(result.isFailure)
+        assertEquals("Some error", result.exceptionOrNull()?.message)
     }
 }

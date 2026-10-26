@@ -5,6 +5,7 @@ import com.arcryalis.gwentest.remote.RemoteResponse.Error
 import com.arcryalis.gwentest.remote.RemoteResponse.Success
 import com.arcryalis.gwentest.remote.impl.api.ScryfallApi
 import com.arcryalis.gwentest.remote.scryfall.ScryfallDataSource
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallCatalogDto
 import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallPaginationDto
 import com.haroldadmin.cnradapter.NetworkResponse
 import javax.inject.Inject
@@ -27,6 +28,9 @@ class ScryfallDataSourceImpl @Inject constructor(
 
         return handleResponse(response)
     }
+
+    override suspend fun autocompleteCardNames(query: String): RemoteResponse<ScryfallCatalogDto> =
+        handleResponse(scryfallApi.autocompleteCardNames(query = query))
 
     private fun <T> handleResponse(response: NetworkResponse<T, Unit>): RemoteResponse<T> = when (response) {
         is NetworkResponse.Success -> Success(response.body)

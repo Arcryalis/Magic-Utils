@@ -15,6 +15,7 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -70,9 +72,11 @@ private class FrameAnalysis(
 @Composable
 fun CameraFeedContent(
     isScanning: Boolean,
+    hasCardName: Boolean,
     modifier: Modifier = Modifier,
     onFrame: (Bitmap, () -> Unit) -> Unit = { _, onProcessed -> onProcessed() },
-    onCameraError: () -> Unit = {}
+    onCameraError: () -> Unit = {},
+    onScanClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -91,7 +95,8 @@ fun CameraFeedContent(
         }
     }
 
-    LaunchedEffect(lifecycleOwner) {
+    LaunchedEffect(lifecycleOwner, isScanning) {
+        if (!isScanning) return@LaunchedEffect
         bindToCamera(
             context = context.applicationContext,
             lifecycleOwner = lifecycleOwner,
@@ -123,9 +128,37 @@ fun CameraFeedContent(
             )
         }
 
-        NameStripOverlay(
-            modifier = Modifier.fillMaxSize()
-        )
+        if (isScanning) {
+            NameStripOverlay(
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            PausedOverlay(
+                hasCardName = hasCardName,
+                modifier = Modifier.fillMaxSize(),
+                onScanClick = onScanClick
+            )
+        }
+    }
+}
+
+@Composable
+private fun PausedOverlay(
+    hasCardName: Boolean,
+    modifier: Modifier = Modifier,
+    onScanClick: () -> Unit = {}
+) {
+    Box(
+        modifier = modifier.background(Color.DarkGray),
+        contentAlignment = Alignment.Center
+    ) {
+        Button(onClick = onScanClick) {
+            Text(
+                text = stringResource(
+                    if (hasCardName) R.string.camera_rescan else R.string.camera_scan
+                )
+            )
+        }
     }
 }
 

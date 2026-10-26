@@ -2,7 +2,9 @@ package com.arcryalis.gwentest.camera
 
 import android.graphics.Bitmap
 import com.arcryalis.gwentest.core.BaseDispatchRule
+import com.arcryalis.gwentest.domain.card.MockAutocompleteCardNamesUseCase
 import com.arcryalis.gwentest.domain.ocr.MockRecogniseTextUseCase
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -26,12 +28,18 @@ class CameraViewModelTest {
     private val testScope = TestScope(mainDispatcher.testDispatcher)
 
     private lateinit var recogniseText: MockRecogniseTextUseCase
+    private lateinit var autocompleteCardNames: MockAutocompleteCardNamesUseCase
 
     private lateinit var sut: CameraViewModel
 
-    private fun setupSut(results: List<Result<String>> = emptyList()) {
+    private fun setupSut(
+        results: List<Result<String>> = emptyList(),
+        autocompleteResults: List<Result<List<String>>> = emptyList(),
+        autocompleteGate: CompletableDeferred<Unit>? = null
+    ) {
         recogniseText = MockRecogniseTextUseCase(results)
-        sut = CameraViewModel(recogniseText)
+        autocompleteCardNames = MockAutocompleteCardNamesUseCase(autocompleteResults, autocompleteGate)
+        sut = CameraViewModel(recogniseText, autocompleteCardNames)
         testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
     }
 
@@ -294,6 +302,165 @@ class CameraViewModelTest {
         sut.onFrame(createFrame()) { processed = true }
 
         assertTrue(processed)
+    }
+
+    @Test
+    fun whenSubmitClicked_thenResultsShown() {
+        setupSut(autocompleteResults = listOf(Result.success(listOf("Geralt", "Geralt of Rivia"))))
+
+        sut.onCameraStatusChecked(hasCamera = false, permissionGranted = false)
+        sut.onInputChange(" Geralt ")
+        sut.onSubmitClick()
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertEquals("Geralt", autocompleteCardNames.lastQuery)
+        assertEquals(CameraResultsState.Results(listOf("Geralt", "Geralt of Rivia")), state.results)
+    }
+
+    @Test
+    fun whenSubmitReturnsEmpty_thenEmptyState() {
+        setupSut(autocompleteResults = listOf(Result.success(emptyList())))
+
+        sut.onCameraStatusChecked(hasCamera = false, permissionGranted = false)
+        sut.onInputChange("Zzzz")
+        sut.onSubmitClick()
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertEquals(CameraResultsState.Empty, state.results)
+    }
+
+    @Test
+    fun whenSubmitFails_thenErrorState() {
+        setupSut(autocompleteResults = listOf(Result.failure(IllegalStateException())))
+
+        sut.onCameraStatusChecked(hasCamera = false, permissionGranted = false)
+        sut.onInputChange("Geralt")
+        sut.onSubmitClick()
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertEquals(CameraResultsState.Error, state.results)
+    }
+
+    @Test
+    fun whenNameUnderTwoChars_thenCannotSubmit() {
+        setupSut()
+
+        sut.onCameraStatusChecked(hasCamera = false, permissionGranted = false)
+        sut.onInputChange(" G ")
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertFalse(state.canSubmit)
+    }
+
+    @Test
+    fun whenNameTwoChars_thenCanSubmit() {
+        setupSut()
+
+        sut.onCameraStatusChecked(hasCamera = false, permissionGranted = false)
+        sut.onInputChange("Ge")
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertTrue(state.canSubmit)
+    }
+
+    @Test
+    fun whenSubmitWithShortName_thenNotRequestedAndErrorShown() {
+        setupSut()
+
+        sut.onCameraStatusChecked(hasCamera = false, permissionGranted = false)
+        sut.onInputChange("G")
+        sut.onSubmitClick()
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertEquals(0, autocompleteCardNames.invocationCount)
+        assertTrue(state.showMinLengthError)
+        assertEquals(CameraResultsState.Idle, state.results)
+    }
+
+    @Test
+    fun whenInputChangedAfterBlockedSubmit_thenErrorCleared() {
+        setupSut()
+
+        sut.onCameraStatusChecked(hasCamera = false, permissionGranted = false)
+        sut.onInputChange("G")
+        sut.onSubmitClick()
+        sut.onInputChange("Ge")
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertFalse(state.showMinLengthError)
+    }
+
+    @Test
+    fun whenInputChangedAfterResults_thenResultsKept() {
+        setupSut(autocompleteResults = listOf(Result.success(listOf("Geralt"))))
+
+        sut.onCameraStatusChecked(hasCamera = false, permissionGranted = false)
+        sut.onInputChange("Geralt")
+        sut.onSubmitClick()
+        sut.onInputChange("Yen")
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertEquals(CameraResultsState.Results(listOf("Geralt")), state.results)
+    }
+
+    @Test
+    fun whenSubmitInProgress_thenLoadingAndCannotSubmit() {
+        setupSut(autocompleteGate = CompletableDeferred())
+
+        sut.onCameraStatusChecked(hasCamera = false, permissionGranted = false)
+        sut.onInputChange("Geralt")
+        sut.onSubmitClick()
+        sut.onSubmitClick()
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertEquals(CameraResultsState.Loading, state.results)
+        assertFalse(state.canSubmit)
+        assertEquals(1, autocompleteCardNames.invocationCount)
+    }
+
+    @Test
+    fun whenScanSucceeds_thenNotSubmitted() {
+        setupSut(results = List(3) { Result.success("Geralt") })
+
+        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+        sut.onScanClick()
+        repeat(3) { sut.onFrame(createFrame()) }
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertEquals("Geralt", state.cardName)
+        assertEquals(0, autocompleteCardNames.invocationCount)
+        assertEquals(CameraResultsState.Idle, state.results)
+    }
+
+    @Test
+    fun whenScanClicked_thenResultsCleared() {
+        setupSut(autocompleteResults = listOf(Result.success(listOf("Geralt"))))
+
+        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+        sut.onInputChange("Geralt")
+        sut.onSubmitClick()
+        sut.onScanClick()
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertEquals(CameraResultsState.Idle, state.results)
+    }
+
+    @Test
+    fun whenScanClickedDuringRequest_thenResultsCleared() {
+        val gate = CompletableDeferred<Unit>()
+        setupSut(
+            autocompleteResults = listOf(Result.success(listOf("Geralt"))),
+            autocompleteGate = gate
+        )
+
+        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+        sut.onInputChange("Geralt")
+        sut.onSubmitClick()
+        sut.onScanClick()
+        gate.complete(Unit)
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertEquals(CameraResultsState.Idle, state.results)
     }
 
     private fun createFrame(): Bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)

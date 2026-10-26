@@ -74,4 +74,10 @@ class CardRepositoryImpl @Inject constructor(
     }
 
     override fun getCardBackUrl(): String = context.getString(R.string.card_back_url)
+
+    override suspend fun autocompleteCardNames(query: String): Result<List<String>> =
+        when (val response = dataSource.autocompleteCardNames(query)) {
+            is RemoteResponse.Success -> Result.success(response.data.data)
+            is RemoteResponse.Error -> Result.failure(Exception(response.message))
+        }
 }

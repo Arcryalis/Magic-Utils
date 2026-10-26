@@ -18,4 +18,6 @@ interface CardRepository {
 
     fun getCardBackUrl(): String
 
+    suspend fun autocompleteCardNames(query: String): Result<List<String>>
+
 }

@@ -55,6 +55,7 @@ fun CameraScreen(
                 .imePadding(),
             onUseManualInputClick = viewModel::onUseManualInputClick,
             onInputChange = viewModel::onInputChange,
+            onSubmitClick = viewModel::onSubmitClick,
             onCameraError = viewModel::onCameraError,
             onCameraStatusChecked = viewModel::onCameraStatusChecked,
             onPermissionResult = viewModel::onPermissionResult,
@@ -70,6 +71,7 @@ fun CameraScreen(
     modifier: Modifier = Modifier,
     onUseManualInputClick: () -> Unit = {},
     onInputChange: (String) -> Unit = {},
+    onSubmitClick: () -> Unit = {},
     onCameraError: () -> Unit = {},
     onCameraStatusChecked: (hasCamera: Boolean, permissionGranted: Boolean) -> Unit = { _, _ -> },
     onPermissionResult: (granted: Boolean, shouldShowRationale: Boolean) -> Unit = { _, _ -> },
@@ -96,6 +98,7 @@ fun CameraScreen(
             state = state,
             modifier = modifier,
             onInputChange = onInputChange,
+            onSubmitClick = onSubmitClick,
             onCameraError = onCameraError,
             onFrame = onFrame,
             onScanClick = onScanClick
@@ -257,6 +260,86 @@ fun CameraReadyManualInputPreview() {
                 showCamera = false,
                 cardName = "",
                 isScanning = false
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CameraReadyResultsPreview() {
+    GwenTestTheme {
+        CameraScreen(
+            state = CameraState.Ready(
+                showCamera = true,
+                cardName = "Thal",
+                isScanning = false,
+                results = CameraResultsState.Results(
+                    listOf("Thallid", "Thalakos Seer", "Thalia, the Survivor")
+                ),
+                canSubmit = true
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CameraReadyLoadingResultsPreview() {
+    GwenTestTheme {
+        CameraScreen(
+            state = CameraState.Ready(
+                showCamera = true,
+                cardName = "Thal",
+                isScanning = false,
+                results = CameraResultsState.Loading
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CameraReadyEmptyResultsPreview() {
+    GwenTestTheme {
+        CameraScreen(
+            state = CameraState.Ready(
+                showCamera = false,
+                cardName = "Zzzz",
+                isScanning = false,
+                results = CameraResultsState.Empty,
+                canSubmit = true
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CameraReadyErrorResultsPreview() {
+    GwenTestTheme {
+        CameraScreen(
+            state = CameraState.Ready(
+                showCamera = false,
+                cardName = "Thal",
+                isScanning = false,
+                results = CameraResultsState.Error,
+                canSubmit = true
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CameraReadyMinLengthErrorPreview() {
+    GwenTestTheme {
+        CameraScreen(
+            state = CameraState.Ready(
+                showCamera = false,
+                cardName = "T",
+                isScanning = false,
+                showMinLengthError = true
             )
         )
     }

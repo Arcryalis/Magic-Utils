@@ -5,7 +5,10 @@
     <string name="camera_use_manual_input">Use manual input</string>
     <string name="camera_input_label">Card name</string>
     <string name="camera_name_strip_hint">Align card name here</string>
-    <string name="camera_scanning">Scanning…</string>
     <string name="camera_scan">Scan</string>
     <string name="camera_rescan">Rescan</string>
+    <string name="camera_submit">Search card name</string>
+    <string name="camera_input_min_length">Enter at least 2 characters</string>
+    <string name="camera_results_empty">No matching cards</string>
+    <string name="camera_results_error">Couldn\'t load results</string>
 </resources>
