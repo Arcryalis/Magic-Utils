@@ -16,6 +16,10 @@ interface CardRepository {
 
     fun getAllCards(): Flow<List<CardInfo>>
 
-    suspend fun getCardBackUrl(): String
+    fun getCardBackUrl(): String
+
+    suspend fun autocompleteCardNames(query: String): Result<List<String>>
+
+    suspend fun getCardmarketUrl(cardName: String): Result<String>
 
 }

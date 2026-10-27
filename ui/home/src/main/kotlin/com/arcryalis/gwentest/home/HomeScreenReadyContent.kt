@@ -1,5 +1,7 @@
 package com.arcryalis.gwentest.home
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,9 +9,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
@@ -17,9 +21,11 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,8 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arcryalis.gwentest.core.DropdownMenu
@@ -37,9 +45,10 @@ import com.arcryalis.gwentest.data.card.model.CardSet
 
 @Composable
 fun HomeScreenReadyContent(
-    players: List<String>,
+    players: List<HomePlayerInfo>,
     startingLifeState: HomeItemState<Int>,
     availableSetsState: HomeItemState<CardSet?>,
+    availablePlayerColors: List<Int?>,
     modifier: Modifier = Modifier,
     onSetSelected: (CardSet?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
@@ -47,8 +56,13 @@ fun HomeScreenReadyContent(
     onDownloadSchemesClick: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {},
-    onPlayerNameChange: (Int, String) -> Unit = { _, _ -> }
+    onPlayerNameChange: (Int, String) -> Unit = { _, _ -> },
+    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> }
 ) {
+    val playerColors = availablePlayerColors.map { colorRes ->
+        colorRes?.let { colorResource(it) } ?: Color.Unspecified
+    }
+
     LazyColumn(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,9 +71,7 @@ fun HomeScreenReadyContent(
     ) {
         item {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 4.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -72,7 +84,7 @@ fun HomeScreenReadyContent(
                 IconButton(
                     onClick = onAddPlayer,
                     enabled = players.size < 4,
-                    modifier = Modifier.width(36.dp)
+                    modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -82,7 +94,7 @@ fun HomeScreenReadyContent(
             }
         }
 
-        itemsIndexed(players) { index, playerName ->
+        itemsIndexed(players) { index, playerInfo ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -91,16 +103,28 @@ fun HomeScreenReadyContent(
                 val label = stringResource(R.string.player_name_label, index + 1)
 
                 OutlinedTextField(
-                    value = playerName,
+                    value = playerInfo.name,
                     onValueChange = { newName -> onPlayerNameChange(index, newName) },
                     label = {
                         Text(
                             text = label,
-                            modifier = Modifier.alpha(if (playerName.isEmpty()) 0.5f else 1f)
+                            modifier = Modifier.alpha(if (playerInfo.name.isEmpty()) 0.5f else 1f)
                         )
                     },
                     singleLine = true,
                     modifier = Modifier.weight(1f)
+                )
+
+                DropdownMenu(
+                    items = playerColors,
+                    selectedItem = playerInfo.color,
+                    titleLabel = "",
+                    modifier = Modifier
+                        .width(72.dp)
+                        .align(Alignment.CenterVertically),
+                    fieldLabel = { "" },
+                    leadingContent = { color -> ColorCircle(color = color) },
+                    onItemSelected = { newColor -> onPlayerColorChange(index, newColor) }
                 )
 
                 IconButton(
@@ -109,7 +133,10 @@ fun HomeScreenReadyContent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(R.string.remove_player, playerName),
+                        contentDescription = stringResource(
+                            R.string.remove_player,
+                            playerInfo.name.ifEmpty { label }
+                        ),
                         tint = Color.Red
                     )
                 }
@@ -126,6 +153,19 @@ fun HomeScreenReadyContent(
                     onItemSelected = onLifeTotalSelected
                 )
             }
+        }
+
+        item {
+            HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
+        }
+
+        item {
+            Text(
+                text = stringResource(R.string.select_archenemy_label),
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
         item {
@@ -184,11 +224,13 @@ private fun HomeCardSetSelector(
                     onClick = onNavigateToSchemeScreen
                 )
 
-                else -> HomeItemStateIcon(
+                HomeItemButtonState.Error -> HomeItemStateIcon(
                     imageVector = Icons.Default.Warning,
                     contentDescription = stringResource(R.string.download_schemes_error),
                     onClick = onDownloadSchemesClick
                 )
+
+                HomeItemButtonState.NoButton -> Unit
             }
         }
     }
@@ -212,4 +254,27 @@ private fun HomeItemStateIcon(
             tint = tint
         )
     }
+}
+
+@Composable
+private fun ColorCircle(
+    color: Color,
+    modifier: Modifier = Modifier,
+    size: Dp = 20.dp
+) {
+    Box(
+        modifier = modifier
+            .size(size)
+            .background(
+                color = if (color == Color.Unspecified) Color.Transparent else color,
+                shape = CircleShape
+            )
+            .then(
+                if (color == Color.Unspecified) {
+                    Modifier.border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                } else {
+                    Modifier.border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), CircleShape)
+                }
+            )
+    )
 }

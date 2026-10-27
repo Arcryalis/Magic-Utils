@@ -18,7 +18,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import kotlin.collections.distinct
 
 class CardRepositoryImpl @Inject constructor(
     private val cardInfoStore: CardInfoDataStore,
@@ -33,47 +32,28 @@ class CardRepositoryImpl @Inject constructor(
     override suspend fun downloadSchemes(): Boolean {
         imageCacher.queueImageCacheRequest(context.getString(R.string.card_back_url))
 
-        return handleDownloadSetPage(1)
-    }
+        var page = 1
+        do {
+            val response = dataSource.getSchemes(page)
+            if (response !is RemoteResponse.Success) return false
 
-    private suspend fun handleDownloadSetPage(pageToFetch: Int): Boolean {
-        val response = dataSource.getSchemes(pageToFetch)
-        return when (response) {
-            is RemoteResponse.Success -> {
-                val data = response.data.data
+            val data = response.data.data
+            cardSetStore.insertSets(data.toDistinctSetEntity())
+            cardInfoStore.insertCards(data.toInfoEntity())
+            cacheFaceImages(data)
 
-                cardSetStore.insertSets(data.toDistinctSetEntity())
-                cardInfoStore.insertCards(data.toInfoEntity())
+            page++
+        } while (response.data.hasMore)
 
-                cacheFaceImages(data)
-
-                val hasMore = response.data.hasMore
-                if (hasMore) {
-                    //Download next page recursively
-                    handleDownloadSetPage(pageToFetch + 1)
-                } else {
-                    true
-                }
-            }
-
-            is RemoteResponse.Error -> {
-                // Do nothing
-                false
-            }
-        }
+        return true
     }
 
     private fun cacheFaceImages(data: List<ScryfallDataDto>) {
-        val smallImages = data.mapNotNull {
-            it.imageUris?.small
-        }
-        val largeImages = data.mapNotNull {
-            it.imageUris?.large
+        val urls = data.flatMap { dto ->
+            listOfNotNull(dto.imageUris?.small, dto.imageUris?.large)
         }
 
-        imageCacher.queueImageCacheRequests(
-            (smallImages + largeImages).distinct()
-        )
+        imageCacher.queueImageCacheRequests(urls.distinct())
     }
 
     override fun getAvailableSets(): Flow<List<CardSet>> = cardSetStore.getSets()
@@ -93,5 +73,24 @@ class CardRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCardBackUrl(): String = context.getString(R.string.card_back_url)
+    override fun getCardBackUrl(): String = context.getString(R.string.card_back_url)
+
+    override suspend fun autocompleteCardNames(query: String): Result<List<String>> =
+        when (val response = dataSource.autocompleteCardNames(query)) {
+            is RemoteResponse.Success -> Result.success(response.data.data)
+            is RemoteResponse.Error -> Result.failure(Exception(response.message))
+        }
+
+    override suspend fun getCardmarketUrl(cardName: String): Result<String> =
+        when (val response = dataSource.getCardByExactName(cardName)) {
+            is RemoteResponse.Success -> {
+                val url = response.data.purchaseUris?.cardmarket?.toCardmarketProductUrl()
+                if (url != null) {
+                    Result.success(url)
+                } else {
+                    Result.failure(Exception("No Cardmarket url"))
+                }
+            }
+            is RemoteResponse.Error -> Result.failure(Exception(response.message))
+        }
 }

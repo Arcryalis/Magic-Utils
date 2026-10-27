@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.gwentest.kotlin.library)
-    alias(libs.plugins.gwentest.kotlin.hilt)
 }
 
 android {
@@ -12,9 +11,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.kotlinx.coroutines.core)
-
+    api(libs.kotlinx.coroutines.core)
     api(projects.data.card.api)
-
-    testFixturesImplementation(libs.kotlinx.coroutines.core)
 }

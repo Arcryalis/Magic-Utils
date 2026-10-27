@@ -1,15 +1,18 @@
 package com.arcryalis.gwentest.home
 
+import androidx.compose.ui.graphics.Color
 import com.arcryalis.gwentest.data.card.model.CardSet
 
 sealed interface HomeState {
     data object Initial: HomeState
 
     data class Ready(
-        val players: List<String>,
+        val players: List<HomePlayerInfo>,
+        val playerColorOptions: List<Int?>,
         val startingLife: HomeItemState<Int>,
         val sets: HomeItemState<CardSet?>,
-        val isRefreshing: Boolean
+        val isRefreshing: Boolean,
+        val canStartGame: Boolean
     ): HomeState
 }
 
@@ -19,7 +22,12 @@ data class HomeItemState<T>(
     val buttonState: HomeItemButtonState = HomeItemButtonState.NoButton
 )
 
-interface HomeItemButtonState {
+data class HomePlayerInfo(
+    val name: String = "",
+    val color: Color = Color.Unspecified
+)
+
+sealed interface HomeItemButtonState {
 
     data object NoButton: HomeItemButtonState
 

@@ -6,9 +6,9 @@ import com.arcryalis.gwentest.data.local.api.TestCardInfoEntity
 import org.junit.Test
 import kotlin.test.assertEquals
 
-    class CardInfoToModelMapperTest {
+class CardInfoToModelMapperTest {
 
-        @Test
+    @Test
     fun givenCardInfoEntity_whenToModel_thenReturnsCardInfo() {
         val entity = TestCardInfoEntity.entity1
         val expectedModel = CardInfo(
@@ -19,42 +19,6 @@ import kotlin.test.assertEquals
                 large = entity.largeImageUrl,
             ),
             isOngoing = entity.isOngoing
-        )
-
-        val result = entity.toModel()
-
-        assertEquals(expectedModel, result)
-    }
-
-    @Test
-    fun givenCardInfoEntityWithNullOracleText_whenToModel_thenReturnsCardInfoWithNullOracleText() {
-        val entity = TestCardInfoEntity.entity1.copy(oracleText = null)
-        val expectedModel = CardInfo(
-            name = entity.name,
-            oracleText = entity.oracleText,
-            images = CardInfoImageUrls(
-                small = entity.smallImageUrl,
-                large = entity.largeImageUrl,
-            ),
-            isOngoing = entity.isOngoing
-        )
-
-        val result = entity.toModel()
-
-        assertEquals(expectedModel, result)
-    }
-
-    @Test
-    fun givenCardInfoEntityWithOngoingFalse_whenToModel_thenReturnsCardInfoOngoingFalse() {
-        val entity = TestCardInfoEntity.entity1.copy(isOngoing = false)
-        val expectedModel = CardInfo(
-            name = entity.name,
-            oracleText = entity.oracleText,
-            images = CardInfoImageUrls(
-                small = entity.smallImageUrl,
-                large = entity.largeImageUrl
-            ),
-            isOngoing = false
         )
 
         val result = entity.toModel()

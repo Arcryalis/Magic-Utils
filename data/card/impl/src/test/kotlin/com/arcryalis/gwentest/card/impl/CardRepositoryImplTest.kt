@@ -15,7 +15,10 @@ import com.arcryalis.gwentest.network.MockCoilImageCacher
 import com.arcryalis.gwentest.remote.RemoteResponse
 import com.arcryalis.gwentest.remote.scryfall.MockScryfallDataSource
 import com.arcryalis.gwentest.remote.scryfall.TestScryfallDataDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallCatalogDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallNamedCardDto
 import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallPaginationDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallPurchaseUrisDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -84,21 +87,7 @@ class CardRepositoryImplTest {
     }
 
     @Test
-    fun givenSuccessfulResponse_whenDownloadSchemes_thenReturnsTrue() = runTest {
-        responses[1] = RemoteResponse.Success(
-            ScryfallPaginationDto(
-                hasMore = false,
-                data = listOf(TestScryfallDataDto.dto1)
-            )
-        )
-
-        val result = sut.downloadSchemes()
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun givenSuccessfulResponse_whenDownloadSchemes_thenPersistsSetsAndCards() = runTest {
+    fun givenSuccessfulResponse_whenDownloadSchemes_thenReturnsTrueAndPersistsSetsAndCards() = runTest {
         val dto = TestScryfallDataDto.dto1.copy(
             type = "Type that includes ongoing"
         )
@@ -123,8 +112,9 @@ class CardRepositoryImplTest {
             )
         )
 
-        sut.downloadSchemes()
+        val result = sut.downloadSchemes()
 
+        assertTrue(result)
         assertEquals(listOf(setEntity), storedSets)
         assertContentEquals(
             listOf(cardEntity),
@@ -133,29 +123,7 @@ class CardRepositoryImplTest {
     }
 
     @Test
-    fun givenSuccessfulResponse_whenDownloadSchemes_thenCachesCardBackAndFaceImages() = runTest {
-        val entity = TestScryfallDataDto.dto1
-        val smallUrl = entity.imageUris!!.small
-        val largeUrl = entity.imageUris!!.large
-        val cardBackUrl = context.getString(R.string.card_back_url)
-
-        responses[1] = RemoteResponse.Success(
-            ScryfallPaginationDto(
-                hasMore = false,
-                data = listOf(entity)
-            )
-        )
-
-        sut.downloadSchemes()
-
-        assertEquals(
-            listOf(cardBackUrl, smallUrl, largeUrl),
-            imageCacher.requestedUrls
-        )
-    }
-
-    @Test
-    fun givenCardsWithDuplicateImageUrls_whenDownloadSchemes_thenCachesDistinctUrls() = runTest {
+    fun givenCardsWithDuplicateImageUrls_whenDownloadSchemes_thenCachesCardBackAndDistinctFaceUrls() = runTest {
         val entity = TestScryfallDataDto.dto1
         val smallUrl = entity.imageUris!!.small
         val largeUrl = entity.imageUris!!.large
@@ -179,7 +147,7 @@ class CardRepositoryImplTest {
         sut.downloadSchemes()
 
         assertContentEquals(
-            listOf(cardBackUrl, smallUrl, smallUrl2, largeUrl),
+            listOf(cardBackUrl, smallUrl, largeUrl, smallUrl2),
             imageCacher.requestedUrls
         )
     }
@@ -206,28 +174,13 @@ class CardRepositoryImplTest {
     }
 
     @Test
-    fun givenErrorResponse_whenDownloadSchemes_thenReturnsFalse() = runTest {
+    fun givenErrorResponse_whenDownloadSchemes_thenReturnsFalseAndDoesNotPersistData() = runTest {
         responses[1] = RemoteResponse.Error("Some error")
 
         val result = sut.downloadSchemes()
 
         assertFalse(result)
-    }
-
-    @Test
-    fun givenErrorResponse_whenDownloadSchemes_thenDoesNotPersistData() = runTest {
-        responses[1] = RemoteResponse.Error("Some error")
-
-        sut.downloadSchemes()
-
         assertEquals(emptyList(), storedSets)
-    }
-
-    @Test
-    fun givenNoConfiguredResponse_whenDownloadSchemes_thenReturnsFalse() = runTest {
-        val result = sut.downloadSchemes()
-
-        assertFalse(result)
     }
 
     @Test
@@ -253,7 +206,7 @@ class CardRepositoryImplTest {
     }
 
     @Test
-    fun givenStoredCardsForSet_whenGetSet_thenReturnsCardsWithCardBackUrl() = runTest {
+    fun givenStoredCardsForSet_whenGetSet_thenReturnsMappedCards() = runTest {
         val entity = TestCardInfoEntity.entity1
         val setId = entity.setId
         storedCards[setId] = mutableListOf(entity)
@@ -284,7 +237,7 @@ class CardRepositoryImplTest {
     }
 
     @Test
-    fun givenStoredCards_whenGetAllCards_thenReturnsAllCardsWithCardBackUrl() = runTest {
+    fun givenStoredCards_whenGetAllCards_thenReturnsAllMappedCards() = runTest {
         val entity1 = TestCardInfoEntity.entity1
         val entity2 = TestCardInfoEntity.entity2
         storedCards[entity1.setId] = mutableListOf(entity1)
@@ -328,5 +281,98 @@ class CardRepositoryImplTest {
         val result = sut.getCardBackUrl()
 
         assertEquals(expected, result)
+    }
+
+    @Test
+    fun givenSuccessfulAutocompleteResponse_whenAutocompleteCardNames_thenReturnsNames() = runTest {
+        val names = listOf("Scheme One", "Scheme Two")
+        dataSource.autocompleteResponse = RemoteResponse.Success(ScryfallCatalogDto(names))
+
+        val result = sut.autocompleteCardNames("Scheme")
+
+        assertEquals(names, result.getOrNull())
+        assertEquals("Scheme", dataSource.lastAutocompleteQuery)
+    }
+
+    @Test
+    fun givenErrorAutocompleteResponse_whenAutocompleteCardNames_thenReturnsFailure() = runTest {
+        dataSource.autocompleteResponse = RemoteResponse.Error("Some error")
+
+        val result = sut.autocompleteCardNames("Scheme")
+
+        assertTrue(result.isFailure)
+        assertEquals("Some error", result.exceptionOrNull()?.message)
+    }
+
+    @Test
+    fun givenCardmarketUrl_whenGetCardmarketUrl_thenReturnsUrl() = runTest {
+        val url = "https://www.cardmarket.com/en/Magic/Products?idProduct=891653&referrer=scryfall"
+        dataSource.namedCardResponse = RemoteResponse.Success(
+            ScryfallNamedCardDto(purchaseUris = ScryfallPurchaseUrisDto(cardmarket = url))
+        )
+
+        val result = sut.getCardmarketUrl("Scheme One")
+
+        assertEquals(
+            "https://www.cardmarket.com/en/Magic/Products?idProduct=891653",
+            result.getOrNull()
+        )
+        assertEquals("Scheme One", dataSource.lastNamedCardQuery)
+    }
+
+    @Test
+    fun givenCardmarketUrlWithoutIdProduct_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
+        dataSource.namedCardResponse = RemoteResponse.Success(
+            ScryfallNamedCardDto(
+                purchaseUris = ScryfallPurchaseUrisDto(cardmarket = "https://www.cardmarket.com/en/Magic/Products?referrer=scryfall")
+            )
+        )
+
+        val result = sut.getCardmarketUrl("Scheme One")
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun givenNoPurchaseUris_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
+        dataSource.namedCardResponse = RemoteResponse.Success(ScryfallNamedCardDto(purchaseUris = null))
+
+        val result = sut.getCardmarketUrl("Scheme One")
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun givenNoCardmarketUrl_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
+        dataSource.namedCardResponse = RemoteResponse.Success(
+            ScryfallNamedCardDto(purchaseUris = ScryfallPurchaseUrisDto(cardmarket = null))
+        )
+
+        val result = sut.getCardmarketUrl("Scheme One")
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun givenNonHttpsUrl_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
+        dataSource.namedCardResponse = RemoteResponse.Success(
+            ScryfallNamedCardDto(
+                purchaseUris = ScryfallPurchaseUrisDto(cardmarket = "http://www.cardmarket.com/en/Magic/Products?idProduct=891653")
+            )
+        )
+
+        val result = sut.getCardmarketUrl("Scheme One")
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun givenErrorResponse_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
+        dataSource.namedCardResponse = RemoteResponse.Error("Some error")
+
+        val result = sut.getCardmarketUrl("Scheme One")
+
+        assertTrue(result.isFailure)
+        assertEquals("Some error", result.exceptionOrNull()?.message)
     }
 }

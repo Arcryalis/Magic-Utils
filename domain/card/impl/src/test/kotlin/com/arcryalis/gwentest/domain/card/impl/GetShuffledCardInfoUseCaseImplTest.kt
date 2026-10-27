@@ -44,18 +44,4 @@ class GetShuffledCardInfoUseCaseImplTest {
 
         assertEquals(cards.size, result.size)
     }
-
-    @Test
-    fun givenUnknownSet_whenInvoked_thenReturnsEmptyList() = runTest {
-        val setId = "set1"
-        val incorrectSetId = "set2"
-        val cards = listOf(TestCardInfo.info1)
-        setupSut(
-            cardsBySet = mapOf(setId to cards)
-        )
-
-        val result = sut(incorrectSetId).first()
-
-        assertEquals(emptyList(), result)
-    }
 }

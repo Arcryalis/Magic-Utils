@@ -2,8 +2,8 @@ package com.arcryalis.gwentest.data.local.impl.di
 
 import com.arcryalis.gwentest.data.local.api.CardInfoDataStore
 import com.arcryalis.gwentest.data.local.api.CardSetDataStore
-import com.arcryalis.gwentest.data.local.impl.Database
-import com.arcryalis.gwentest.data.local.impl.dao.CardDao
+import com.arcryalis.gwentest.data.local.impl.AppDatabase
+import com.arcryalis.gwentest.data.local.impl.dao.CardInfoDao
 import com.arcryalis.gwentest.data.local.impl.dao.CardSetDao
 import com.arcryalis.gwentest.data.local.impl.datastore.CardInfoDataStoreImpl
 import com.arcryalis.gwentest.data.local.impl.datastore.CardSetDataStoreImpl
@@ -25,9 +25,9 @@ interface DatastoreModule {
 
     companion object {
         @Provides
-        fun provideCardDao(db: Database): CardDao = db.getCardDao()
+        fun provideCardInfoDao(db: AppDatabase): CardInfoDao = db.getCardInfoDao()
 
         @Provides
-        fun provideCardSetDao(db: Database): CardSetDao = db.getCardSetDao()
+        fun provideCardSetDao(db: AppDatabase): CardSetDao = db.getCardSetDao()
     }
 }

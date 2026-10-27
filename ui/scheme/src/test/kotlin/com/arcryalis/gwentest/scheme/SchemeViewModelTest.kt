@@ -1,10 +1,9 @@
 package com.arcryalis.gwentest.scheme
 
 import com.arcryalis.gwentest.core.BaseDispatchRule
-import com.arcryalis.gwentest.core.navigation.SchemeRoute
 import com.arcryalis.gwentest.data.card.TestCardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfo
-import com.arcryalis.gwentest.domain.card.MockGetAllCardCardInfoUseCase
+import com.arcryalis.gwentest.domain.card.MockGetAllCardInfoUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -23,24 +22,20 @@ class SchemeViewModelTest {
 
     private val testScope = TestScope(mainDispatcher.testDispatcher)
 
-    private lateinit var route: SchemeRoute
     private lateinit var sut: SchemeViewModel
 
     private fun setupSut(
         cards: List<CardInfo> = listOf(TestCardInfo.info1, TestCardInfo.info2),
     ) {
-        route = SchemeRoute
-
         sut = SchemeViewModel(
-            route = route,
-            getAllCardCardInfoUseCase = MockGetAllCardCardInfoUseCase(cardInfo = cards),
+            getAllCardInfoUseCase = MockGetAllCardInfoUseCase(cardInfo = cards),
         )
+        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
     }
 
     @Test
     fun whenInitializedWithEmptyCards_thenStateIsLoading() {
         setupSut(cards = emptyList())
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         val state = sut.state.value
         assertIs<SchemeState.Loading>(state)
@@ -49,7 +44,6 @@ class SchemeViewModelTest {
     @Test
     fun whenInitializedWithCards_thenStateIsReadyWithCardsAndNullOverlay() {
         setupSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         val state = sut.state.value
         assertIs<SchemeState.Ready>(state)
@@ -58,21 +52,8 @@ class SchemeViewModelTest {
     }
 
     @Test
-    fun whenCardClicked_thenOverlayCardIsSet() {
+    fun whenCardClickedThenOverlayClosed_thenOverlayCardIsSetThenCleared() {
         setupSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
-
-        sut.onCardClicked(TestCardInfo.info1)
-
-        val state = sut.state.value
-        assertIs<SchemeState.Ready>(state)
-        assertEquals(TestCardInfo.info1, state.overlayCard)
-    }
-
-    @Test
-    fun whenCloseOverlayClicked_thenOverlayCardBecomesNull() {
-        setupSut()
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
 
         sut.onCardClicked(TestCardInfo.info1)
         var state = sut.state.value as SchemeState.Ready
