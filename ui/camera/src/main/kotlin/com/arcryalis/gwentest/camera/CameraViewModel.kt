@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arcryalis.gwentest.domain.card.AutocompleteCardNamesUseCase
+import com.arcryalis.gwentest.domain.card.GetCardmarketUrlUseCase
 import com.arcryalis.gwentest.domain.ocr.RecogniseTextUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -18,101 +19,103 @@ import javax.inject.Inject
 private const val RECENT_RESULTS_SIZE = 5
 private const val REQUIRED_MATCHES = 3
 private const val MIN_QUERY_LENGTH = 2
+private const val MIN_SCAN_LENGTH = 3
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(
     private val recogniseText: RecogniseTextUseCase,
     private val autocompleteCardNames: AutocompleteCardNamesUseCase,
+    private val getCardmarketUrl: GetCardmarketUrlUseCase,
 ) : ViewModel() {
 
     private val hasPermission = MutableStateFlow<Boolean?>(null)
     private val deviceHasCamera = MutableStateFlow<Boolean?>(null)
-    private val manualOverride = MutableStateFlow(false)
+    private val manualMode = MutableStateFlow(false)
     private val hasCameraError = MutableStateFlow(false)
 
     private val cardName = MutableStateFlow("")
     private val isScanning = MutableStateFlow(false)
     private val results = MutableStateFlow<CameraResultsState>(CameraResultsState.Idle)
     private val showMinLengthError = MutableStateFlow(false)
+    private val lookup = MutableStateFlow<CameraLookupState>(CameraLookupState.Idle)
 
     private var autocompleteJob: Job? = null
+    private var lookupJob: Job? = null
     private var scanId = 0
     private val recentResults = ArrayDeque<String>()
     private val whitespace = Regex("\\s+")
+    private val trailingNumber = Regex(" \\d+$")
 
-    private val showPermissionRequest = combine(
+    private val cameraMode = combine(
         deviceHasCamera,
         hasPermission,
-        manualOverride
-    ) { hasCamera, permission, override ->
-        if (hasCamera == true) {
-            permission != true && !override
-        } else {
-            false
-        }
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    private val includeCameraSection = combine(
-        deviceHasCamera,
-        hasPermission,
+        manualMode,
         hasCameraError
-    ) { hasCamera, permission, error ->
-        hasCamera == true && permission == true && !error
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    ) { hasCamera, permission, manual, error ->
+        when {
+            hasCamera == null -> null
+            !hasCamera || manual || error -> CameraMode.Manual
+            permission != true -> CameraMode.PermissionRequired
+            else -> CameraMode.Available
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val inputState = combine(
         cardName,
         showMinLengthError,
-        results
-    ) { cardName, showMinLengthError, results ->
+        results,
+        lookup
+    ) { cardName, showMinLengthError, results, lookup ->
         CameraInputState(
             cardName = cardName,
             results = results,
             canSubmit = cardName.trim().length >= MIN_QUERY_LENGTH &&
                     results != CameraResultsState.Loading,
-            showMinLengthError = showMinLengthError
+            showMinLengthError = showMinLengthError,
+            lookup = lookup
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, CameraInputState())
 
     val state: StateFlow<CameraState> = combine(
-        showPermissionRequest,
-        includeCameraSection,
+        cameraMode,
         inputState,
         isScanning
-    ) { showPermission, showCamera, input, isScanning ->
-        if (showPermission) {
-            CameraState.PermissionRequired
+    ) { camera, input, isScanning ->
+        if (camera == null) {
+            CameraState.Loading
         } else {
             CameraState.Ready(
-                showCamera = showCamera,
+                camera = camera,
                 cardName = input.cardName,
                 isScanning = isScanning,
                 results = input.results,
                 canSubmit = input.canSubmit,
-                showMinLengthError = input.showMinLengthError
+                showMinLengthError = input.showMinLengthError,
+                lookup = input.lookup
             )
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, CameraState.Loading)
 
     fun onCameraStatusChecked(hasCamera: Boolean, permissionGranted: Boolean) {
+        if (permissionGranted && hasPermission.value == false) {
+            manualMode.value = false
+        }
+
         deviceHasCamera.value = hasCamera
         hasPermission.value = permissionGranted
-
-        if (permissionGranted) {
-            manualOverride.value = false
-        }
     }
 
     fun onPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
         hasPermission.value = granted
 
         if (!granted && !shouldShowRationale) {
-            manualOverride.value = true
+            manualMode.value = true
         }
     }
 
     fun onUseManualInputClick() {
-        manualOverride.value = true
+        manualMode.value = true
+        isScanning.value = false
     }
 
     fun onCameraError() {
@@ -127,10 +130,13 @@ class CameraViewModel @Inject constructor(
     }
 
     fun onScanClick() {
+        if (cameraMode.value != CameraMode.Available) return
+
         scanId++
         recentResults.clear()
         autocompleteJob?.cancel()
         results.value = CameraResultsState.Idle
+        cancelLookup()
         isScanning.value = true
     }
 
@@ -143,6 +149,7 @@ class CameraViewModel @Inject constructor(
             return
         }
 
+        cancelLookup()
         results.value = CameraResultsState.Loading
         autocompleteJob = viewModelScope.launch {
             results.value = autocompleteCardNames(query).fold(
@@ -152,6 +159,38 @@ class CameraViewModel @Inject constructor(
                 onFailure = { CameraResultsState.Error }
             )
         }
+    }
+
+    fun onOpenCardmarketClick(cardName: String) {
+        if (lookup.value is CameraLookupState.Loading) return
+
+        lookup.value = CameraLookupState.Loading(cardName)
+        lookupJob = viewModelScope.launch {
+            lookup.value = getCardmarketUrl(cardName).fold(
+                onSuccess = { url -> CameraLookupState.Open(url) },
+                onFailure = { CameraLookupState.Failed }
+            )
+        }
+    }
+
+    fun onLookupHandled() {
+        lookup.value = CameraLookupState.Idle
+    }
+
+    fun onUrlOpenFailed() {
+        lookup.value = CameraLookupState.Failed
+    }
+
+    fun onScreenStopped() {
+        val current = lookup.value
+        if (current is CameraLookupState.Loading || current is CameraLookupState.Open) {
+            cancelLookup()
+        }
+    }
+
+    private fun cancelLookup() {
+        lookupJob?.cancel()
+        lookup.value = CameraLookupState.Idle
     }
 
     fun onFrame(image: Bitmap, onProcessed: () -> Unit = {}) {
@@ -180,7 +219,8 @@ class CameraViewModel @Inject constructor(
 
     private fun onTextRecognised(text: String) {
         val normalised = text.trim().replace(whitespace, " ")
-        if (normalised.isEmpty()) return
+        val stripped = normalised.replace(trailingNumber, "")
+        if (stripped.length < MIN_SCAN_LENGTH) return
 
         recentResults.addLast(normalised)
         if (recentResults.size > RECENT_RESULTS_SIZE) {
@@ -188,7 +228,7 @@ class CameraViewModel @Inject constructor(
         }
 
         if (recentResults.count { it == normalised } >= REQUIRED_MATCHES) {
-            cardName.value = normalised
+            cardName.value = stripped
             showMinLengthError.value = false
             isScanning.value = false
             recentResults.clear()
@@ -201,4 +241,5 @@ private data class CameraInputState(
     val results: CameraResultsState = CameraResultsState.Idle,
     val canSubmit: Boolean = false,
     val showMinLengthError: Boolean = false,
+    val lookup: CameraLookupState = CameraLookupState.Idle,
 )

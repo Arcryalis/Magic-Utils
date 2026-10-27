@@ -1,6 +1,7 @@
 package com.arcryalis.gwentest.remote.impl.api
 
 import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallCatalogDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallNamedCardDto
 import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallPaginationDto
 import com.haroldadmin.cnradapter.NetworkResponse
 import retrofit2.http.GET
@@ -21,4 +22,9 @@ interface ScryfallApi {
     suspend fun autocompleteCardNames(
         @Query("q") query: String
     ): NetworkResponse<ScryfallCatalogDto, Unit>
+
+    @GET("cards/named")
+    suspend fun getCardByExactName(
+        @Query("exact") name: String
+    ): NetworkResponse<ScryfallNamedCardDto, Unit>
 }

@@ -1,12 +1,14 @@
 package com.arcryalis.gwentest.camera
 
+import android.content.ClipData
 import android.graphics.Bitmap
+import android.os.Build
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,6 +19,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.NavigateNext
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,13 +29,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arcryalis.gwentest.core.isPortrait
+import kotlinx.coroutines.launch
 
 @Composable
 fun CameraReadyScreen(
@@ -39,11 +48,14 @@ fun CameraReadyScreen(
     modifier: Modifier = Modifier,
     onInputChange: (String) -> Unit = {},
     onSubmitClick: () -> Unit = {},
+    onOpenCardmarketClick: (String) -> Unit = {},
     onCameraError: () -> Unit = {},
     onFrame: (Bitmap, () -> Unit) -> Unit = { _, onProcessed -> onProcessed() },
-    onScanClick: () -> Unit = {}
+    onScanClick: () -> Unit = {},
+    onPermissionRequestClick: () -> Unit = {},
+    onUseManualInputClick: () -> Unit = {}
 ) {
-    if (!state.showCamera) {
+    if (state.camera == CameraMode.Manual) {
         Column(modifier = modifier) {
             CardNameInput(
                 state = state,
@@ -53,9 +65,11 @@ fun CameraReadyScreen(
             )
             CameraResultsList(
                 results = state.results,
+                lookup = state.lookup,
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                onOpenCardmarketClick = onOpenCardmarketClick
             )
         }
 
@@ -70,13 +84,17 @@ fun CameraReadyScreen(
                 onSubmitClick = onSubmitClick,
                 onCameraError = onCameraError,
                 onFrame = onFrame,
-                onScanClick = onScanClick
+                onScanClick = onScanClick,
+                onPermissionRequestClick = onPermissionRequestClick,
+                onUseManualInputClick = onUseManualInputClick
             )
             CameraResultsList(
                 results = state.results,
+                lookup = state.lookup,
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                onOpenCardmarketClick = onOpenCardmarketClick
             )
         }
 
@@ -91,13 +109,17 @@ fun CameraReadyScreen(
                 onSubmitClick = onSubmitClick,
                 onCameraError = onCameraError,
                 onFrame = onFrame,
-                onScanClick = onScanClick
+                onScanClick = onScanClick,
+                onPermissionRequestClick = onPermissionRequestClick,
+                onUseManualInputClick = onUseManualInputClick
             )
             CameraResultsList(
                 results = state.results,
+                lookup = state.lookup,
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                onOpenCardmarketClick = onOpenCardmarketClick
             )
         }
     }
@@ -111,18 +133,23 @@ private fun CameraSection(
     onSubmitClick: () -> Unit = {},
     onCameraError: () -> Unit = {},
     onFrame: (Bitmap, () -> Unit) -> Unit = { _, onProcessed -> onProcessed() },
-    onScanClick: () -> Unit = {}
+    onScanClick: () -> Unit = {},
+    onPermissionRequestClick: () -> Unit = {},
+    onUseManualInputClick: () -> Unit = {}
 ) {
     Column(modifier = modifier) {
         CameraFeedContent(
             isScanning = state.isScanning,
             hasCardName = state.cardName.isNotBlank(),
+            permissionRequired = state.camera == CameraMode.PermissionRequired,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
             onFrame = onFrame,
             onCameraError = onCameraError,
-            onScanClick = onScanClick
+            onScanClick = onScanClick,
+            onPermissionRequestClick = onPermissionRequestClick,
+            onUseManualInputClick = onUseManualInputClick
         )
         CardNameInput(
             state = state,
@@ -185,8 +212,14 @@ private fun CardNameInput(
 @Composable
 private fun CameraResultsList(
     results: CameraResultsState,
-    modifier: Modifier = Modifier
+    lookup: CameraLookupState,
+    modifier: Modifier = Modifier,
+    onOpenCardmarketClick: (String) -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+
     when (results) {
         CameraResultsState.Empty -> CameraResultsMessage(
             text = stringResource(R.string.camera_results_empty),
@@ -202,11 +235,63 @@ private fun CameraResultsList(
             val names = (results as? CameraResultsState.Results)?.names.orEmpty()
             LazyColumn(modifier = modifier) {
                 items(names) { name ->
-                    ListItem(headlineContent = { Text(text = name) })
+                    CameraResultItem(
+                        name = name,
+                        lookup = lookup,
+                        onCopyClick = {
+                            scope.launch {
+                                clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(name, name)))
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                                    Toast.makeText(context, R.string.camera_copied, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        },
+                        onOpenCardmarketClick = { onOpenCardmarketClick(name) }
+                    )
                 }
             }
         }
     }
+}
+
+@Composable
+private fun CameraResultItem(
+    name: String,
+    lookup: CameraLookupState,
+    onCopyClick: () -> Unit = {},
+    onOpenCardmarketClick: () -> Unit = {}
+) {
+    ListItem(
+        headlineContent = { Text(text = name) },
+        trailingContent = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onCopyClick) {
+                    Icon(
+                        imageVector = Icons.Default.ContentCopy,
+                        contentDescription = stringResource(R.string.camera_copy_name)
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(48.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (lookup == CameraLookupState.Loading(name)) {
+                        CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                    } else {
+                        IconButton(
+                            onClick = onOpenCardmarketClick,
+                            enabled = lookup !is CameraLookupState.Loading
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.NavigateNext,
+                                contentDescription = stringResource(R.string.camera_open_cardmarket)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    )
 }
 
 @Composable

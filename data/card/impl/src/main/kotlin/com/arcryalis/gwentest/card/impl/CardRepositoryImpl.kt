@@ -80,4 +80,17 @@ class CardRepositoryImpl @Inject constructor(
             is RemoteResponse.Success -> Result.success(response.data.data)
             is RemoteResponse.Error -> Result.failure(Exception(response.message))
         }
+
+    override suspend fun getCardmarketUrl(cardName: String): Result<String> =
+        when (val response = dataSource.getCardByExactName(cardName)) {
+            is RemoteResponse.Success -> {
+                val url = response.data.purchaseUris?.cardmarket?.toCardmarketProductUrl()
+                if (url != null) {
+                    Result.success(url)
+                } else {
+                    Result.failure(Exception("No Cardmarket url"))
+                }
+            }
+            is RemoteResponse.Error -> Result.failure(Exception(response.message))
+        }
 }

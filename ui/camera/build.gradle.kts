@@ -29,7 +29,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     api(libs.androidx.navigation3.runtime)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.material.icons.core)
+    implementation(libs.material.icons.extended)
 
     implementation(projects.ui.core)
     implementation(projects.domain.card.api)

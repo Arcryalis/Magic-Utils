@@ -1,7 +1,5 @@
 <resources>
-    <string name="camera_permission_title">Permission required</string>
-    <string name="camera_permission_subtitle">Camera permissions are required to scan cards</string>
-    <string name="camera_permission_request">Request</string>
+    <string name="camera_permission_request">Allow camera</string>
     <string name="camera_use_manual_input">Use manual input</string>
     <string name="camera_input_label">Card name</string>
     <string name="camera_name_strip_hint">Align card name here</string>
@@ -11,4 +9,8 @@
     <string name="camera_input_min_length">Enter at least 2 characters</string>
     <string name="camera_results_empty">No matching cards</string>
     <string name="camera_results_error">Couldn\'t load results</string>
+    <string name="camera_card_open_error">Couldn\'t open card</string>
+    <string name="camera_copy_name">Copy card name</string>
+    <string name="camera_open_cardmarket">Open on Cardmarket</string>
+    <string name="camera_copied">Copied</string>
 </resources>

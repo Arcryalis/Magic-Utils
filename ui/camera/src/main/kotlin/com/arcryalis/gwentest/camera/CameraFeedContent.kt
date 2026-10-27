@@ -23,7 +23,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -73,10 +77,13 @@ private class FrameAnalysis(
 fun CameraFeedContent(
     isScanning: Boolean,
     hasCardName: Boolean,
+    permissionRequired: Boolean,
     modifier: Modifier = Modifier,
     onFrame: (Bitmap, () -> Unit) -> Unit = { _, onProcessed -> onProcessed() },
     onCameraError: () -> Unit = {},
-    onScanClick: () -> Unit = {}
+    onScanClick: () -> Unit = {},
+    onPermissionRequestClick: () -> Unit = {},
+    onUseManualInputClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -135,8 +142,11 @@ fun CameraFeedContent(
         } else {
             PausedOverlay(
                 hasCardName = hasCardName,
+                permissionRequired = permissionRequired,
                 modifier = Modifier.fillMaxSize(),
-                onScanClick = onScanClick
+                onScanClick = onScanClick,
+                onPermissionRequestClick = onPermissionRequestClick,
+                onUseManualInputClick = onUseManualInputClick
             )
         }
     }
@@ -145,18 +155,38 @@ fun CameraFeedContent(
 @Composable
 private fun PausedOverlay(
     hasCardName: Boolean,
+    permissionRequired: Boolean,
     modifier: Modifier = Modifier,
-    onScanClick: () -> Unit = {}
+    onScanClick: () -> Unit = {},
+    onPermissionRequestClick: () -> Unit = {},
+    onUseManualInputClick: () -> Unit = {}
 ) {
     Box(
         modifier = modifier.background(Color.DarkGray),
         contentAlignment = Alignment.Center
     ) {
-        Button(onClick = onScanClick) {
-            Text(
-                text = stringResource(
-                    if (hasCardName) R.string.camera_rescan else R.string.camera_scan
+        if (permissionRequired) {
+            Button(onClick = onPermissionRequestClick) {
+                Text(text = stringResource(R.string.camera_permission_request))
+            }
+        } else {
+            Button(onClick = onScanClick) {
+                Text(
+                    text = stringResource(
+                        if (hasCardName) R.string.camera_rescan else R.string.camera_scan
+                    )
                 )
+            }
+        }
+
+        IconButton(
+            onClick = onUseManualInputClick,
+            modifier = Modifier.align(Alignment.TopEnd)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = stringResource(R.string.camera_use_manual_input),
+                tint = Color.White
             )
         }
     }

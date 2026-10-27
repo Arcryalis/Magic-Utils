@@ -16,7 +16,9 @@ import com.arcryalis.gwentest.remote.RemoteResponse
 import com.arcryalis.gwentest.remote.scryfall.MockScryfallDataSource
 import com.arcryalis.gwentest.remote.scryfall.TestScryfallDataDto
 import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallCatalogDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallNamedCardDto
 import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallPaginationDto
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallPurchaseUrisDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -297,6 +299,78 @@ class CardRepositoryImplTest {
         dataSource.autocompleteResponse = RemoteResponse.Error("Some error")
 
         val result = sut.autocompleteCardNames("Scheme")
+
+        assertTrue(result.isFailure)
+        assertEquals("Some error", result.exceptionOrNull()?.message)
+    }
+
+    @Test
+    fun givenCardmarketUrl_whenGetCardmarketUrl_thenReturnsUrl() = runTest {
+        val url = "https://www.cardmarket.com/en/Magic/Products?idProduct=891653&referrer=scryfall"
+        dataSource.namedCardResponse = RemoteResponse.Success(
+            ScryfallNamedCardDto(purchaseUris = ScryfallPurchaseUrisDto(cardmarket = url))
+        )
+
+        val result = sut.getCardmarketUrl("Scheme One")
+
+        assertEquals(
+            "https://www.cardmarket.com/en/Magic/Products?idProduct=891653",
+            result.getOrNull()
+        )
+        assertEquals("Scheme One", dataSource.lastNamedCardQuery)
+    }
+
+    @Test
+    fun givenCardmarketUrlWithoutIdProduct_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
+        dataSource.namedCardResponse = RemoteResponse.Success(
+            ScryfallNamedCardDto(
+                purchaseUris = ScryfallPurchaseUrisDto(cardmarket = "https://www.cardmarket.com/en/Magic/Products?referrer=scryfall")
+            )
+        )
+
+        val result = sut.getCardmarketUrl("Scheme One")
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun givenNoPurchaseUris_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
+        dataSource.namedCardResponse = RemoteResponse.Success(ScryfallNamedCardDto(purchaseUris = null))
+
+        val result = sut.getCardmarketUrl("Scheme One")
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun givenNoCardmarketUrl_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
+        dataSource.namedCardResponse = RemoteResponse.Success(
+            ScryfallNamedCardDto(purchaseUris = ScryfallPurchaseUrisDto(cardmarket = null))
+        )
+
+        val result = sut.getCardmarketUrl("Scheme One")
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun givenNonHttpsUrl_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
+        dataSource.namedCardResponse = RemoteResponse.Success(
+            ScryfallNamedCardDto(
+                purchaseUris = ScryfallPurchaseUrisDto(cardmarket = "http://www.cardmarket.com/en/Magic/Products?idProduct=891653")
+            )
+        )
+
+        val result = sut.getCardmarketUrl("Scheme One")
+
+        assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun givenErrorResponse_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
+        dataSource.namedCardResponse = RemoteResponse.Error("Some error")
+
+        val result = sut.getCardmarketUrl("Scheme One")
 
         assertTrue(result.isFailure)
         assertEquals("Some error", result.exceptionOrNull()?.message)

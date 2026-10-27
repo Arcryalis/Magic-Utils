@@ -1,34 +1,30 @@
 package com.arcryalis.gwentest.camera
 
 import android.Manifest
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcryalis.gwentest.core.LoadingScreen
@@ -56,6 +52,10 @@ fun CameraScreen(
             onUseManualInputClick = viewModel::onUseManualInputClick,
             onInputChange = viewModel::onInputChange,
             onSubmitClick = viewModel::onSubmitClick,
+            onOpenCardmarketClick = viewModel::onOpenCardmarketClick,
+            onLookupHandled = viewModel::onLookupHandled,
+            onUrlOpenFailed = viewModel::onUrlOpenFailed,
+            onScreenStopped = viewModel::onScreenStopped,
             onCameraError = viewModel::onCameraError,
             onCameraStatusChecked = viewModel::onCameraStatusChecked,
             onPermissionResult = viewModel::onPermissionResult,
@@ -72,6 +72,10 @@ fun CameraScreen(
     onUseManualInputClick: () -> Unit = {},
     onInputChange: (String) -> Unit = {},
     onSubmitClick: () -> Unit = {},
+    onOpenCardmarketClick: (String) -> Unit = {},
+    onLookupHandled: () -> Unit = {},
+    onUrlOpenFailed: () -> Unit = {},
+    onScreenStopped: () -> Unit = {},
     onCameraError: () -> Unit = {},
     onCameraStatusChecked: (hasCamera: Boolean, permissionGranted: Boolean) -> Unit = { _, _ -> },
     onPermissionResult: (granted: Boolean, shouldShowRationale: Boolean) -> Unit = { _, _ -> },
@@ -88,21 +92,63 @@ fun CameraScreen(
             modifier = modifier
         )
 
-        CameraState.PermissionRequired -> CameraPermissionRequiredScreen(
-            modifier = modifier,
-            onPermissionResult = onPermissionResult,
-            onUseManualInputClick = onUseManualInputClick
-        )
+        is CameraState.Ready -> {
+            CardLookupEffect(
+                lookup = state.lookup,
+                onLookupHandled = onLookupHandled,
+                onUrlOpenFailed = onUrlOpenFailed,
+                onScreenStopped = onScreenStopped
+            )
+            CameraReadyScreen(
+                state = state,
+                modifier = modifier,
+                onInputChange = onInputChange,
+                onSubmitClick = onSubmitClick,
+                onOpenCardmarketClick = onOpenCardmarketClick,
+                onCameraError = onCameraError,
+                onFrame = onFrame,
+                onScanClick = onScanClick,
+                onPermissionRequestClick = rememberCameraPermissionRequest(onPermissionResult),
+                onUseManualInputClick = onUseManualInputClick
+            )
+        }
+    }
+}
 
-        is CameraState.Ready -> CameraReadyScreen(
-            state = state,
-            modifier = modifier,
-            onInputChange = onInputChange,
-            onSubmitClick = onSubmitClick,
-            onCameraError = onCameraError,
-            onFrame = onFrame,
-            onScanClick = onScanClick
-        )
+@Composable
+private fun CardLookupEffect(
+    lookup: CameraLookupState,
+    onLookupHandled: () -> Unit = {},
+    onUrlOpenFailed: () -> Unit = {},
+    onScreenStopped: () -> Unit = {}
+) {
+    val context = LocalContext.current
+    val activity = LocalActivity.current
+
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+        if (activity?.isChangingConfigurations != true) {
+            onScreenStopped()
+        }
+    }
+
+    LaunchedEffect(lookup) {
+        when (lookup) {
+            is CameraLookupState.Open -> {
+                try {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, lookup.url.toUri()))
+                    onLookupHandled()
+                } catch (_: ActivityNotFoundException) {
+                    onUrlOpenFailed()
+                }
+            }
+
+            CameraLookupState.Failed -> {
+                Toast.makeText(context, R.string.camera_card_open_error, Toast.LENGTH_SHORT).show()
+                onLookupHandled()
+            }
+
+            else -> Unit
+        }
     }
 }
 
@@ -123,11 +169,9 @@ private fun HandleCameraPermission(
 }
 
 @Composable
-private fun CameraPermissionRequiredScreen(
-    modifier: Modifier = Modifier,
-    onPermissionResult: (granted: Boolean, shouldShowRationale: Boolean) -> Unit = { _, _ -> },
-    onUseManualInputClick: () -> Unit = {}
-) {
+private fun rememberCameraPermissionRequest(
+    onPermissionResult: (granted: Boolean, shouldShowRationale: Boolean) -> Unit
+): () -> Unit {
     val activity = LocalActivity.current
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -140,56 +184,7 @@ private fun CameraPermissionRequiredScreen(
         )
     }
 
-    CameraPermissionRequiredContent(
-        modifier = modifier,
-        onPermissionRequestClick = { permissionLauncher.launch(Manifest.permission.CAMERA) },
-        onUseManualInputClick = onUseManualInputClick
-    )
-}
-
-@Composable
-private fun CameraPermissionRequiredContent(
-    modifier: Modifier = Modifier,
-    onPermissionRequestClick: () -> Unit = {},
-    onUseManualInputClick: () -> Unit = {}
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 32.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = stringResource(R.string.camera_permission_title),
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                text = stringResource(R.string.camera_permission_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-
-            Button(
-                onClick = onPermissionRequestClick,
-                modifier = Modifier.padding(top = 24.dp)
-            ) {
-                Text(text = stringResource(R.string.camera_permission_request))
-            }
-
-            TextButton(
-                onClick = onUseManualInputClick,
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text(text = stringResource(R.string.camera_use_manual_input))
-            }
-        }
-    }
+    return { permissionLauncher.launch(Manifest.permission.CAMERA) }
 }
 
 
@@ -205,7 +200,13 @@ fun CameraLoadingPreview() {
 @Composable
 fun CameraPermissionRequiredPreview() {
     GwenTestTheme {
-        CameraScreen(state = CameraState.PermissionRequired)
+        CameraScreen(
+            state = CameraState.Ready(
+                camera = CameraMode.PermissionRequired,
+                cardName = "",
+                isScanning = false
+            )
+        )
     }
 }
 
@@ -215,7 +216,7 @@ fun CameraReadyPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
-                showCamera = true,
+                camera = CameraMode.Available,
                 cardName = "Card name",
                 isScanning = false
             )
@@ -229,7 +230,7 @@ fun CameraReadyScanningPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
-                showCamera = true,
+                camera = CameraMode.Available,
                 cardName = "",
                 isScanning = true
             )
@@ -243,9 +244,13 @@ fun CameraReadyLandscapePreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
-                showCamera = true,
-                cardName = "",
-                isScanning = false
+                camera = CameraMode.Available,
+                cardName = "Thal",
+                isScanning = false,
+                results = CameraResultsState.Results(
+                    listOf("Thallid", "Thalakos Seer", "Thalia, Guardian of Thraben")
+                ),
+                canSubmit = true
             )
         )
     }
@@ -257,7 +262,7 @@ fun CameraReadyManualInputPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
-                showCamera = false,
+                camera = CameraMode.Manual,
                 cardName = "",
                 isScanning = false
             )
@@ -271,13 +276,14 @@ fun CameraReadyResultsPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
-                showCamera = true,
+                camera = CameraMode.Available,
                 cardName = "Thal",
                 isScanning = false,
                 results = CameraResultsState.Results(
                     listOf("Thallid", "Thalakos Seer", "Thalia, the Survivor")
                 ),
-                canSubmit = true
+                canSubmit = true,
+                lookup = CameraLookupState.Loading("Thalakos Seer")
             )
         )
     }
@@ -289,7 +295,7 @@ fun CameraReadyLoadingResultsPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
-                showCamera = true,
+                camera = CameraMode.Available,
                 cardName = "Thal",
                 isScanning = false,
                 results = CameraResultsState.Loading
@@ -304,7 +310,7 @@ fun CameraReadyEmptyResultsPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
-                showCamera = false,
+                camera = CameraMode.Manual,
                 cardName = "Zzzz",
                 isScanning = false,
                 results = CameraResultsState.Empty,
@@ -320,7 +326,7 @@ fun CameraReadyErrorResultsPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
-                showCamera = false,
+                camera = CameraMode.Manual,
                 cardName = "Thal",
                 isScanning = false,
                 results = CameraResultsState.Error,
@@ -336,7 +342,7 @@ fun CameraReadyMinLengthErrorPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
-                showCamera = false,
+                camera = CameraMode.Manual,
                 cardName = "T",
                 isScanning = false,
                 showMinLengthError = true
