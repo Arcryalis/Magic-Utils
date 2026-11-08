@@ -4,6 +4,7 @@ import java.net.URI
 import java.net.URISyntaxException
 
 private const val ID_PRODUCT = "idProduct"
+private const val CARDMARKET_HOST = "cardmarket.com"
 
 internal fun String.toCardmarketProductUrl(): String? {
     val uri = try {
@@ -11,7 +12,9 @@ internal fun String.toCardmarketProductUrl(): String? {
     } catch (_: URISyntaxException) {
         return null
     }
-    if (uri.scheme != "https" || uri.host == null) return null
+    val host = uri.host?.lowercase() ?: return null
+    if (uri.scheme != "https") return null
+    if (host != CARDMARKET_HOST && !host.endsWith(".$CARDMARKET_HOST")) return null
 
     val idProduct = uri.rawQuery
         ?.split("&")

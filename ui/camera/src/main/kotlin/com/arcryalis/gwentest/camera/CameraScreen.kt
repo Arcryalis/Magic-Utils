@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,20 +39,21 @@ fun CameraScreen(
     viewModel: CameraViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
 ) {
-    val state = viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     NavigationScaffold(
         modifier = modifier,
         onNavigateBack = onNavigateBack,
     ) { scaffoldModifier ->
         CameraScreen(
-            state = state.value,
+            state = state,
             modifier = scaffoldModifier
                 .fillMaxSize()
                 .consumeWindowInsets(WindowInsets.navigationBars)
                 .imePadding(),
             onUseManualInputClick = viewModel::onUseManualInputClick,
             onInputChange = viewModel::onInputChange,
+            onInputFocused = viewModel::onInputFocused,
             onSubmitClick = viewModel::onSubmitClick,
             onOpenCardmarketClick = viewModel::onOpenCardmarketClick,
             onLookupHandled = viewModel::onLookupHandled,
@@ -71,6 +74,7 @@ fun CameraScreen(
     modifier: Modifier = Modifier,
     onUseManualInputClick: () -> Unit = {},
     onInputChange: (String) -> Unit = {},
+    onInputFocused: () -> Unit = {},
     onSubmitClick: () -> Unit = {},
     onOpenCardmarketClick: (String) -> Unit = {},
     onLookupHandled: () -> Unit = {},
@@ -103,6 +107,7 @@ fun CameraScreen(
                 state = state,
                 modifier = modifier,
                 onInputChange = onInputChange,
+                onInputFocused = onInputFocused,
                 onSubmitClick = onSubmitClick,
                 onOpenCardmarketClick = onOpenCardmarketClick,
                 onCameraError = onCameraError,
@@ -184,9 +189,10 @@ private fun rememberCameraPermissionRequest(
         )
     }
 
-    return { permissionLauncher.launch(Manifest.permission.CAMERA) }
+    return remember(permissionLauncher) {
+        { permissionLauncher.launch(Manifest.permission.CAMERA) }
+    }
 }
-
 
 @Preview(showBackground = true)
 @Composable

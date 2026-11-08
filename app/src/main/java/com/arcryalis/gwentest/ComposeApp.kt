@@ -32,7 +32,6 @@ import com.arcryalis.gwentest.scheme.SchemeScreen
 
 const val NAV_ANIMATION_DURATION = 300
 
-/** Slides the new screen in from the right (direction 1) or left (direction -1). */
 private fun slideTransition(direction: Int): ContentTransform =
     (slideInHorizontally(tween(NAV_ANIMATION_DURATION)) { it * direction } +
             fadeIn(tween(NAV_ANIMATION_DURATION))) togetherWith

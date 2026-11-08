@@ -12,8 +12,8 @@ android {
 
     defaultConfig {
         applicationId = "com.arcryalis.gwentest"
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = 3
+        versionName = "1.2"
     }
 }
 

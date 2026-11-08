@@ -6,10 +6,6 @@ import com.arcryalis.gwentest.domain.card.MockAutocompleteCardNamesUseCase
 import com.arcryalis.gwentest.domain.card.MockGetCardmarketUrlUseCase
 import com.arcryalis.gwentest.domain.ocr.MockRecogniseTextUseCase
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,14 +17,11 @@ import kotlin.test.assertTrue
 
 private const val CARDMARKET_URL = "https://www.cardmarket.com/en/Magic/Products?idProduct=1"
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class CameraViewModelTest {
 
     @get:Rule
     val mainDispatcher = BaseDispatchRule()
-
-    private val testScope = TestScope(mainDispatcher.testDispatcher)
 
     private lateinit var recogniseText: MockRecogniseTextUseCase
     private lateinit var autocompleteCardNames: MockAutocompleteCardNamesUseCase
@@ -47,7 +40,6 @@ class CameraViewModelTest {
         autocompleteCardNames = MockAutocompleteCardNamesUseCase(autocompleteResults, autocompleteGate)
         getCardmarketUrl = MockGetCardmarketUrlUseCase(cardmarketResults, cardmarketGate)
         sut = CameraViewModel(recogniseText, autocompleteCardNames, getCardmarketUrl)
-        testScope.backgroundScope.launch(UnconfinedTestDispatcher()) { sut.state.collect {} }
     }
 
     @Test
@@ -144,6 +136,19 @@ class CameraViewModelTest {
     }
 
     @Test
+    fun whenCameraErrorThenStatusChecked_thenCameraAvailable() {
+        setupSut()
+
+        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+        sut.onCameraError()
+        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertEquals(CameraMode.Available, state.camera)
+        assertFalse(state.isScanning)
+    }
+
+    @Test
     fun whenInputChanged_thenStateHasInput() {
         setupSut()
 
@@ -202,19 +207,6 @@ class CameraViewModelTest {
     }
 
     @Test
-    fun whenNewViewModelCreated_thenManualInputIsCleared() {
-        setupSut()
-        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = false)
-        sut.onUseManualInputClick()
-
-        setupSut()
-        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = false)
-
-        val state = assertIs<CameraState.Ready>(sut.state.value)
-        assertEquals(CameraMode.PermissionRequired, state.camera)
-    }
-
-    @Test
     fun whenScreenOpened_thenNotScanning() {
         setupSut()
 
@@ -236,12 +228,24 @@ class CameraViewModelTest {
     }
 
     @Test
+    fun whenStatusCheckedWhileScanning_thenStillScanning() {
+        setupSut()
+
+        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+        sut.onScanClick()
+        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertTrue(state.isScanning)
+    }
+
+    @Test
     fun whenSameTextRecognisedThreeTimes_thenCardNameSetAndScanningPaused() {
         setupSut(
             listOf(
-                Result.success("Geralt  of Rivia"),
-                Result.success(" Geralt of Rivia "),
-                Result.success("Geralt\nof Rivia")
+                Result.success("Geralt  of Rivia 12"),
+                Result.success(" Geralt of Rivia 12 "),
+                Result.success("Geralt\nof Rivia 12")
             )
         )
 
@@ -269,101 +273,20 @@ class CameraViewModelTest {
         repeat(3) { sut.onFrame(createFrame()) }
 
         val state = assertIs<CameraState.Ready>(sut.state.value)
-        assertEquals("", state.cardName)
-        assertTrue(state.isScanning)
-    }
-
-    @Test
-    fun whenBlankResult_thenIgnored() {
-        setupSut(
-            listOf(
-                Result.success(" "),
-                Result.success("\n"),
-                Result.success("")
-            )
-        )
-
-        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
-        sut.onScanClick()
-        repeat(3) { sut.onFrame(createFrame()) }
-
-        val state = assertIs<CameraState.Ready>(sut.state.value)
         assertEquals(3, recogniseText.invocationCount)
         assertEquals("", state.cardName)
         assertTrue(state.isScanning)
     }
 
     @Test
-    fun whenShortResults_thenIgnored() {
-        setupSut(
-            listOf(
-                Result.success("G"),
-                Result.success("Ge"),
-                Result.success("Ge"),
-                Result.success("Ge")
-            )
-        )
+    fun whenRescanned_thenEarlierMatchesForgotten() {
+        setupSut(List(4) { Result.success("Geralt") })
 
         sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
         sut.onScanClick()
-        repeat(4) { sut.onFrame(createFrame()) }
-
-        val state = assertIs<CameraState.Ready>(sut.state.value)
-        assertEquals("", state.cardName)
-        assertTrue(state.isScanning)
-    }
-
-    @Test
-    fun whenStrippedResultTooShort_thenIgnored() {
-        setupSut(results = List(3) { Result.success("Ox 12") })
-
-        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+        repeat(2) { sut.onFrame(createFrame()) }
         sut.onScanClick()
-        repeat(3) { sut.onFrame(createFrame()) }
-
-        val state = assertIs<CameraState.Ready>(sut.state.value)
-        assertEquals("", state.cardName)
-        assertTrue(state.isScanning)
-    }
-
-    @Test
-    fun whenResultEndsWithSpaceAndNumber_thenNumberStripped() {
-        setupSut(results = List(3) { Result.success("Geralt of Rivia 12") })
-
-        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
-        sut.onScanClick()
-        repeat(3) { sut.onFrame(createFrame()) }
-
-        val state = assertIs<CameraState.Ready>(sut.state.value)
-        assertEquals("Geralt of Rivia", state.cardName)
-        assertFalse(state.isScanning)
-    }
-
-    @Test
-    fun whenResultEndsWithNumberWithoutSpace_thenKept() {
-        setupSut(results = List(3) { Result.success("Card42") })
-
-        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
-        sut.onScanClick()
-        repeat(3) { sut.onFrame(createFrame()) }
-
-        val state = assertIs<CameraState.Ready>(sut.state.value)
-        assertEquals("Card42", state.cardName)
-    }
-
-    @Test
-    fun whenTrailingNumbersDiffer_thenNoMatch() {
-        setupSut(
-            listOf(
-                Result.success("Geralt 12"),
-                Result.success("Geralt 13"),
-                Result.success("Geralt 14")
-            )
-        )
-
-        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
-        sut.onScanClick()
-        repeat(3) { sut.onFrame(createFrame()) }
+        repeat(2) { sut.onFrame(createFrame()) }
 
         val state = assertIs<CameraState.Ready>(sut.state.value)
         assertEquals("", state.cardName)
@@ -394,12 +317,12 @@ class CameraViewModelTest {
     }
 
     @Test
-    fun whenRecognitionFails_thenScanningPausedAndCameraShown() {
-        setupSut(listOf(Result.failure(IllegalStateException())))
+    fun whenInputFocused_thenScanningPaused() {
+        setupSut()
 
         sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
         sut.onScanClick()
-        sut.onFrame(createFrame())
+        sut.onInputFocused()
 
         val state = assertIs<CameraState.Ready>(sut.state.value)
         assertEquals(CameraMode.Available, state.camera)
@@ -407,17 +330,62 @@ class CameraViewModelTest {
     }
 
     @Test
-    fun whenScanClickedAfterFailure_thenScanningResumes() {
-        setupSut(listOf(Result.failure(IllegalStateException()), Result.success("Geralt")))
+    fun whenRecognitionFailsOnce_thenStillScanning() {
+        setupSut(listOf(Result.failure(IllegalStateException())))
 
         sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
         sut.onScanClick()
         sut.onFrame(createFrame())
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertTrue(state.isScanning)
+    }
+
+    @Test
+    fun whenRecognitionFailsThreeTimes_thenScanningPausedAndCameraShown() {
+        setupSut(List(3) { Result.failure(IllegalStateException()) })
+
+        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+        sut.onScanClick()
+        repeat(3) { sut.onFrame(createFrame()) }
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertEquals(CameraMode.Available, state.camera)
+        assertFalse(state.isScanning)
+    }
+
+    @Test
+    fun whenFailureThenSuccess_thenFailureCountReset() {
+        setupSut(
+            listOf(
+                Result.failure(IllegalStateException()),
+                Result.failure(IllegalStateException()),
+                Result.success("Geralt"),
+                Result.failure(IllegalStateException()),
+                Result.failure(IllegalStateException())
+            )
+        )
+
+        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+        sut.onScanClick()
+        repeat(5) { sut.onFrame(createFrame()) }
+
+        val state = assertIs<CameraState.Ready>(sut.state.value)
+        assertTrue(state.isScanning)
+    }
+
+    @Test
+    fun whenScanClickedAfterFailures_thenScanningResumes() {
+        setupSut(List(3) { Result.failure<String>(IllegalStateException()) } + Result.success("Geralt"))
+
+        sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
+        sut.onScanClick()
+        repeat(3) { sut.onFrame(createFrame()) }
         sut.onScanClick()
         sut.onFrame(createFrame())
 
         val state = assertIs<CameraState.Ready>(sut.state.value)
-        assertEquals(2, recogniseText.invocationCount)
+        assertEquals(4, recogniseText.invocationCount)
         assertEquals(CameraMode.Available, state.camera)
         assertTrue(state.isScanning)
     }

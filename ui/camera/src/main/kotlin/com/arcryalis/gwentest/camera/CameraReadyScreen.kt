@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
@@ -47,6 +48,7 @@ fun CameraReadyScreen(
     state: CameraState.Ready,
     modifier: Modifier = Modifier,
     onInputChange: (String) -> Unit = {},
+    onInputFocused: () -> Unit = {},
     onSubmitClick: () -> Unit = {},
     onOpenCardmarketClick: (String) -> Unit = {},
     onCameraError: () -> Unit = {},
@@ -55,72 +57,57 @@ fun CameraReadyScreen(
     onPermissionRequestClick: () -> Unit = {},
     onUseManualInputClick: () -> Unit = {}
 ) {
+    val resultsList: @Composable (Modifier) -> Unit = { listModifier ->
+        CameraResultsList(
+            results = state.results,
+            lookup = state.lookup,
+            modifier = listModifier,
+            onOpenCardmarketClick = onOpenCardmarketClick
+        )
+    }
+
     if (state.camera == CameraMode.Manual) {
         Column(modifier = modifier) {
             CardNameInput(
                 state = state,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = onInputChange,
+                onFocused = onInputFocused,
                 onSubmitClick = onSubmitClick
             )
-            CameraResultsList(
-                results = state.results,
-                lookup = state.lookup,
-                modifier = Modifier
+            resultsList(
+                Modifier
                     .weight(1f)
-                    .fillMaxWidth(),
-                onOpenCardmarketClick = onOpenCardmarketClick
+                    .fillMaxWidth()
             )
         }
+        return
+    }
 
-    } else if (isPortrait()) {
+    val cameraSection: @Composable (Modifier) -> Unit = { sectionModifier ->
+        CameraSection(
+            state = state,
+            modifier = sectionModifier,
+            onInputChange = onInputChange,
+            onInputFocused = onInputFocused,
+            onSubmitClick = onSubmitClick,
+            onCameraError = onCameraError,
+            onFrame = onFrame,
+            onScanClick = onScanClick,
+            onPermissionRequestClick = onPermissionRequestClick,
+            onUseManualInputClick = onUseManualInputClick
+        )
+    }
+
+    if (isPortrait()) {
         Column(modifier = modifier) {
-            CameraSection(
-                state = state,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                onInputChange = onInputChange,
-                onSubmitClick = onSubmitClick,
-                onCameraError = onCameraError,
-                onFrame = onFrame,
-                onScanClick = onScanClick,
-                onPermissionRequestClick = onPermissionRequestClick,
-                onUseManualInputClick = onUseManualInputClick
-            )
-            CameraResultsList(
-                results = state.results,
-                lookup = state.lookup,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                onOpenCardmarketClick = onOpenCardmarketClick
-            )
+            cameraSection(Modifier.weight(2f).fillMaxWidth())
+            resultsList(Modifier.weight(3f).fillMaxWidth())
         }
-
     } else {
         Row(modifier = modifier) {
-            CameraSection(
-                state = state,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                onInputChange = onInputChange,
-                onSubmitClick = onSubmitClick,
-                onCameraError = onCameraError,
-                onFrame = onFrame,
-                onScanClick = onScanClick,
-                onPermissionRequestClick = onPermissionRequestClick,
-                onUseManualInputClick = onUseManualInputClick
-            )
-            CameraResultsList(
-                results = state.results,
-                lookup = state.lookup,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                onOpenCardmarketClick = onOpenCardmarketClick
-            )
+            cameraSection(Modifier.weight(2f).fillMaxHeight())
+            resultsList(Modifier.weight(3f).fillMaxHeight())
         }
     }
 }
@@ -130,6 +117,7 @@ private fun CameraSection(
     state: CameraState.Ready,
     modifier: Modifier = Modifier,
     onInputChange: (String) -> Unit = {},
+    onInputFocused: () -> Unit = {},
     onSubmitClick: () -> Unit = {},
     onCameraError: () -> Unit = {},
     onFrame: (Bitmap, () -> Unit) -> Unit = { _, onProcessed -> onProcessed() },
@@ -155,6 +143,7 @@ private fun CameraSection(
             state = state,
             modifier = Modifier.fillMaxWidth(),
             onValueChange = onInputChange,
+            onFocused = onInputFocused,
             onSubmitClick = onSubmitClick
         )
     }
@@ -165,6 +154,7 @@ private fun CardNameInput(
     state: CameraState.Ready,
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit = {},
+    onFocused: () -> Unit = {},
     onSubmitClick: () -> Unit = {}
 ) {
     Row(
@@ -185,7 +175,9 @@ private fun CardNameInput(
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { onSubmitClick() }),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .onFocusChanged { if (it.isFocused) onFocused() }
         )
 
         Box(

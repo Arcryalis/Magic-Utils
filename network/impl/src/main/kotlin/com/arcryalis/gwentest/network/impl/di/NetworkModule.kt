@@ -25,17 +25,28 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @BaseHttpClient
+    fun provideBaseOkHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
+
+    @Provides
+    @Singleton
     @ApiHttpClient
-    fun provideApiOkHttpClient(interceptor: ScryfallApiHeaderInterceptor): OkHttpClient =
-        OkHttpClient.Builder()
+    fun provideApiOkHttpClient(
+        @BaseHttpClient base: OkHttpClient,
+        interceptor: ScryfallApiHeaderInterceptor
+    ): OkHttpClient =
+        base.newBuilder()
             .addInterceptor(interceptor)
             .build()
 
     @Provides
     @Singleton
     @ImageHttpClient
-    fun provideImageOkHttpClient(interceptor: ScryfallImageHeaderInterceptor): OkHttpClient =
-        OkHttpClient.Builder()
+    fun provideImageOkHttpClient(
+        @BaseHttpClient base: OkHttpClient,
+        interceptor: ScryfallImageHeaderInterceptor
+    ): OkHttpClient =
+        base.newBuilder()
             .addInterceptor(interceptor)
             .build()
 

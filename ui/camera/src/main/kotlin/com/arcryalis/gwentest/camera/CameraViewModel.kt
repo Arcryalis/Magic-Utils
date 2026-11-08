@@ -16,10 +16,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val RECENT_RESULTS_SIZE = 5
-private const val REQUIRED_MATCHES = 3
 private const val MIN_QUERY_LENGTH = 2
-private const val MIN_SCAN_LENGTH = 3
+private const val MAX_CONSECUTIVE_FAILURES = 3
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(
@@ -42,9 +40,8 @@ class CameraViewModel @Inject constructor(
     private var autocompleteJob: Job? = null
     private var lookupJob: Job? = null
     private var scanId = 0
-    private val recentResults = ArrayDeque<String>()
-    private val whitespace = Regex("\\s+")
-    private val trailingNumber = Regex(" \\d+$")
+    private var consecutiveFailures = 0
+    private val scanTextMatcher = ScanTextMatcher()
 
     private val cameraMode = combine(
         deviceHasCamera,
@@ -103,6 +100,7 @@ class CameraViewModel @Inject constructor(
 
         deviceHasCamera.value = hasCamera
         hasPermission.value = permissionGranted
+        hasCameraError.value = false
     }
 
     fun onPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
@@ -129,11 +127,16 @@ class CameraViewModel @Inject constructor(
         isScanning.value = false
     }
 
+    fun onInputFocused() {
+        isScanning.value = false
+    }
+
     fun onScanClick() {
         if (cameraMode.value != CameraMode.Available) return
 
         scanId++
-        recentResults.clear()
+        consecutiveFailures = 0
+        scanTextMatcher.reset()
         autocompleteJob?.cancel()
         results.value = CameraResultsState.Idle
         cancelLookup()
@@ -198,9 +201,9 @@ class CameraViewModel @Inject constructor(
             onProcessed()
             return
         }
+        val frameScanId = scanId
         viewModelScope.launch {
             try {
-                val frameScanId = scanId
                 val result = recogniseText(image)
                 if (!isScanning.value || frameScanId != scanId) return@launch
                 result
@@ -213,26 +216,21 @@ class CameraViewModel @Inject constructor(
     }
 
     private fun onRecognitionFailed() {
-        isScanning.value = false
-        recentResults.clear()
+        consecutiveFailures++
+        if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+            isScanning.value = false
+            consecutiveFailures = 0
+            scanTextMatcher.reset()
+        }
     }
 
     private fun onTextRecognised(text: String) {
-        val normalised = text.trim().replace(whitespace, " ")
-        val stripped = normalised.replace(trailingNumber, "")
-        if (stripped.length < MIN_SCAN_LENGTH) return
+        consecutiveFailures = 0
+        val match = scanTextMatcher.onText(text) ?: return
 
-        recentResults.addLast(normalised)
-        if (recentResults.size > RECENT_RESULTS_SIZE) {
-            recentResults.removeFirst()
-        }
-
-        if (recentResults.count { it == normalised } >= REQUIRED_MATCHES) {
-            cardName.value = stripped
-            showMinLengthError.value = false
-            isScanning.value = false
-            recentResults.clear()
-        }
+        cardName.value = match
+        showMinLengthError.value = false
+        isScanning.value = false
     }
 }
 

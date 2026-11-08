@@ -3,13 +3,17 @@ package com.arcryalis.gwentest.camera
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.util.Rational
 import android.util.Size
+import android.view.Surface
 import androidx.camera.compose.CameraXViewfinder
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceRequest
+import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.ViewPort
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
@@ -23,6 +27,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -41,28 +46,33 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.currentStateAsState
 import kotlinx.coroutines.awaitCancellation
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import kotlin.math.max
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.roundToInt
 import androidx.camera.core.CameraState as CameraXState
 
 internal object NameStrip {
     const val WIDTH_FRACTION = 0.85f
-    const val HEIGHT_FRACTION = 0.12f
+    const val HEIGHT_FRACTION = 0.15f
 }
 
 private val ANALYSIS_TARGET_SIZE = Size(1280, 720)
@@ -87,6 +97,9 @@ fun CameraFeedContent(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateAsState()
+    val isResumed = lifecycleState.isAtLeast(Lifecycle.State.RESUMED)
+    val displayRotation = LocalView.current.display?.rotation ?: Surface.ROTATION_0
     val currentOnCameraError by rememberUpdatedState(onCameraError)
     val currentOnFrame by rememberUpdatedState(onFrame)
     var surfaceRequest by remember { mutableStateOf<SurfaceRequest?>(null) }
@@ -95,18 +108,20 @@ fun CameraFeedContent(
 
     val analyzer = remember {
         ImageAnalysis.Analyzer { imageProxy ->
-            val strip = imageProxy.use { it.toNameStripBitmap(viewfinderSize) } ?: return@Analyzer
+            val strip = imageProxy.use { it.toNameStripBitmap() }
             val processed = CountDownLatch(1)
             currentOnFrame(strip) { processed.countDown() }
             processed.await(FRAME_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         }
     }
 
-    LaunchedEffect(lifecycleOwner, isScanning) {
-        if (!isScanning) return@LaunchedEffect
+    LaunchedEffect(lifecycleOwner, isScanning, isResumed, viewfinderSize, displayRotation) {
+        if (!isScanning || !isResumed || viewfinderSize == IntSize.Zero) return@LaunchedEffect
         bindToCamera(
             context = context.applicationContext,
             lifecycleOwner = lifecycleOwner,
+            viewfinderSize = viewfinderSize,
+            displayRotation = displayRotation,
             onSurfaceRequest = { surfaceRequest = it },
             onFrameAnalysis = { frameAnalysis = it },
             onCameraError = { currentOnCameraError() }
@@ -161,8 +176,10 @@ private fun PausedOverlay(
     onPermissionRequestClick: () -> Unit = {},
     onUseManualInputClick: () -> Unit = {}
 ) {
+    val focusManager = LocalFocusManager.current
+
     Box(
-        modifier = modifier.background(Color.DarkGray),
+        modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainerHighest),
         contentAlignment = Alignment.Center
     ) {
         if (permissionRequired) {
@@ -170,7 +187,12 @@ private fun PausedOverlay(
                 Text(text = stringResource(R.string.camera_permission_request))
             }
         } else {
-            Button(onClick = onScanClick) {
+            Button(
+                onClick = {
+                    focusManager.clearFocus()
+                    onScanClick()
+                }
+            ) {
                 Text(
                     text = stringResource(
                         if (hasCardName) R.string.camera_rescan else R.string.camera_scan
@@ -186,7 +208,7 @@ private fun PausedOverlay(
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = stringResource(R.string.camera_use_manual_input),
-                tint = Color.White
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -202,70 +224,67 @@ private fun NameStripOverlay(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier
-                .weight(marginWeight)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            Text(
-                text = stringResource(R.string.camera_name_strip_hint),
-                color = Color.White,
-                style = MaterialTheme.typography.labelLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
+        Spacer(modifier = Modifier.weight(marginWeight))
         Box(
             modifier = Modifier
                 .weight(NameStrip.HEIGHT_FRACTION)
                 .fillMaxWidth(NameStrip.WIDTH_FRACTION)
-                .border(2.dp, Color.White)
+                .border(2.dp, MaterialTheme.colorScheme.primary)
         )
         Spacer(modifier = Modifier.weight(marginWeight))
     }
 }
 
-private fun ImageProxy.toNameStripBitmap(viewfinderSize: IntSize): Bitmap? {
-    if (viewfinderSize.width == 0 || viewfinderSize.height == 0) return null
+internal fun nameStripRect(cropRect: IntRect, rotationDegrees: Int): IntRect {
+    val isSideways = rotationDegrees % 180 != 0
+    val uprightWidth = if (isSideways) cropRect.height else cropRect.width
+    val uprightHeight = if (isSideways) cropRect.width else cropRect.height
 
+    val stripWidth = (uprightWidth * NameStrip.WIDTH_FRACTION).roundToInt().coerceIn(1, uprightWidth)
+    val stripHeight = (uprightHeight * NameStrip.HEIGHT_FRACTION).roundToInt().coerceIn(1, uprightHeight)
+
+    val width = if (isSideways) stripHeight else stripWidth
+    val height = if (isSideways) stripWidth else stripHeight
+
+    return IntRect(
+        offset = IntOffset(
+            x = cropRect.left + (cropRect.width - width) / 2,
+            y = cropRect.top + (cropRect.height - height) / 2
+        ),
+        size = IntSize(width, height)
+    )
+}
+
+private fun ImageProxy.toNameStripBitmap(): Bitmap {
     val rotation = imageInfo.rotationDegrees
     val source = toBitmap()
-    val isSideways = rotation % 180 != 0
-    val uprightWidth = if (isSideways) source.height else source.width
-    val uprightHeight = if (isSideways) source.width else source.height
-
-    val scale = max(
-        viewfinderSize.width.toFloat() / uprightWidth,
-        viewfinderSize.height.toFloat() / uprightHeight
-    )
-    val stripWidth = (viewfinderSize.width / scale * NameStrip.WIDTH_FRACTION)
-        .roundToInt()
-        .coerceIn(1, uprightWidth)
-    val stripHeight = (viewfinderSize.height / scale * NameStrip.HEIGHT_FRACTION)
-        .roundToInt()
-        .coerceIn(1, uprightHeight)
-
-    val cropWidth = if (isSideways) stripHeight else stripWidth
-    val cropHeight = if (isSideways) stripWidth else stripHeight
+    val isFullBuffer = source.width == width && source.height == height
+    val visible = if (isFullBuffer) {
+        IntRect(cropRect.left, cropRect.top, cropRect.right, cropRect.bottom)
+    } else {
+        IntRect(0, 0, source.width, source.height)
+    }
+    val strip = nameStripRect(visible, rotation)
     val matrix = Matrix().apply { postRotate(rotation.toFloat()) }
 
-    val strip = Bitmap.createBitmap(
+    val result = Bitmap.createBitmap(
         source,
-        (source.width - cropWidth) / 2,
-        (source.height - cropHeight) / 2,
-        cropWidth,
-        cropHeight,
+        strip.left,
+        strip.top,
+        strip.width,
+        strip.height,
         matrix,
         true
     )
-    if (strip !== source) source.recycle()
-    return strip
+    if (result !== source) source.recycle()
+    return result
 }
 
 private suspend fun bindToCamera(
     context: Context,
     lifecycleOwner: LifecycleOwner,
+    viewfinderSize: IntSize,
+    displayRotation: Int,
     onSurfaceRequest: (SurfaceRequest?) -> Unit,
     onFrameAnalysis: (FrameAnalysis?) -> Unit,
     onCameraError: () -> Unit
@@ -276,6 +295,7 @@ private suspend fun bindToCamera(
                 .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
                 .build()
         )
+        .setTargetRotation(displayRotation)
         .build()
         .apply {
             setSurfaceProvider { request -> onSurfaceRequest(request) }
@@ -292,8 +312,20 @@ private suspend fun bindToCamera(
                 )
                 .build()
         )
+        .setTargetRotation(displayRotation)
         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
         .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+        .build()
+    val viewPort = ViewPort.Builder(
+        Rational(viewfinderSize.width, viewfinderSize.height),
+        displayRotation
+    )
+        .setScaleType(ViewPort.FILL_CENTER)
+        .build()
+    val useCaseGroup = UseCaseGroup.Builder()
+        .setViewPort(viewPort)
+        .addUseCase(preview)
+        .addUseCase(imageAnalysis)
         .build()
     val analysisExecutor = Executors.newSingleThreadExecutor()
 
@@ -302,9 +334,11 @@ private suspend fun bindToCamera(
         provider to provider.bindToLifecycle(
             lifecycleOwner,
             CameraSelector.DEFAULT_BACK_CAMERA,
-            preview,
-            imageAnalysis
+            useCaseGroup
         )
+    } catch (e: CancellationException) {
+        analysisExecutor.shutdown()
+        throw e
     } catch (_: Exception) {
         analysisExecutor.shutdown()
         onCameraError()
@@ -324,7 +358,7 @@ private suspend fun bindToCamera(
     } finally {
         onFrameAnalysis(null)
         camera.cameraInfo.cameraState.removeObserver(cameraStateObserver)
-        cameraProvider.unbindAll()
+        cameraProvider.unbind(preview, imageAnalysis)
         imageAnalysis.clearAnalyzer()
         analysisExecutor.shutdown()
         onSurfaceRequest(null)

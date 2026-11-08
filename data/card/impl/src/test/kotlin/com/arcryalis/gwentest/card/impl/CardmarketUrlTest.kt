@@ -63,6 +63,29 @@ class CardmarketUrlTest {
     }
 
     @Test
+    fun whenOtherHost_thenNull() {
+        assertNull("https://example.com/en/Magic/Products?idProduct=818770".toCardmarketProductUrl())
+    }
+
+    @Test
+    fun whenLookalikeHost_thenNull() {
+        assertNull(
+            "https://cardmarket.com.evil.io/en/Magic/Products?idProduct=818770".toCardmarketProductUrl()
+        )
+        assertNull(
+            "https://evilcardmarket.com/en/Magic/Products?idProduct=818770".toCardmarketProductUrl()
+        )
+    }
+
+    @Test
+    fun whenBareCardmarketHost_thenKept() {
+        assertEquals(
+            "https://cardmarket.com/en/Magic/Products?idProduct=818770",
+            "https://cardmarket.com/en/Magic/Products?idProduct=818770".toCardmarketProductUrl()
+        )
+    }
+
+    @Test
     fun whenFragmentPresent_thenDropped() {
         assertEquals(
             "https://www.cardmarket.com/en/Magic/Products?idProduct=818770",
