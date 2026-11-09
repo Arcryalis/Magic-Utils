@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.android.gradlePlugin)
     implementation(libs.kotlin.gradlePlugin)
     implementation(libs.room.gradlePlugin)
+    implementation(libs.spotless.gradlePlugin)
 }
 
 gradlePlugin {
@@ -63,6 +64,11 @@ gradlePlugin {
         create("androidRoom") {
             id = "gwentest.room"
             implementationClass = "com.arcryalis.gwentest.convention.AndroidRoomConventionPlugin"
+        }
+
+        create("spotless") {
+            id = "gwentest.spotless"
+            implementationClass = "com.arcryalis.gwentest.convention.SpotlessConventionPlugin"
         }
     }
 }
