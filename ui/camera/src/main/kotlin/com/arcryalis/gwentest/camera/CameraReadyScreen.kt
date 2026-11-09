@@ -50,7 +50,7 @@ fun CameraReadyScreen(
     onInputChange: (String) -> Unit = {},
     onInputFocused: () -> Unit = {},
     onSubmitClick: () -> Unit = {},
-    onOpenCardmarketClick: (String) -> Unit = {},
+    onOpenLinkClick: (String) -> Unit = {},
     onCameraError: () -> Unit = {},
     onFrame: (Bitmap, () -> Unit) -> Unit = { _, onProcessed -> onProcessed() },
     onScanClick: () -> Unit = {},
@@ -58,11 +58,11 @@ fun CameraReadyScreen(
     onUseManualInputClick: () -> Unit = {}
 ) {
     val resultsList: @Composable (Modifier) -> Unit = { listModifier ->
-        CameraResultsList(
-            results = state.results,
-            lookup = state.lookup,
+        CardSearchResultsList(
+            searchResults = state.searchResults,
+            storeLink = state.storeLink,
             modifier = listModifier,
-            onOpenCardmarketClick = onOpenCardmarketClick
+            onOpenLinkClick = onOpenLinkClick
         )
     }
 
@@ -127,7 +127,7 @@ private fun CameraSection(
 ) {
     Column(modifier = modifier) {
         CameraFeedContent(
-            isScanning = state.isScanning,
+            isScanning = (state.camera as? CameraMode.Available)?.isScanning == true,
             hasCardName = state.cardName.isNotBlank(),
             permissionRequired = state.camera == CameraMode.PermissionRequired,
             modifier = Modifier
@@ -184,7 +184,7 @@ private fun CardNameInput(
             modifier = Modifier.width(36.dp),
             contentAlignment = Alignment.Center
         ) {
-            if (state.results == CameraResultsState.Loading) {
+            if (state.searchResults == CardSearchResultState.Loading) {
                 CircularProgressIndicator(modifier = Modifier.size(28.dp))
             } else {
                 IconButton(
@@ -202,34 +202,34 @@ private fun CardNameInput(
 }
 
 @Composable
-private fun CameraResultsList(
-    results: CameraResultsState,
-    lookup: CameraLookupState,
+private fun CardSearchResultsList(
+    searchResults: CardSearchResultState,
+    storeLink: StoreLinkState,
     modifier: Modifier = Modifier,
-    onOpenCardmarketClick: (String) -> Unit = {}
+    onOpenLinkClick: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
 
-    when (results) {
-        CameraResultsState.Empty -> CameraResultsMessage(
+    when (searchResults) {
+        CardSearchResultState.NoResults -> CardSearchResultsMessage(
             text = stringResource(R.string.camera_results_empty),
             modifier = modifier
         )
 
-        CameraResultsState.Error -> CameraResultsMessage(
+        CardSearchResultState.Error -> CardSearchResultsMessage(
             text = stringResource(R.string.camera_results_error),
             modifier = modifier
         )
 
         else -> {
-            val names = (results as? CameraResultsState.Results)?.names.orEmpty()
+            val names = (searchResults as? CardSearchResultState.Results)?.names.orEmpty()
             LazyColumn(modifier = modifier) {
                 items(names) { name ->
-                    CameraResultItem(
+                    CardSearchResultItem(
                         name = name,
-                        lookup = lookup,
+                        storeLink = storeLink,
                         onCopyClick = {
                             scope.launch {
                                 clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(name, name)))
@@ -238,7 +238,7 @@ private fun CameraResultsList(
                                 }
                             }
                         },
-                        onOpenCardmarketClick = { onOpenCardmarketClick(name) }
+                        onOpenLinkClick = { onOpenLinkClick(name) }
                     )
                 }
             }
@@ -247,11 +247,11 @@ private fun CameraResultsList(
 }
 
 @Composable
-private fun CameraResultItem(
+private fun CardSearchResultItem(
     name: String,
-    lookup: CameraLookupState,
+    storeLink: StoreLinkState,
     onCopyClick: () -> Unit = {},
-    onOpenCardmarketClick: () -> Unit = {}
+    onOpenLinkClick: () -> Unit = {}
 ) {
     ListItem(
         headlineContent = { Text(text = name) },
@@ -267,12 +267,12 @@ private fun CameraResultItem(
                     modifier = Modifier.size(48.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (lookup == CameraLookupState.Loading(name)) {
+                    if (storeLink == StoreLinkState.Loading(name)) {
                         CircularProgressIndicator(modifier = Modifier.size(20.dp))
                     } else {
                         IconButton(
-                            onClick = onOpenCardmarketClick,
-                            enabled = lookup !is CameraLookupState.Loading
+                            onClick = onOpenLinkClick,
+                            enabled = storeLink !is StoreLinkState.Loading
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.NavigateNext,
@@ -287,7 +287,7 @@ private fun CameraResultItem(
 }
 
 @Composable
-private fun CameraResultsMessage(
+private fun CardSearchResultsMessage(
     text: String,
     modifier: Modifier = Modifier
 ) {

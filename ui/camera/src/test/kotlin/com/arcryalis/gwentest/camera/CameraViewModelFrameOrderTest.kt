@@ -12,7 +12,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class CameraViewModelFrameOrderTest {
@@ -45,7 +44,7 @@ class CameraViewModelFrameOrderTest {
 
         val state = assertIs<CameraState.Ready>(sut.state.value)
         assertEquals("", state.cardName)
-        assertTrue(state.isScanning)
+        assertEquals(CameraMode.Available(isScanning = true), state.camera)
     }
 
     private fun createFrame(): Bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)

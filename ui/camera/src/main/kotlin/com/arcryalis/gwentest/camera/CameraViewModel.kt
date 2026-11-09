@@ -8,9 +8,12 @@ import com.arcryalis.gwentest.domain.card.GetCardmarketUrlUseCase
 import com.arcryalis.gwentest.domain.ocr.RecogniseTextUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -30,15 +33,17 @@ class CameraViewModel @Inject constructor(
     private val deviceHasCamera = MutableStateFlow<Boolean?>(null)
     private val manualMode = MutableStateFlow(false)
     private val hasCameraError = MutableStateFlow(false)
+    private val isScanning = MutableStateFlow(false)
 
     private val cardName = MutableStateFlow("")
-    private val isScanning = MutableStateFlow(false)
-    private val results = MutableStateFlow<CameraResultsState>(CameraResultsState.Idle)
+    private val searchResults = MutableStateFlow<CardSearchResultState>(CardSearchResultState.Empty)
     private val showMinLengthError = MutableStateFlow(false)
-    private val lookup = MutableStateFlow<CameraLookupState>(CameraLookupState.Idle)
+    private val storeLink = MutableStateFlow<StoreLinkState>(StoreLinkState.Idle)
+    private val _storeLinkEvents = MutableSharedFlow<StoreLinkEvent>()
+    val storeLinkEvents: SharedFlow<StoreLinkEvent> = _storeLinkEvents.asSharedFlow()
 
-    private var autocompleteJob: Job? = null
-    private var lookupJob: Job? = null
+    private var searchJob: Job? = null
+    private var storeLinkJob: Job? = null
     private var scanId = 0
     private var consecutiveFailures = 0
     private val scanTextMatcher = ScanTextMatcher()
@@ -47,48 +52,47 @@ class CameraViewModel @Inject constructor(
         deviceHasCamera,
         hasPermission,
         manualMode,
-        hasCameraError
-    ) { hasCamera, permission, manual, error ->
+        hasCameraError,
+        isScanning
+    ) { hasCamera, permission, manual, error, scanning ->
         when {
             hasCamera == null -> null
             !hasCamera || manual || error -> CameraMode.Manual
             permission != true -> CameraMode.PermissionRequired
-            else -> CameraMode.Available
+            else -> CameraMode.Available(isScanning = scanning)
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val inputState = combine(
         cardName,
         showMinLengthError,
-        results,
-        lookup
-    ) { cardName, showMinLengthError, results, lookup ->
+        searchResults,
+        storeLink
+    ) { cardName, showMinLengthError, searchResults, storeLink ->
         CameraInputState(
             cardName = cardName,
-            results = results,
+            searchResults = searchResults,
             canSubmit = cardName.trim().length >= MIN_QUERY_LENGTH &&
-                    results != CameraResultsState.Loading,
+                    searchResults != CardSearchResultState.Loading,
             showMinLengthError = showMinLengthError,
-            lookup = lookup
+            storeLink = storeLink
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, CameraInputState())
 
     val state: StateFlow<CameraState> = combine(
         cameraMode,
-        inputState,
-        isScanning
-    ) { camera, input, isScanning ->
+        inputState
+    ) { camera, input ->
         if (camera == null) {
             CameraState.Loading
         } else {
             CameraState.Ready(
                 camera = camera,
                 cardName = input.cardName,
-                isScanning = isScanning,
-                results = input.results,
+                searchResults = input.searchResults,
                 canSubmit = input.canSubmit,
                 showMinLengthError = input.showMinLengthError,
-                lookup = input.lookup
+                storeLink = input.storeLink
             )
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, CameraState.Loading)
@@ -96,6 +100,9 @@ class CameraViewModel @Inject constructor(
     fun onCameraStatusChecked(hasCamera: Boolean, permissionGranted: Boolean) {
         if (permissionGranted && hasPermission.value == false) {
             manualMode.value = false
+        }
+        if (!hasCamera || !permissionGranted) {
+            isScanning.value = false
         }
 
         deviceHasCamera.value = hasCamera
@@ -132,19 +139,19 @@ class CameraViewModel @Inject constructor(
     }
 
     fun onScanClick() {
-        if (cameraMode.value != CameraMode.Available) return
+        if (cameraMode.value !is CameraMode.Available) return
 
         scanId++
         consecutiveFailures = 0
         scanTextMatcher.reset()
-        autocompleteJob?.cancel()
-        results.value = CameraResultsState.Idle
-        cancelLookup()
+        searchJob?.cancel()
+        searchResults.value = CardSearchResultState.Empty
+        cancelStoreLink()
         isScanning.value = true
     }
 
     fun onSubmitClick() {
-        if (results.value == CameraResultsState.Loading) return
+        if (searchResults.value == CardSearchResultState.Loading) return
 
         val query = cardName.value.trim()
         if (query.length < MIN_QUERY_LENGTH) {
@@ -152,48 +159,35 @@ class CameraViewModel @Inject constructor(
             return
         }
 
-        cancelLookup()
-        results.value = CameraResultsState.Loading
-        autocompleteJob = viewModelScope.launch {
-            results.value = autocompleteCardNames(query).fold(
+        cancelStoreLink()
+        searchResults.value = CardSearchResultState.Loading
+        searchJob = viewModelScope.launch {
+            searchResults.value = autocompleteCardNames(query).fold(
                 onSuccess = { names ->
-                    if (names.isEmpty()) CameraResultsState.Empty else CameraResultsState.Results(names)
+                    if (names.isEmpty()) CardSearchResultState.NoResults else CardSearchResultState.Results(names)
                 },
-                onFailure = { CameraResultsState.Error }
+                onFailure = { CardSearchResultState.Error }
             )
         }
     }
 
-    fun onOpenCardmarketClick(cardName: String) {
-        if (lookup.value is CameraLookupState.Loading) return
+    fun onOpenLinkClick(cardName: String) {
+        if (storeLink.value is StoreLinkState.Loading) return
 
-        lookup.value = CameraLookupState.Loading(cardName)
-        lookupJob = viewModelScope.launch {
-            lookup.value = getCardmarketUrl(cardName).fold(
-                onSuccess = { url -> CameraLookupState.Open(url) },
-                onFailure = { CameraLookupState.Failed }
+        storeLink.value = StoreLinkState.Loading(cardName)
+        storeLinkJob = viewModelScope.launch {
+            val event = getCardmarketUrl(cardName).fold(
+                onSuccess = { url -> StoreLinkEvent.Open(url) },
+                onFailure = { StoreLinkEvent.Failed }
             )
+            storeLink.value = StoreLinkState.Idle
+            _storeLinkEvents.emit(event)
         }
     }
 
-    fun onLookupHandled() {
-        lookup.value = CameraLookupState.Idle
-    }
-
-    fun onUrlOpenFailed() {
-        lookup.value = CameraLookupState.Failed
-    }
-
-    fun onScreenStopped() {
-        val current = lookup.value
-        if (current is CameraLookupState.Loading || current is CameraLookupState.Open) {
-            cancelLookup()
-        }
-    }
-
-    private fun cancelLookup() {
-        lookupJob?.cancel()
-        lookup.value = CameraLookupState.Idle
+    private fun cancelStoreLink() {
+        storeLinkJob?.cancel()
+        storeLink.value = StoreLinkState.Idle
     }
 
     fun onFrame(image: Bitmap, onProcessed: () -> Unit = {}) {
@@ -236,8 +230,8 @@ class CameraViewModel @Inject constructor(
 
 private data class CameraInputState(
     val cardName: String = "",
-    val results: CameraResultsState = CameraResultsState.Idle,
+    val searchResults: CardSearchResultState = CardSearchResultState.Empty,
     val canSubmit: Boolean = false,
     val showMinLengthError: Boolean = false,
-    val lookup: CameraLookupState = CameraLookupState.Idle,
+    val storeLink: StoreLinkState = StoreLinkState.Idle,
 )

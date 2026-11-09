@@ -5,31 +5,33 @@ sealed interface CameraState {
     data class Ready(
         val camera: CameraMode,
         val cardName: String,
-        val isScanning: Boolean,
-        val results: CameraResultsState = CameraResultsState.Idle,
+        val searchResults: CardSearchResultState = CardSearchResultState.Empty,
         val canSubmit: Boolean = false,
         val showMinLengthError: Boolean = false,
-        val lookup: CameraLookupState = CameraLookupState.Idle,
+        val storeLink: StoreLinkState = StoreLinkState.Idle,
     ) : CameraState
 }
 
-enum class CameraMode {
-    Manual,
-    PermissionRequired,
-    Available
+sealed interface CameraMode {
+    data object Manual : CameraMode
+    data object PermissionRequired : CameraMode
+    data class Available(val isScanning: Boolean) : CameraMode
 }
 
-sealed interface CameraLookupState {
-    data object Idle : CameraLookupState
-    data class Loading(val cardName: String) : CameraLookupState
-    data class Open(val url: String) : CameraLookupState
-    data object Failed : CameraLookupState
+sealed interface StoreLinkState {
+    data object Idle : StoreLinkState
+    data class Loading(val cardName: String) : StoreLinkState
 }
 
-sealed interface CameraResultsState {
-    data object Idle : CameraResultsState
-    data object Loading : CameraResultsState
-    data object Empty : CameraResultsState
-    data object Error : CameraResultsState
-    data class Results(val names: List<String>) : CameraResultsState
+sealed interface StoreLinkEvent {
+    data class Open(val url: String) : StoreLinkEvent
+    data object Failed : StoreLinkEvent
+}
+
+sealed interface CardSearchResultState {
+    data object Empty : CardSearchResultState
+    data object Loading : CardSearchResultState
+    data object NoResults : CardSearchResultState
+    data object Error : CardSearchResultState
+    data class Results(val names: List<String>) : CardSearchResultState
 }
