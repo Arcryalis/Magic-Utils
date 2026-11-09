@@ -33,33 +33,30 @@ object NetworkModule {
     @ApiHttpClient
     fun provideApiOkHttpClient(
         @BaseHttpClient base: OkHttpClient,
-        interceptor: ScryfallApiHeaderInterceptor
-    ): OkHttpClient =
-        base.newBuilder()
-            .addInterceptor(interceptor)
-            .build()
+        interceptor: ScryfallApiHeaderInterceptor,
+    ): OkHttpClient = base.newBuilder()
+        .addInterceptor(interceptor)
+        .build()
 
     @Provides
     @Singleton
     @ImageHttpClient
     fun provideImageOkHttpClient(
         @BaseHttpClient base: OkHttpClient,
-        interceptor: ScryfallImageHeaderInterceptor
-    ): OkHttpClient =
-        base.newBuilder()
-            .addInterceptor(interceptor)
-            .build()
+        interceptor: ScryfallImageHeaderInterceptor,
+    ): OkHttpClient = base.newBuilder()
+        .addInterceptor(interceptor)
+        .build()
 
     @Provides
     @Singleton
     fun provideRetrofit(
         @ApiHttpClient client: OkHttpClient,
-        @ApplicationContext context: Context
-    ): Retrofit =
-        Retrofit.Builder()
-            .baseUrl(context.getString(R.string.scryfall_base_url))
-            .client(client)
-            .addCallAdapterFactory(NetworkResponseAdapterFactory())
-            .addConverterFactory(retroJson.asConverterFactory("application/json".toMediaType()))
-            .build()
+        @ApplicationContext context: Context,
+    ): Retrofit = Retrofit.Builder()
+        .baseUrl(context.getString(R.string.scryfall_base_url))
+        .client(client)
+        .addCallAdapterFactory(NetworkResponseAdapterFactory())
+        .addConverterFactory(retroJson.asConverterFactory("application/json".toMediaType()))
+        .build()
 }

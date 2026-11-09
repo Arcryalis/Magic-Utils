@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ScryfallCatalogDto(
     @SerialName("data")
-    val data: List<String>
+    val data: List<String>,
 )

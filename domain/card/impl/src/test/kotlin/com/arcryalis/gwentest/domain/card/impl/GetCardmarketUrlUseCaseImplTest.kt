@@ -15,14 +15,14 @@ class GetCardmarketUrlUseCaseImplTest {
     private lateinit var sut: GetCardmarketUrlUseCase
 
     private fun setupSut(
-        cardmarketUrlResult: Result<String> = Result.success("https://www.cardmarket.com/en/Magic/Products?idProduct=1")
+        cardmarketUrlResult: Result<String> = Result.success("https://www.cardmarket.com/en/Magic/Products?idProduct=1"),
     ) {
         cardRepository = MockCardRepository(
             availableSets = emptyList(),
             cardsBySet = emptyMap(),
             cardsExistLocally = false,
             downloadResult = false,
-            cardmarketUrlResult = cardmarketUrlResult
+            cardmarketUrlResult = cardmarketUrlResult,
         )
         sut = GetCardmarketUrlUseCaseImpl(cardRepository)
     }

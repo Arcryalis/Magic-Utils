@@ -7,7 +7,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ScryfallApiHeaderInterceptor @Inject constructor(
-    private val scryfallUserAgentProvider: ScryfallUserAgentProvider
+    private val scryfallUserAgentProvider: ScryfallUserAgentProvider,
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {

@@ -17,20 +17,20 @@ import androidx.compose.ui.unit.dp
 fun NavigationScaffold(
     modifier: Modifier = Modifier,
     onNavigateBack: (() -> Unit)? = null,
-    content: @Composable (Modifier) -> Unit
+    content: @Composable (Modifier) -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
             if (onNavigateBack != null) {
                 DefaultTopNavigationBar(
-                    onNavigateBack = onNavigateBack
+                    onNavigateBack = onNavigateBack,
                 )
             }
         },
     ) { innerPadding ->
         content(
-            Modifier.padding(innerPadding)
+            Modifier.padding(innerPadding),
         )
     }
 }
@@ -38,6 +38,7 @@ fun NavigationScaffold(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultTopNavigationBar(
+    modifier: Modifier = Modifier,
     onNavigateBack: (() -> Unit)? = null,
 ) {
     TopAppBar(
@@ -51,11 +52,11 @@ fun DefaultTopNavigationBar(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = stringResource(R.string.navigation_back)
+                        contentDescription = stringResource(R.string.navigation_back),
                     )
                 }
             }
         },
-        modifier = Modifier
+        modifier = modifier,
     )
 }

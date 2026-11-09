@@ -32,15 +32,18 @@ import com.arcryalis.gwentest.scheme.SchemeScreen
 
 const val NAV_ANIMATION_DURATION = 300
 
-private fun slideTransition(direction: Int): ContentTransform =
-    (slideInHorizontally(tween(NAV_ANIMATION_DURATION)) { it * direction } +
-            fadeIn(tween(NAV_ANIMATION_DURATION))) togetherWith
-            (slideOutHorizontally(tween(NAV_ANIMATION_DURATION)) { -it * direction } +
-                    fadeOut(tween(NAV_ANIMATION_DURATION)))
+private fun slideTransition(direction: Int): ContentTransform = (
+    slideInHorizontally(tween(NAV_ANIMATION_DURATION)) { it * direction } +
+        fadeIn(tween(NAV_ANIMATION_DURATION))
+    ) togetherWith
+    (
+        slideOutHorizontally(tween(NAV_ANIMATION_DURATION)) { -it * direction } +
+            fadeOut(tween(NAV_ANIMATION_DURATION))
+        )
 
 @Composable
 fun ComposeApp(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val backStack = rememberNavBackStack(HomeRoute)
     val navigator = remember(backStack) { AppNavigator(backStack) }
@@ -56,7 +59,7 @@ fun ComposeApp(
                 },
                 onNavigateToGameScreen = { settings ->
                     navigator.navigate(settings.toGameRoute())
-                }
+                },
             )
         }
         entry<SchemeRoute> {
@@ -73,7 +76,7 @@ fun ComposeApp(
             val viewModel = hiltViewModel<GameViewModel, GameViewModel.Factory>(
                 creationCallback = { factory ->
                     factory.create(route)
-                }
+                },
             )
             GameScreen(viewModel = viewModel)
         }
@@ -87,7 +90,7 @@ fun ComposeApp(
             onBack = navigator::navigateBack,
             entryDecorators = listOf(
                 rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator()
+                rememberViewModelStoreNavEntryDecorator(),
             ),
             entryProvider = entryProvider,
             transitionSpec = { slideTransition(direction = 1) },

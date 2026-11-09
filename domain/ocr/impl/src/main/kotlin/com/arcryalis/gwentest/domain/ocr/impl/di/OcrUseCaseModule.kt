@@ -26,6 +26,5 @@ internal object OcrRecognizerModule {
 
     @Provides
     @Singleton
-    fun provideTextRecognizer(): TextRecognizer =
-        TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    fun provideTextRecognizer(): TextRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 }

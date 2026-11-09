@@ -18,6 +18,6 @@ tasks.register("allUnitTests") {
     dependsOn(
         subprojects.mapNotNull { subproject ->
             subproject.tasks.findByName("testDebugUnitTest")
-        }
+        },
     )
 }

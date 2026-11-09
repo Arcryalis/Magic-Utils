@@ -6,11 +6,11 @@ object TestCardSetEntity {
 
     val set1 = CardSetEntity(
         id = "setId",
-        name = "setName"
+        name = "setName",
     )
 
     val set2 = CardSetEntity(
         id = "setId 2",
-        name = "Second name"
+        name = "Second name",
     )
 }

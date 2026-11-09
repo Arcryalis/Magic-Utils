@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 
-
 @Composable
 fun LifeCounter(
     lifeTotal: String,
@@ -45,8 +44,8 @@ fun LifeCounter(
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color.LightGray,
     arrowsVisible: Boolean = true,
-    onUpClicked: () -> Unit = {},
-    onDownClicked: () -> Unit = {},
+    onUpClick: () -> Unit = {},
+    onDownClick: () -> Unit = {},
 ) {
     val haptics = LocalHapticFeedback.current
     var boxHeight by remember { mutableFloatStateOf(0f) }
@@ -61,14 +60,14 @@ fun LifeCounter(
                         handleOnPress(
                             containerHeight = boxHeight,
                             tapYOffset = tapOffset.y,
-                            onLowerClicked = onDownClicked,
-                            onUpperClicked = onUpClicked
+                            onLowerClick = onDownClick,
+                            onUpperClick = onUpClick,
                         )
-                    }
+                    },
                 )
             }
             .fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
         LifeCounterArrow(
             imageVector = Icons.Default.KeyboardArrowUp,
@@ -77,8 +76,8 @@ fun LifeCounter(
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
 
-        Column (
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+        Column(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
         ) {
             Text(
                 text = lifeTotal,
@@ -113,17 +112,17 @@ fun LifeCounter(
 private fun handleOnPress(
     containerHeight: Float,
     tapYOffset: Float,
-    onLowerClicked: () -> Unit = {},
-    onUpperClicked: () -> Unit = {}
+    onLowerClick: () -> Unit = {},
+    onUpperClick: () -> Unit = {},
 ) {
     // check top/bottom. Ignore middle press
     val lowerThreshold = containerHeight / 3
     val upperThreshold = containerHeight - lowerThreshold
 
     if (tapYOffset >= upperThreshold) {
-        onLowerClicked()
+        onLowerClick()
     } else if (tapYOffset <= lowerThreshold) {
-        onUpperClicked()
+        onUpperClick()
     }
 }
 
@@ -141,43 +140,42 @@ private fun LifeCounterArrow(
             tint = LocalContentColor.current,
             modifier = modifier
                 .fillMaxWidth()
-                .height(96.dp)
+                .height(96.dp),
         )
     } else {
         Box(
-            modifier = Modifier
+            modifier = Modifier,
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun LifeCounterPreview() {
+private fun LifeCounterPreview() {
     GwenTestTheme {
         LifeCounter(
             lifeTotal = "100",
             playerName = "Someone",
-            backgroundColor = Color.Red
+            backgroundColor = Color.Red,
         )
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun LifeCounterWithoutArrowsPreview() {
+private fun LifeCounterWithoutArrowsPreview() {
     GwenTestTheme {
         LifeCounter(
             lifeTotal = "9",
             playerName = "Player 1",
-            arrowsVisible = false
+            arrowsVisible = false,
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun LifeCounterWithoutNamePreview() {
+private fun LifeCounterWithoutNamePreview() {
     GwenTestTheme {
         LifeCounter(
             lifeTotal = "-10",
@@ -185,4 +183,3 @@ fun LifeCounterWithoutNamePreview() {
         )
     }
 }
-

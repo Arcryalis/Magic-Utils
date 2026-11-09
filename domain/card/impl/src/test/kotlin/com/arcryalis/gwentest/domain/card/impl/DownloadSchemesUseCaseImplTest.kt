@@ -14,15 +14,15 @@ class DownloadSchemesUseCaseImplTest {
     private lateinit var sut: DownloadSchemesUseCase
 
     private fun setupSut(
-        downloadResult: Boolean
+        downloadResult: Boolean,
     ) {
         sut = DownloadSchemesUseCaseImpl(
             MockCardRepository(
                 availableSets = emptyList(),
                 cardsBySet = emptyMap(),
                 cardsExistLocally = false,
-                downloadResult = downloadResult
-            )
+                downloadResult = downloadResult,
+            ),
         )
     }
 

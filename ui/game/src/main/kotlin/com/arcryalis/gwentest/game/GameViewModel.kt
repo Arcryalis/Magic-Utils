@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
-import com.arcryalis.gwentest.game.navigation.GameRoute
 import com.arcryalis.gwentest.game.mapper.toModel
+import com.arcryalis.gwentest.game.navigation.GameRoute
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -24,8 +24,8 @@ import kotlinx.coroutines.launch
 class GameViewModel @AssistedInject constructor(
     @Assisted private val route: GameRoute,
     private val getShuffledCardInfoUseCase: GetShuffledCardInfoUseCase,
-    private val getCardBackUrl: GetCardBackUrlUseCase
-): ViewModel()  {
+    private val getCardBackUrl: GetCardBackUrlUseCase,
+) : ViewModel() {
 
     companion object {
         private const val MAX_LIFE = 999
@@ -37,8 +37,8 @@ class GameViewModel @AssistedInject constructor(
 
     private val setId = route.setId
     private val startingDeck = (
-            setId?.let { getShuffledCardInfoUseCase(setId) } ?: flowOf(emptyList())
-    ).stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        setId?.let { getShuffledCardInfoUseCase(setId) } ?: flowOf(emptyList())
+        ).stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private var revealedCardIndex = MutableStateFlow<Int?>(null)
     private val revealedCardList = combine(
@@ -46,7 +46,7 @@ class GameViewModel @AssistedInject constructor(
         revealedCardIndex,
     ) { deck, index ->
         if (index != null) {
-            deck.take(index+1).reversed()
+            deck.take(index + 1).reversed()
         } else {
             emptyList()
         }
@@ -69,7 +69,7 @@ class GameViewModel @AssistedInject constructor(
                     null
                 },
                 revealedCards = revealedCards,
-                extraCardList = extraCards
+                extraCardList = extraCards,
             )
         } else {
             null
@@ -79,14 +79,16 @@ class GameViewModel @AssistedInject constructor(
     private val overlayRequest = MutableStateFlow<OverlayRequest>(OverlayRequest.None)
     private val overlayState = combine(
         overlayRequest,
-        extraCardList
+        extraCardList,
     ) { request, extraList ->
         when (request) {
             OverlayRequest.None -> OverlayState.Hidden
+
             is OverlayRequest.Card -> OverlayState.Visible.Individual(
                 info = request.card,
-                showRemove = extraList.contains(request.card)
+                showRemove = extraList.contains(request.card),
             )
+
             is OverlayRequest.Gallery -> OverlayState.Visible.Gallery(request.cards)
         }
     }
@@ -97,7 +99,7 @@ class GameViewModel @AssistedInject constructor(
         playerInfo,
         deckState,
         overlayState,
-        isLoading
+        isLoading,
     ) { players, deck, overlay, loading ->
         if (loading) {
             GameState.Loading
@@ -105,7 +107,7 @@ class GameViewModel @AssistedInject constructor(
             GameState.Ready(
                 players = players,
                 deckSettings = deck,
-                overlayState = overlay
+                overlayState = overlay,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, GameState.Loading)
@@ -142,10 +144,10 @@ class GameViewModel @AssistedInject constructor(
         if (currentLife != null && currentLife > MIN_LIFE) {
             playerInfo.update {
                 playerInfo.value
-                ?.toMutableList()
-                ?.apply {
-                    this[index] = this[index].copy(lifeTotal = currentLife - 1)
-                }?.toList()
+                    ?.toMutableList()
+                    ?.apply {
+                        this[index] = this[index].copy(lifeTotal = currentLife - 1)
+                    }?.toList()
             }
         }
     }

@@ -39,7 +39,7 @@ class CameraViewModelTest {
         autocompleteResults: List<Result<List<String>>> = emptyList(),
         autocompleteGate: CompletableDeferred<Unit>? = null,
         cardmarketResults: List<Result<String>> = emptyList(),
-        cardmarketGate: CompletableDeferred<Unit>? = null
+        cardmarketGate: CompletableDeferred<Unit>? = null,
     ) {
         recogniseText = MockRecogniseTextUseCase(results)
         autocompleteCardNames = MockAutocompleteCardNamesUseCase(autocompleteResults, autocompleteGate)
@@ -261,8 +261,8 @@ class CameraViewModelTest {
             listOf(
                 Result.success("Geralt  of Rivia 12"),
                 Result.success(" Geralt of Rivia 12 "),
-                Result.success("Geralt\nof Rivia 12")
-            )
+                Result.success("Geralt\nof Rivia 12"),
+            ),
         )
 
         sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
@@ -280,8 +280,8 @@ class CameraViewModelTest {
             listOf(
                 Result.success("Geralt"),
                 Result.success("Yennefer"),
-                Result.success("Ciri")
-            )
+                Result.success("Ciri"),
+            ),
         )
 
         sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
@@ -376,8 +376,8 @@ class CameraViewModelTest {
                 Result.failure(IllegalStateException()),
                 Result.success("Geralt"),
                 Result.failure(IllegalStateException()),
-                Result.failure(IllegalStateException())
-            )
+                Result.failure(IllegalStateException()),
+            ),
         )
 
         sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)
@@ -572,7 +572,7 @@ class CameraViewModelTest {
         val gate = CompletableDeferred<Unit>()
         setupSut(
             autocompleteResults = listOf(Result.success(listOf("Geralt"))),
-            autocompleteGate = gate
+            autocompleteGate = gate,
         )
 
         sut.onCameraStatusChecked(hasCamera = true, permissionGranted = true)

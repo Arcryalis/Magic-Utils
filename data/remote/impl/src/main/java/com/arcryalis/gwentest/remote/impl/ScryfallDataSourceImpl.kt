@@ -12,7 +12,7 @@ import com.haroldadmin.cnradapter.NetworkResponse
 import javax.inject.Inject
 
 class ScryfallDataSourceImpl @Inject constructor(
-    private val scryfallApi: ScryfallApi
+    private val scryfallApi: ScryfallApi,
 ) : ScryfallDataSource {
 
     override suspend fun getSchemes(page: Int): RemoteResponse<ScryfallPaginationDto> {
@@ -24,17 +24,15 @@ class ScryfallDataSourceImpl @Inject constructor(
             unique = "prints",
             order = "set",
             includeExtras = true,
-            page = page
+            page = page,
         )
 
         return handleResponse(response)
     }
 
-    override suspend fun autocompleteCardNames(query: String): RemoteResponse<ScryfallCatalogDto> =
-        handleResponse(scryfallApi.autocompleteCardNames(query = query))
+    override suspend fun autocompleteCardNames(query: String): RemoteResponse<ScryfallCatalogDto> = handleResponse(scryfallApi.autocompleteCardNames(query = query))
 
-    override suspend fun getCardByExactName(name: String): RemoteResponse<ScryfallNamedCardDto> =
-        handleResponse(scryfallApi.getCardByExactName(name = name))
+    override suspend fun getCardByExactName(name: String): RemoteResponse<ScryfallNamedCardDto> = handleResponse(scryfallApi.getCardByExactName(name = name))
 
     private fun <T> handleResponse(response: NetworkResponse<T, Unit>): RemoteResponse<T> = when (response) {
         is NetworkResponse.Success -> Success(response.body)

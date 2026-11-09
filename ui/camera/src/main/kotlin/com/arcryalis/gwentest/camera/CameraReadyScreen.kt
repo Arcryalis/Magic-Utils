@@ -48,21 +48,21 @@ fun CameraReadyScreen(
     state: CameraState.Ready,
     modifier: Modifier = Modifier,
     onInputChange: (String) -> Unit = {},
-    onInputFocused: () -> Unit = {},
+    onInputFocus: () -> Unit = {},
     onSubmitClick: () -> Unit = {},
     onOpenLinkClick: (String) -> Unit = {},
     onCameraError: () -> Unit = {},
     onFrame: (Bitmap, () -> Unit) -> Unit = { _, onProcessed -> onProcessed() },
     onScanClick: () -> Unit = {},
     onPermissionRequestClick: () -> Unit = {},
-    onUseManualInputClick: () -> Unit = {}
+    onUseManualInputClick: () -> Unit = {},
 ) {
     val resultsList: @Composable (Modifier) -> Unit = { listModifier ->
         CardSearchResultsList(
             searchResults = state.searchResults,
             storeLink = state.storeLink,
             modifier = listModifier,
-            onOpenLinkClick = onOpenLinkClick
+            onOpenLinkClick = onOpenLinkClick,
         )
     }
 
@@ -73,13 +73,13 @@ fun CameraReadyScreen(
                 state = state,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChange = onInputChange,
-                onFocused = onInputFocused,
-                onSubmitClick = onSubmitClick
+                onFocus = onInputFocus,
+                onSubmitClick = onSubmitClick,
             )
             resultsList(
                 Modifier
                     .weight(1f)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             )
         }
         return
@@ -91,13 +91,13 @@ fun CameraReadyScreen(
             feedMode = feedMode,
             modifier = sectionModifier,
             onInputChange = onInputChange,
-            onInputFocused = onInputFocused,
+            onInputFocus = onInputFocus,
             onSubmitClick = onSubmitClick,
             onCameraError = onCameraError,
             onFrame = onFrame,
             onScanClick = onScanClick,
             onPermissionRequestClick = onPermissionRequestClick,
-            onUseManualInputClick = onUseManualInputClick
+            onUseManualInputClick = onUseManualInputClick,
         )
     }
 
@@ -120,13 +120,13 @@ private fun CameraSection(
     feedMode: CameraFeedMode,
     modifier: Modifier = Modifier,
     onInputChange: (String) -> Unit = {},
-    onInputFocused: () -> Unit = {},
+    onInputFocus: () -> Unit = {},
     onSubmitClick: () -> Unit = {},
     onCameraError: () -> Unit = {},
     onFrame: (Bitmap, () -> Unit) -> Unit = { _, onProcessed -> onProcessed() },
     onScanClick: () -> Unit = {},
     onPermissionRequestClick: () -> Unit = {},
-    onUseManualInputClick: () -> Unit = {}
+    onUseManualInputClick: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
         CameraFeedContent(
@@ -138,14 +138,14 @@ private fun CameraSection(
             onCameraError = onCameraError,
             onScanClick = onScanClick,
             onPermissionRequestClick = onPermissionRequestClick,
-            onUseManualInputClick = onUseManualInputClick
+            onUseManualInputClick = onUseManualInputClick,
         )
         CardNameInput(
             state = state,
             modifier = Modifier.fillMaxWidth(),
             onValueChange = onInputChange,
-            onFocused = onInputFocused,
-            onSubmitClick = onSubmitClick
+            onFocus = onInputFocus,
+            onSubmitClick = onSubmitClick,
         )
     }
 }
@@ -155,13 +155,13 @@ private fun CardNameInput(
     state: CameraState.Ready,
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit = {},
-    onFocused: () -> Unit = {},
-    onSubmitClick: () -> Unit = {}
+    onFocus: () -> Unit = {},
+    onSubmitClick: () -> Unit = {},
 ) {
     Row(
         modifier = modifier.padding(horizontal = 20.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         OutlinedTextField(
             value = state.cardName,
@@ -178,23 +178,23 @@ private fun CardNameInput(
             keyboardActions = KeyboardActions(onSearch = { onSubmitClick() }),
             modifier = Modifier
                 .weight(1f)
-                .onFocusChanged { if (it.isFocused) onFocused() }
+                .onFocusChanged { if (it.isFocused) onFocus() },
         )
 
         Box(
             modifier = Modifier.width(36.dp),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             if (state.searchResults == CardSearchResultState.Loading) {
                 CircularProgressIndicator(modifier = Modifier.size(28.dp))
             } else {
                 IconButton(
                     onClick = onSubmitClick,
-                    enabled = state.canSubmit
+                    enabled = state.canSubmit,
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = stringResource(R.string.camera_submit)
+                        contentDescription = stringResource(R.string.camera_submit),
                     )
                 }
             }
@@ -207,7 +207,7 @@ private fun CardSearchResultsList(
     searchResults: CardSearchResultState,
     storeLink: StoreLinkState,
     modifier: Modifier = Modifier,
-    onOpenLinkClick: (String) -> Unit = {}
+    onOpenLinkClick: (String) -> Unit = {},
 ) {
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
@@ -216,12 +216,12 @@ private fun CardSearchResultsList(
     when (searchResults) {
         CardSearchResultState.NoResults -> CardSearchResultsMessage(
             text = stringResource(R.string.camera_results_empty),
-            modifier = modifier
+            modifier = modifier,
         )
 
         CardSearchResultState.Error -> CardSearchResultsMessage(
             text = stringResource(R.string.camera_results_error),
-            modifier = modifier
+            modifier = modifier,
         )
 
         else -> {
@@ -239,7 +239,7 @@ private fun CardSearchResultsList(
                                 }
                             }
                         },
-                        onOpenLinkClick = { onOpenLinkClick(name) }
+                        onOpenLinkClick = { onOpenLinkClick(name) },
                     )
                 }
             }
@@ -252,7 +252,7 @@ private fun CardSearchResultItem(
     name: String,
     storeLink: StoreLinkState,
     onCopyClick: () -> Unit = {},
-    onOpenLinkClick: () -> Unit = {}
+    onOpenLinkClick: () -> Unit = {},
 ) {
     ListItem(
         headlineContent = { Text(text = name) },
@@ -261,45 +261,45 @@ private fun CardSearchResultItem(
                 IconButton(onClick = onCopyClick) {
                     Icon(
                         imageVector = Icons.Default.ContentCopy,
-                        contentDescription = stringResource(R.string.camera_copy_name)
+                        contentDescription = stringResource(R.string.camera_copy_name),
                     )
                 }
                 Box(
                     modifier = Modifier.size(48.dp),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     if (storeLink == StoreLinkState.Loading(name)) {
                         CircularProgressIndicator(modifier = Modifier.size(20.dp))
                     } else {
                         IconButton(
                             onClick = onOpenLinkClick,
-                            enabled = storeLink !is StoreLinkState.Loading
+                            enabled = storeLink !is StoreLinkState.Loading,
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.NavigateNext,
-                                contentDescription = stringResource(R.string.camera_open_cardmarket)
+                                contentDescription = stringResource(R.string.camera_open_cardmarket),
                             )
                         }
                     }
                 }
             }
-        }
+        },
     )
 }
 
 @Composable
 private fun CardSearchResultsMessage(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.padding(horizontal = 32.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }

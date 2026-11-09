@@ -18,7 +18,7 @@ class CardInfoToModelMapperTest {
                 small = entity.smallImageUrl,
                 large = entity.largeImageUrl,
             ),
-            isOngoing = entity.isOngoing
+            isOngoing = entity.isOngoing,
         )
 
         val result = entity.toModel()
@@ -37,19 +37,19 @@ class CardInfoToModelMapperTest {
                 oracleText = entity1.oracleText,
                 images = CardInfoImageUrls(
                     small = entity1.smallImageUrl,
-                    large = entity1.largeImageUrl
+                    large = entity1.largeImageUrl,
                 ),
-                isOngoing = entity1.isOngoing
+                isOngoing = entity1.isOngoing,
             ),
             CardInfo(
                 name = entity2.name,
                 oracleText = entity2.oracleText,
                 images = CardInfoImageUrls(
                     small = entity2.smallImageUrl,
-                    large = entity2.largeImageUrl
+                    large = entity2.largeImageUrl,
                 ),
-                isOngoing = entity2.isOngoing
-            )
+                isOngoing = entity2.isOngoing,
+            ),
         )
         val entities = listOf(entity1, entity2)
 

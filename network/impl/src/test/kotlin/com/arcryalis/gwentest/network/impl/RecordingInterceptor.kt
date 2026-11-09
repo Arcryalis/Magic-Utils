@@ -16,7 +16,7 @@ class RecordingInterceptor : Interceptor {
         return SuccessResult(
             drawable = ColorDrawable(Color.TRANSPARENT),
             request = chain.request,
-            dataSource = DataSource.MEMORY
+            dataSource = DataSource.MEMORY,
         )
     }
 }

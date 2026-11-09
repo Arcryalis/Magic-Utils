@@ -3,7 +3,7 @@ package com.arcryalis.gwentest.domain.ocr
 import android.graphics.Bitmap
 
 class MockRecogniseTextUseCase(
-    results: List<Result<String>> = emptyList()
+    results: List<Result<String>> = emptyList(),
 ) : RecogniseTextUseCase {
     private val results = ArrayDeque(results)
 

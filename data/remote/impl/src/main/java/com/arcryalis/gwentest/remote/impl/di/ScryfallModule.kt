@@ -1,8 +1,8 @@
 package com.arcryalis.gwentest.remote.impl.di
 
-import com.arcryalis.gwentest.remote.scryfall.ScryfallDataSource
 import com.arcryalis.gwentest.remote.impl.ScryfallDataSourceImpl
 import com.arcryalis.gwentest.remote.impl.api.ScryfallApi
+import com.arcryalis.gwentest.remote.scryfall.ScryfallDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -16,13 +16,11 @@ import javax.inject.Singleton
 interface ScryfallModule {
 
     @Binds
-    fun bindScryfallDataSource(scryfallDataSource: ScryfallDataSourceImpl) : ScryfallDataSource
+    fun bindScryfallDataSource(scryfallDataSource: ScryfallDataSourceImpl): ScryfallDataSource
 
     companion object {
         @Provides
         @Singleton
-        fun provideScryfallApi(retrofit: Retrofit): ScryfallApi =
-            retrofit.create(ScryfallApi::class.java)
+        fun provideScryfallApi(retrofit: Retrofit): ScryfallApi = retrofit.create(ScryfallApi::class.java)
     }
-
 }

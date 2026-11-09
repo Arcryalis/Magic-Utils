@@ -11,12 +11,12 @@ import com.arcryalis.gwentest.data.local.impl.dao.CardSetDao
 @Database(
     entities = [
         CardInfoEntity::class,
-        CardSetEntity::class
+        CardSetEntity::class,
     ],
     version = 2,
     autoMigrations = [
-        AutoMigration(from = 1, to = 2)
-    ]
+        AutoMigration(from = 1, to = 2),
+    ],
 )
 abstract class AppDatabase : RoomDatabase() {
 

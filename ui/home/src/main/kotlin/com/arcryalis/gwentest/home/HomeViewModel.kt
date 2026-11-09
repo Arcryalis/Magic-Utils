@@ -3,7 +3,6 @@ package com.arcryalis.gwentest.home
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arcryalis.gwentest.core.R as CoreR
 import com.arcryalis.gwentest.data.card.model.CardSet
 import com.arcryalis.gwentest.domain.card.DownloadSchemesUseCase
 import com.arcryalis.gwentest.domain.card.GetCardSetsUseCase
@@ -16,17 +15,19 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.arcryalis.gwentest.core.R as CoreR
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val downloadSchemesUseCase: DownloadSchemesUseCase,
     private val getCardSetsUseCase: GetCardSetsUseCase,
-): ViewModel() {
+) : ViewModel() {
 
     companion object {
         private const val MAX_PLAYERS = 4
         private val LIFE_TOTAL_OPTIONS = listOf(20, 40, 60)
         private const val MAX_PLAYER_NAME_LENGTH = 16
+
         // Color resources defined in ui:core. null means "no color".
         private val PLAYER_COLOR_OPTIONS: List<Int?> = listOf(
             null,
@@ -47,7 +48,7 @@ class HomeViewModel @Inject constructor(
         getCardSetsUseCase(),
         selectedSet,
         cardSetsLoading,
-        cardSetsError
+        cardSetsError,
     ) { availableItems, selected, cardsLoading, error ->
         HomeItemState(
             items = listOf(null) + availableItems,
@@ -60,7 +61,7 @@ class HomeViewModel @Inject constructor(
                 HomeItemButtonState.Loading
             } else {
                 HomeItemButtonState.Available
-            }
+            },
         )
     }
 
@@ -68,7 +69,7 @@ class HomeViewModel @Inject constructor(
     private val lifeTotalState = selectedLifeTotal.map {
         HomeItemState(
             items = LIFE_TOTAL_OPTIONS,
-            selectedItem = it
+            selectedItem = it,
         )
     }
 
@@ -76,7 +77,7 @@ class HomeViewModel @Inject constructor(
         cardSetsLoading,
         availableSetState,
         playersList,
-        lifeTotalState
+        lifeTotalState,
     ) { loading, setState, players, lifeState ->
         HomeState.Ready(
             players = players,
@@ -84,12 +85,11 @@ class HomeViewModel @Inject constructor(
             startingLife = lifeState,
             sets = setState,
             isRefreshing = loading,
-            canStartGame = canStartGame(players, setState.selectedItem)
+            canStartGame = canStartGame(players, setState.selectedItem),
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState.Initial)
 
-    private fun canStartGame(players: List<HomePlayerInfo>, set: CardSet?): Boolean =
-        players.isNotEmpty() || set != null
+    private fun canStartGame(players: List<HomePlayerInfo>, set: CardSet?): Boolean = players.isNotEmpty() || set != null
 
     fun buildGameSettings(): HomeGameSettings? {
         val players = playersList.value
@@ -98,7 +98,7 @@ class HomeViewModel @Inject constructor(
             HomeGameSettings(
                 players = players,
                 startingLife = selectedLifeTotal.value,
-                setId = set?.id
+                setId = set?.id,
             )
         } else {
             null

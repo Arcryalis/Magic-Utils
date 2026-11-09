@@ -8,7 +8,7 @@ data class ScryfallPaginationDto(
     @SerialName("has_more")
     val hasMore: Boolean,
     val warnings: String? = null,
-    val data: List<ScryfallDataDto>
+    val data: List<ScryfallDataDto>,
 )
 
 @Serializable
@@ -24,11 +24,11 @@ data class ScryfallDataDto(
     @SerialName("set")
     val setId: String,
     @SerialName("set_name")
-    val setName: String
+    val setName: String,
 )
 
 @Serializable
 data class ScryfallImageUrlsDto(
     val small: String,
-    val large: String
+    val large: String,
 )

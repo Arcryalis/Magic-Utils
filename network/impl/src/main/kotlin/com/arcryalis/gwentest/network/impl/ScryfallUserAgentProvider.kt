@@ -7,7 +7,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ScryfallUserAgentProvider @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) {
 
     val scryfallUserAgent: String by lazy {

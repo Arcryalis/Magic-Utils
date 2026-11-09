@@ -5,8 +5,7 @@ import com.arcryalis.gwentest.domain.card.GetCardmarketUrlUseCase
 import javax.inject.Inject
 
 class GetCardmarketUrlUseCaseImpl @Inject constructor(
-    private val cardRepository: CardRepository
+    private val cardRepository: CardRepository,
 ) : GetCardmarketUrlUseCase {
-    override suspend fun invoke(cardName: String): Result<String> =
-        cardRepository.getCardmarketUrl(cardName)
+    override suspend fun invoke(cardName: String): Result<String> = cardRepository.getCardmarketUrl(cardName)
 }

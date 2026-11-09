@@ -27,7 +27,7 @@ class CameraViewModelFrameOrderTest {
         sut = CameraViewModel(
             MockRecogniseTextUseCase(results),
             MockAutocompleteCardNamesUseCase(),
-            MockGetCardmarketUrlUseCase()
+            MockGetCardmarketUrlUseCase(),
         )
     }
 

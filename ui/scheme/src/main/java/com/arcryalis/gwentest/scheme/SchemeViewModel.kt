@@ -13,21 +13,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SchemeViewModel @Inject constructor(
-    private val getAllCardInfoUseCase: GetAllCardInfoUseCase
-): ViewModel()  {
+    private val getAllCardInfoUseCase: GetAllCardInfoUseCase,
+) : ViewModel() {
 
     private val overlayCard = MutableStateFlow<CardInfo?>(null)
 
     val state = combine(
         getAllCardInfoUseCase(),
-        overlayCard
+        overlayCard,
     ) { allCards, overlay ->
         if (allCards.isEmpty()) {
             SchemeState.Loading
         } else {
             SchemeState.Ready(
                 cards = allCards,
-                overlayCard = overlay
+                overlayCard = overlay,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, SchemeState.Loading)

@@ -2,18 +2,18 @@ package com.arcryalis.gwentest.domain.card.impl.di
 
 import com.arcryalis.gwentest.domain.card.AutocompleteCardNamesUseCase
 import com.arcryalis.gwentest.domain.card.DownloadSchemesUseCase
+import com.arcryalis.gwentest.domain.card.GetAllCardInfoUseCase
 import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
+import com.arcryalis.gwentest.domain.card.GetCardSetsUseCase
 import com.arcryalis.gwentest.domain.card.GetCardmarketUrlUseCase
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
-import com.arcryalis.gwentest.domain.card.GetCardSetsUseCase
-import com.arcryalis.gwentest.domain.card.GetAllCardInfoUseCase
 import com.arcryalis.gwentest.domain.card.impl.AutocompleteCardNamesUseCaseImpl
 import com.arcryalis.gwentest.domain.card.impl.DownloadSchemesUseCaseImpl
+import com.arcryalis.gwentest.domain.card.impl.GetAllCardInfoUseCaseImpl
 import com.arcryalis.gwentest.domain.card.impl.GetCardBackUrlUseCaseImpl
+import com.arcryalis.gwentest.domain.card.impl.GetCardSetsUseCaseImpl
 import com.arcryalis.gwentest.domain.card.impl.GetCardmarketUrlUseCaseImpl
 import com.arcryalis.gwentest.domain.card.impl.GetShuffledCardInfoUseCaseImpl
-import com.arcryalis.gwentest.domain.card.impl.GetCardSetsUseCaseImpl
-import com.arcryalis.gwentest.domain.card.impl.GetAllCardInfoUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

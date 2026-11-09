@@ -15,14 +15,14 @@ class AutocompleteCardNamesUseCaseImplTest {
     private lateinit var sut: AutocompleteCardNamesUseCase
 
     private fun setupSut(
-        autocompleteResult: Result<List<String>> = Result.success(emptyList())
+        autocompleteResult: Result<List<String>> = Result.success(emptyList()),
     ) {
         cardRepository = MockCardRepository(
             availableSets = emptyList(),
             cardsBySet = emptyMap(),
             cardsExistLocally = false,
             downloadResult = false,
-            autocompleteResult = autocompleteResult
+            autocompleteResult = autocompleteResult,
         )
         sut = AutocompleteCardNamesUseCaseImpl(cardRepository)
     }

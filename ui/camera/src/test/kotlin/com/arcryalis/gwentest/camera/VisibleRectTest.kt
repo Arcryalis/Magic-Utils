@@ -19,7 +19,7 @@ class VisibleRectTest {
     fun whenBitmapAlreadyCropped_thenWholeBitmapUsed() {
         assertEquals(
             IntRect(0, 0, 1000, 600),
-            visibleRect(IntSize(1000, 600), imageSize, cropRect)
+            visibleRect(IntSize(1000, 600), imageSize, cropRect),
         )
     }
 }

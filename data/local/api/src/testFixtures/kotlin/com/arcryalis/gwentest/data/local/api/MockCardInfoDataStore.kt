@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 class MockCardInfoDataStore(
-    private var localCards: MutableMap<String, MutableList<CardInfoEntity>>
+    private var localCards: MutableMap<String, MutableList<CardInfoEntity>>,
 ) : CardInfoDataStore {
 
     override fun doCardsExistLocally(): Flow<Boolean> = flowOf(localCards.isNotEmpty())
@@ -18,14 +18,14 @@ class MockCardInfoDataStore(
                 } else {
                     localCards[setId] = cardList.toMutableList()
                 }
-        }
+            }
     }
 
     override fun getCardSet(setId: String): Flow<List<CardInfoEntity>> = flowOf(
-        localCards.getOrDefault(setId, emptyList())
+        localCards.getOrDefault(setId, emptyList()),
     )
 
     override fun getAllCards(): Flow<List<CardInfoEntity>> = flowOf(
-        localCards.values.flatten()
+        localCards.values.flatten(),
     )
 }

@@ -12,10 +12,10 @@ import androidx.room.PrimaryKey
             entity = CardSetEntity::class,
             parentColumns = ["id"],
             childColumns = ["setId"],
-            onDelete = ForeignKey.CASCADE
-        )
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
-    indices = [Index("setId")]
+    indices = [Index("setId")],
 )
 data class CardInfoEntity(
     @PrimaryKey val id: String,
@@ -24,5 +24,5 @@ data class CardInfoEntity(
     val smallImageUrl: String,
     val largeImageUrl: String,
     val oracleText: String?,
-    val isOngoing: Boolean
+    val isOngoing: Boolean,
 )

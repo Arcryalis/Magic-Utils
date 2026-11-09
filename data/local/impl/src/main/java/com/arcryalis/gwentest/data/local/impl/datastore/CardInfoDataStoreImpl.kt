@@ -9,8 +9,8 @@ import javax.inject.Singleton
 
 @Singleton
 class CardInfoDataStoreImpl @Inject constructor(
-    private val cardInfoDao: CardInfoDao
-): CardInfoDataStore {
+    private val cardInfoDao: CardInfoDao,
+) : CardInfoDataStore {
 
     override fun doCardsExistLocally(): Flow<Boolean> = cardInfoDao.doCardsExistLocally()
 

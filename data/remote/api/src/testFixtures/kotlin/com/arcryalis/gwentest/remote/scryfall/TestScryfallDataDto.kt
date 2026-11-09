@@ -10,12 +10,12 @@ object TestScryfallDataDto {
         name = "Card Name",
         imageUris = ScryfallImageUrlsDto(
             small = "smallUrl",
-            large = "largeUrl"
+            large = "largeUrl",
         ),
         oracleText = "Oracle Text",
         type = "Scheme Ongoing",
         setId = "setId",
-        setName = "Set Name"
+        setName = "Set Name",
     )
 
     val dto2 = ScryfallDataDto(
@@ -23,11 +23,11 @@ object TestScryfallDataDto {
         name = "one more name",
         imageUris = ScryfallImageUrlsDto(
             small = "url small",
-            large = "url large"
+            large = "url large",
         ),
         oracleText = "oText",
         type = "scheme",
         setId = "setId the second",
-        setName = "further set name"
+        setName = "further set name",
     )
 }

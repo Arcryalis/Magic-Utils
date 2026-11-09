@@ -28,9 +28,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcryalis.gwentest.core.LoadingScreen
-import com.arcryalis.gwentest.core.R as CoreR
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardSet
+import com.arcryalis.gwentest.core.R as CoreR
 
 @Composable
 fun HomeScreen(
@@ -50,14 +50,14 @@ fun HomeScreen(
         },
         onNavigateToSchemeScreen = onNavigateToSchemeScreen,
         onNavigateToCameraScreen = onNavigateToCameraScreen,
-        onSetSelected = viewModel::onSelectSet,
-        onLifeTotalSelected = viewModel::onSelectLifeTotal,
+        onSetSelect = viewModel::onSelectSet,
+        onLifeTotalSelect = viewModel::onSelectLifeTotal,
         onRefreshClick = viewModel::onRefresh,
         onDownloadSchemesClick = viewModel::onDownloadSchemes,
         onAddPlayer = viewModel::addPlayer,
         onRemovePlayer = viewModel::removePlayer,
         onPlayerNameChange = viewModel::updatePlayerName,
-        onPlayerColorChange = viewModel::updatePlayerColor
+        onPlayerColorChange = viewModel::updatePlayerColor,
     )
 }
 
@@ -68,19 +68,19 @@ fun HomeScreen(
     onStartGameClick: () -> Unit = {},
     onNavigateToSchemeScreen: () -> Unit = {},
     onNavigateToCameraScreen: () -> Unit = {},
-    onSetSelected: (CardSet?) -> Unit = {},
-    onLifeTotalSelected: (Int) -> Unit = {},
+    onSetSelect: (CardSet?) -> Unit = {},
+    onLifeTotalSelect: (Int) -> Unit = {},
     onRefreshClick: () -> Unit = {},
     onDownloadSchemesClick: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {},
     onPlayerNameChange: (Int, String) -> Unit = { _, _ -> },
-    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> }
+    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> },
 ) {
     when (state) {
         is HomeState.Initial -> LoadingScreen(
             text = null,
-            modifier = modifier
+            modifier = modifier,
         )
 
         is HomeState.Ready -> HomeReadyScreen(
@@ -92,8 +92,8 @@ fun HomeScreen(
             availablePlayerColors = state.playerColorOptions,
             modifier = modifier,
             onSubmit = onStartGameClick,
-            onSetSelected = onSetSelected,
-            onLifeTotalSelected = onLifeTotalSelected,
+            onSetSelect = onSetSelect,
+            onLifeTotalSelect = onLifeTotalSelect,
             onNavigateToSchemeScreen = onNavigateToSchemeScreen,
             onNavigateToCameraScreen = onNavigateToCameraScreen,
             onRefresh = onRefreshClick,
@@ -101,7 +101,7 @@ fun HomeScreen(
             onAddPlayer = onAddPlayer,
             onRemovePlayer = onRemovePlayer,
             onPlayerNameChange = onPlayerNameChange,
-            onPlayerColorChange = onPlayerColorChange
+            onPlayerColorChange = onPlayerColorChange,
         )
     }
 }
@@ -117,8 +117,8 @@ private fun HomeReadyScreen(
     availablePlayerColors: List<Int?>,
     modifier: Modifier = Modifier,
     onSubmit: () -> Unit = {},
-    onSetSelected: (CardSet?) -> Unit = {},
-    onLifeTotalSelected: (Int) -> Unit = {},
+    onSetSelect: (CardSet?) -> Unit = {},
+    onLifeTotalSelect: (Int) -> Unit = {},
     onNavigateToSchemeScreen: () -> Unit = {},
     onNavigateToCameraScreen: () -> Unit = {},
     onRefresh: () -> Unit = {},
@@ -126,12 +126,12 @@ private fun HomeReadyScreen(
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {},
     onPlayerNameChange: (Int, String) -> Unit = { _, _ -> },
-    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> }
+    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> },
 ) {
     Scaffold(
         topBar = {
             HomeTopBarContent(
-                onCameraClick = onNavigateToCameraScreen
+                onCameraClick = onNavigateToCameraScreen,
             )
         },
         bottomBar = {
@@ -140,10 +140,10 @@ private fun HomeReadyScreen(
                 modifier = Modifier
                     .navigationBarsPadding()
                     .padding(20.dp),
-                onSubmitClicked = onSubmit
+                onSubmitClick = onSubmit,
             )
         },
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         PullToRefreshBox(
             isRefreshing = isRefreshing,
@@ -159,14 +159,14 @@ private fun HomeReadyScreen(
                 availableSetsState = availableSetsState,
                 availablePlayerColors = availablePlayerColors,
                 modifier = Modifier.fillMaxSize(),
-                onSetSelected = onSetSelected,
-                onLifeTotalSelected = onLifeTotalSelected,
+                onSetSelect = onSetSelect,
+                onLifeTotalSelect = onLifeTotalSelect,
                 onNavigateToSchemeScreen = onNavigateToSchemeScreen,
                 onDownloadSchemesClick = onDownloadSchemesClick,
                 onAddPlayer = onAddPlayer,
                 onRemovePlayer = onRemovePlayer,
                 onPlayerNameChange = onPlayerNameChange,
-                onPlayerColorChange = onPlayerColorChange
+                onPlayerColorChange = onPlayerColorChange,
             )
         }
     }
@@ -176,7 +176,7 @@ private fun HomeReadyScreen(
 fun HomeReadyFooterContent(
     enabled: Boolean,
     modifier: Modifier = Modifier,
-    onSubmitClicked: () -> Unit = {}
+    onSubmitClick: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
         HorizontalDivider(modifier = Modifier)
@@ -186,7 +186,7 @@ fun HomeReadyFooterContent(
             modifier = Modifier
                 .padding(vertical = 16.dp)
                 .fillMaxWidth(),
-            onSubmitClicked = onSubmitClicked
+            onSubmitClick = onSubmitClick,
         )
     }
 }
@@ -195,19 +195,19 @@ fun HomeReadyFooterContent(
 private fun HomeSubmitButton(
     enabled: Boolean,
     modifier: Modifier = Modifier,
-    onSubmitClicked: () -> Unit = {}
+    onSubmitClick: () -> Unit = {},
 ) {
     Button(
-        onClick = onSubmitClicked,
+        onClick = onSubmitClick,
         modifier = modifier,
-        enabled = enabled
+        enabled = enabled,
     ) {
         Text(
             text = stringResource(R.string.select_set_button),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 8.dp)
+            modifier = Modifier.padding(vertical = 8.dp),
         )
     }
 }
@@ -216,7 +216,7 @@ private fun HomeSubmitButton(
 @Composable
 private fun HomeTopBarContent(
     modifier: Modifier = Modifier,
-    onCameraClick: () -> Unit = {}
+    onCameraClick: () -> Unit = {},
 ) {
     TopAppBar(
         title = {
@@ -225,70 +225,70 @@ private fun HomeTopBarContent(
         actions = {
             IconButton(
                 onClick = onCameraClick,
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = 8.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.PhotoCamera,
-                    contentDescription = stringResource(R.string.open_camera)
+                    contentDescription = stringResource(R.string.open_camera),
                 )
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun HomeReadyScreenPreview() {
+private fun HomeReadyScreenPreview() {
     GwenTestTheme {
         HomeReadyScreen(
             players = listOf(
                 HomePlayerInfo("Player 1", Color.Red),
                 HomePlayerInfo("", Color.Unspecified),
-                HomePlayerInfo("Another player with a long name", Color.Blue)
+                HomePlayerInfo("Another player with a long name", Color.Blue),
             ),
             availablePlayerColors = listOf(null, CoreR.color.player_color_red, CoreR.color.player_color_blue, CoreR.color.player_color_green),
             startingLifeState = HomeItemState(
                 items = listOf(20, 40, 60),
-                selectedItem = 20
+                selectedItem = 20,
             ),
             availableSetsState = HomeItemState(
                 items = listOf(
                     null,
                     CardSet("dci", "DCI Promos"),
                     CardSet("oarc", "Archenemy Schemes"),
-                    CardSet("oe01", "Archenemy: Nicol Bolas Schemes")
+                    CardSet("oe01", "Archenemy: Nicol Bolas Schemes"),
                 ),
-                selectedItem = CardSet("dci", "DCI Promos")
+                selectedItem = CardSet("dci", "DCI Promos"),
             ),
             isRefreshing = false,
-            canStartGame = true
+            canStartGame = true,
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun HomeReadyScreenNoPlayersPreview() {
+private fun HomeReadyScreenNoPlayersPreview() {
     GwenTestTheme {
         HomeReadyScreen(
             players = emptyList(),
             availablePlayerColors = listOf(null, CoreR.color.player_color_red, CoreR.color.player_color_blue, CoreR.color.player_color_green),
             startingLifeState = HomeItemState(
                 items = listOf(20, 40, 60),
-                selectedItem = 40
+                selectedItem = 40,
             ),
             availableSetsState = HomeItemState(
                 items = listOf(
                     null,
                     CardSet("dci", "DCI Promos"),
                     CardSet("oarc", "Archenemy Schemes"),
-                    CardSet("oe01", "Archenemy: Nicol Bolas Schemes")
+                    CardSet("oe01", "Archenemy: Nicol Bolas Schemes"),
                 ),
-                selectedItem = CardSet("dci", "DCI Promos")
+                selectedItem = CardSet("dci", "DCI Promos"),
             ),
             isRefreshing = false,
-            canStartGame = true
+            canStartGame = true,
         )
     }
 }

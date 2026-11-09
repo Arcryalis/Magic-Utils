@@ -1,7 +1,7 @@
 package com.arcryalis.gwentest.game.mapper
 
-import com.arcryalis.gwentest.game.navigation.RoutePlayerInfo
 import com.arcryalis.gwentest.game.PlayerInfo
+import com.arcryalis.gwentest.game.navigation.RoutePlayerInfo
 
 fun RoutePlayerInfo.toModel(): PlayerInfo = PlayerInfo(
     name = name,

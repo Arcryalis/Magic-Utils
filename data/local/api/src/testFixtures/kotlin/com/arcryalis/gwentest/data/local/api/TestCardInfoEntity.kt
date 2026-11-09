@@ -11,7 +11,7 @@ object TestCardInfoEntity {
         smallImageUrl = "smallUrl",
         largeImageUrl = "largeUrl",
         oracleText = "Oracle Text",
-        isOngoing = true
+        isOngoing = true,
     )
 
     val entity2 = CardInfoEntity(
@@ -21,6 +21,6 @@ object TestCardInfoEntity {
         smallImageUrl = "The small url",
         largeImageUrl = "The large url",
         oracleText = "Some oracle text",
-        isOngoing = false
+        isOngoing = false,
     )
 }

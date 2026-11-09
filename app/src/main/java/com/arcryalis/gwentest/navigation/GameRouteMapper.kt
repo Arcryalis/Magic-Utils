@@ -9,8 +9,8 @@ fun HomeGameSettings.toGameRoute(): GameRoute = GameRoute(
         RoutePlayerInfo(
             name = it.name,
             lifeTotal = startingLife,
-            color = it.color
+            color = it.color,
         )
     }.ifEmpty { null },
-    setId = setId
+    setId = setId,
 )

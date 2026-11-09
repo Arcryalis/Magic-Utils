@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,9 +36,9 @@ import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun CameraScreen(
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CameraViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -54,14 +55,14 @@ fun CameraScreen(
                 .imePadding(),
             onUseManualInputClick = viewModel::onUseManualInputClick,
             onInputChange = viewModel::onInputChange,
-            onInputFocused = viewModel::onInputFocused,
+            onInputFocus = viewModel::onInputFocused,
             onSubmitClick = viewModel::onSubmitClick,
             onOpenLinkClick = viewModel::onOpenLinkClick,
             onCameraError = viewModel::onCameraError,
-            onCameraStatusChecked = viewModel::onCameraStatusChecked,
+            onCameraStatusCheck = viewModel::onCameraStatusChecked,
             onPermissionResult = viewModel::onPermissionResult,
             onFrame = viewModel::onFrame,
-            onScanClick = viewModel::onScanClick
+            onScanClick = viewModel::onScanClick,
         )
     }
 }
@@ -73,23 +74,23 @@ fun CameraScreen(
     storeLinkEvents: Flow<StoreLinkEvent> = emptyFlow(),
     onUseManualInputClick: () -> Unit = {},
     onInputChange: (String) -> Unit = {},
-    onInputFocused: () -> Unit = {},
+    onInputFocus: () -> Unit = {},
     onSubmitClick: () -> Unit = {},
     onOpenLinkClick: (String) -> Unit = {},
     onCameraError: () -> Unit = {},
-    onCameraStatusChecked: (hasCamera: Boolean, permissionGranted: Boolean) -> Unit = { _, _ -> },
+    onCameraStatusCheck: (hasCamera: Boolean, permissionGranted: Boolean) -> Unit = { _, _ -> },
     onPermissionResult: (granted: Boolean, shouldShowRationale: Boolean) -> Unit = { _, _ -> },
     onFrame: (Bitmap, () -> Unit) -> Unit = { _, onProcessed -> onProcessed() },
-    onScanClick: () -> Unit = {}
+    onScanClick: () -> Unit = {},
 ) {
     HandleCameraPermission(
-        onCameraStatusChecked = onCameraStatusChecked
+        onCameraStatusCheck = onCameraStatusCheck,
     )
 
     when (state) {
         CameraState.Loading -> LoadingScreen(
             text = null,
-            modifier = modifier
+            modifier = modifier,
         )
 
         is CameraState.Ready -> {
@@ -99,7 +100,7 @@ fun CameraScreen(
                 state = state,
                 modifier = modifier,
                 onInputChange = onInputChange,
-                onInputFocused = onInputFocused,
+                onInputFocus = onInputFocus,
                 onSubmitClick = onSubmitClick,
                 onOpenLinkClick = onOpenLinkClick,
                 onCameraError = onCameraError,
@@ -107,9 +108,9 @@ fun CameraScreen(
                 onScanClick = onScanClick,
                 onPermissionRequestClick = rememberPermissionRequest(
                     permission = Manifest.permission.CAMERA,
-                    onPermissionResult = onPermissionResult
+                    onPermissionResult = onPermissionResult,
                 ),
-                onUseManualInputClick = onUseManualInputClick
+                onUseManualInputClick = onUseManualInputClick,
             )
         }
     }
@@ -117,7 +118,7 @@ fun CameraScreen(
 
 @Composable
 private fun StoreLinkEffect(
-    events: Flow<StoreLinkEvent>
+    events: Flow<StoreLinkEvent>,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -147,15 +148,16 @@ private fun Context.showCardOpenError() {
 
 @Composable
 private fun HandleCameraPermission(
-    onCameraStatusChecked: (hasCamera: Boolean, permissionGranted: Boolean) -> Unit = { _, _ -> },
+    onCameraStatusCheck: (hasCamera: Boolean, permissionGranted: Boolean) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
+    val currentOnCameraStatusCheck by rememberUpdatedState(onCameraStatusCheck)
 
     LifecycleResumeEffect(Unit) {
-        onCameraStatusChecked(
+        currentOnCameraStatusCheck(
             context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY),
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
-                    PackageManager.PERMISSION_GRANTED
+                PackageManager.PERMISSION_GRANTED,
         )
         onPauseOrDispose { }
     }
@@ -163,7 +165,7 @@ private fun HandleCameraPermission(
 
 @Preview(showBackground = true)
 @Composable
-fun CameraLoadingPreview() {
+private fun CameraLoadingPreview() {
     GwenTestTheme {
         CameraScreen(state = CameraState.Loading)
     }
@@ -171,145 +173,145 @@ fun CameraLoadingPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun CameraPermissionRequiredPreview() {
+private fun CameraPermissionRequiredPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
                 camera = CameraMode.PermissionRequired,
-                cardName = ""
-            )
+                cardName = "",
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CameraReadyPreview() {
+private fun CameraReadyPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
                 camera = CameraMode.Available(isScanning = false),
-                cardName = "Card name"
-            )
+                cardName = "Card name",
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CameraReadyScanningPreview() {
+private fun CameraReadyScanningPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
                 camera = CameraMode.Available(isScanning = true),
-                cardName = ""
-            )
+                cardName = "",
+            ),
         )
     }
 }
 
 @Preview(showBackground = true, widthDp = 800, heightDp = 400)
 @Composable
-fun CameraReadyLandscapePreview() {
+private fun CameraReadyLandscapePreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
                 camera = CameraMode.Available(isScanning = false),
                 cardName = "Thal",
                 searchResults = CardSearchResultState.Results(
-                    listOf("Thallid", "Thalakos Seer", "Thalia, Guardian of Thraben")
+                    listOf("Thallid", "Thalakos Seer", "Thalia, Guardian of Thraben"),
                 ),
-                canSubmit = true
-            )
+                canSubmit = true,
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CameraReadyManualInputPreview() {
+private fun CameraReadyManualInputPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
                 camera = CameraMode.Manual,
-                cardName = ""
-            )
+                cardName = "",
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CameraReadyResultsPreview() {
+private fun CameraReadyResultsPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
                 camera = CameraMode.Available(isScanning = false),
                 cardName = "Thal",
                 searchResults = CardSearchResultState.Results(
-                    listOf("Thallid", "Thalakos Seer", "Thalia, the Survivor")
+                    listOf("Thallid", "Thalakos Seer", "Thalia, the Survivor"),
                 ),
                 canSubmit = true,
-                storeLink = StoreLinkState.Loading("Thalakos Seer")
-            )
+                storeLink = StoreLinkState.Loading("Thalakos Seer"),
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CameraReadyLoadingResultsPreview() {
+private fun CameraReadyLoadingResultsPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
                 camera = CameraMode.Available(isScanning = false),
                 cardName = "Thal",
-                searchResults = CardSearchResultState.Loading
-            )
+                searchResults = CardSearchResultState.Loading,
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CameraReadyEmptyResultsPreview() {
+private fun CameraReadyEmptyResultsPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
                 camera = CameraMode.Manual,
                 cardName = "Zzzz",
                 searchResults = CardSearchResultState.NoResults,
-                canSubmit = true
-            )
+                canSubmit = true,
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CameraReadyErrorResultsPreview() {
+private fun CameraReadyErrorResultsPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
                 camera = CameraMode.Manual,
                 cardName = "Thal",
                 searchResults = CardSearchResultState.Error,
-                canSubmit = true
-            )
+                canSubmit = true,
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CameraReadyMinLengthErrorPreview() {
+private fun CameraReadyMinLengthErrorPreview() {
     GwenTestTheme {
         CameraScreen(
             state = CameraState.Ready(
                 camera = CameraMode.Manual,
                 cardName = "T",
-                showMinLengthError = true
-            )
+                showMinLengthError = true,
+            ),
         )
     }
 }

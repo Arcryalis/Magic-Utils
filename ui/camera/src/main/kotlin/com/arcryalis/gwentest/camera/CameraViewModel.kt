@@ -53,7 +53,7 @@ class CameraViewModel @Inject constructor(
         hasPermission,
         manualMode,
         hasCameraError,
-        isScanning
+        isScanning,
     ) { hasCamera, permission, manual, error, scanning ->
         when {
             hasCamera == null -> null
@@ -67,21 +67,21 @@ class CameraViewModel @Inject constructor(
         cardName,
         showMinLengthError,
         searchResults,
-        storeLink
+        storeLink,
     ) { cardName, showMinLengthError, searchResults, storeLink ->
         CameraInputState(
             cardName = cardName,
             searchResults = searchResults,
             canSubmit = cardName.trim().length >= MIN_QUERY_LENGTH &&
-                    searchResults != CardSearchResultState.Loading,
+                searchResults != CardSearchResultState.Loading,
             showMinLengthError = showMinLengthError,
-            storeLink = storeLink
+            storeLink = storeLink,
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, CameraInputState())
 
     val state: StateFlow<CameraState> = combine(
         cameraMode,
-        inputState
+        inputState,
     ) { camera, input ->
         if (camera == null) {
             CameraState.Loading
@@ -92,7 +92,7 @@ class CameraViewModel @Inject constructor(
                 searchResults = input.searchResults,
                 canSubmit = input.canSubmit,
                 showMinLengthError = input.showMinLengthError,
-                storeLink = input.storeLink
+                storeLink = input.storeLink,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, CameraState.Loading)
@@ -166,7 +166,7 @@ class CameraViewModel @Inject constructor(
                 onSuccess = { names ->
                     if (names.isEmpty()) CardSearchResultState.NoResults else CardSearchResultState.Results(names)
                 },
-                onFailure = { CardSearchResultState.Error }
+                onFailure = { CardSearchResultState.Error },
             )
         }
     }
@@ -178,7 +178,7 @@ class CameraViewModel @Inject constructor(
         storeLinkJob = viewModelScope.launch {
             val event = getCardmarketUrl(cardName).fold(
                 onSuccess = { url -> StoreLinkEvent.Open(url) },
-                onFailure = { StoreLinkEvent.Failed }
+                onFailure = { StoreLinkEvent.Failed },
             )
             storeLink.value = StoreLinkState.Idle
             _storeLinkEvents.emit(event)

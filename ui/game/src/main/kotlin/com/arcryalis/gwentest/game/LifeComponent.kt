@@ -1,6 +1,5 @@
 package com.arcryalis.gwentest.game
 
-import com.arcryalis.gwentest.core.isPortrait
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.arcryalis.gwentest.core.isPortrait
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
-
 
 private typealias PlayerSlot = @Composable (index: Int, modifier: Modifier) -> Unit
 
@@ -21,8 +20,8 @@ private typealias PlayerSlot = @Composable (index: Int, modifier: Modifier) -> U
 fun LifeComponent(
     players: List<PlayerInfo>,
     modifier: Modifier = Modifier,
-    onPlayerUpClicked: (Int) -> Unit = {},
-    onPlayerDownClicked: (Int) -> Unit = {},
+    onPlayerUpClick: (Int) -> Unit = {},
+    onPlayerDownClick: (Int) -> Unit = {},
 ) {
     val arrowsVisible = isPortrait()
     val playerSlot: PlayerSlot = { index, slotModifier ->
@@ -31,18 +30,20 @@ fun LifeComponent(
             index = index,
             arrowsVisible = arrowsVisible,
             modifier = slotModifier,
-            onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked
+            onPlayerUpClick = onPlayerUpClick,
+            onPlayerDownClick = onPlayerDownClick,
         )
     }
 
     when (players.size) {
         1 -> playerSlot(0, modifier)
+
         2 -> LifeTwoPlayerSection(modifier = modifier, playerSlot = playerSlot)
+
         3, 4 -> LifeMultiPlayerSection(
             isThreePlayer = players.size == 3,
             modifier = modifier,
-            playerSlot = playerSlot
+            playerSlot = playerSlot,
         )
 
         else -> {
@@ -57,8 +58,8 @@ private fun LifeCounterItem(
     index: Int,
     arrowsVisible: Boolean,
     modifier: Modifier = Modifier,
-    onPlayerUpClicked: (Int) -> Unit = {},
-    onPlayerDownClicked: (Int) -> Unit = {}
+    onPlayerUpClick: (Int) -> Unit = {},
+    onPlayerDownClick: (Int) -> Unit = {},
 ) {
     LifeCounter(
         lifeTotal = player.lifeTotal.toString(),
@@ -66,11 +67,12 @@ private fun LifeCounterItem(
         backgroundColor = player.backgroundColor,
         arrowsVisible = arrowsVisible,
         modifier = modifier.fillMaxSize(),
-        onUpClicked = { onPlayerUpClicked(index) },
-        onDownClicked = { onPlayerDownClicked(index) },
+        onUpClick = { onPlayerUpClick(index) },
+        onDownClick = { onPlayerDownClick(index) },
     )
 }
 
+@Suppress("ktlint:compose:content-slot-reused")
 @Composable
 private fun LifeTwoPlayerSection(
     playerSlot: PlayerSlot,
@@ -85,6 +87,7 @@ private fun LifeTwoPlayerSection(
     }
 }
 
+@Suppress("ktlint:compose:content-slot-reused")
 @Composable
 private fun LifeMultiPlayerSection(
     isThreePlayer: Boolean,
@@ -95,7 +98,7 @@ private fun LifeMultiPlayerSection(
         Row(
             modifier = Modifier
                 .weight(1f)
-                .rotate(180f)
+                .rotate(180f),
         ) {
             playerSlot(0, Modifier.weight(1f))
 
@@ -126,32 +129,32 @@ private fun LifeMultiPlayerSection(
 
 @Preview(showBackground = true)
 @Composable
-fun LifeCounterOnePlayerPreview() {
+private fun LifeCounterOnePlayerPreview() {
     GwenTestTheme {
         LifeComponent(
             players = listOf(
-                PlayerInfo(name = "Player 1", lifeTotal = 20)
-            )
+                PlayerInfo(name = "Player 1", lifeTotal = 20),
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun LifeCounterTwoPlayerPreview() {
+private fun LifeCounterTwoPlayerPreview() {
     GwenTestTheme {
         LifeComponent(
             players = listOf(
                 PlayerInfo(name = "Player 1", lifeTotal = 20),
                 PlayerInfo(name = "Player 2", lifeTotal = 25),
-            )
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun LifeCounterThreePlayerPreview() {
+private fun LifeCounterThreePlayerPreview() {
     GwenTestTheme {
         LifeComponent(
             players = listOf(
@@ -159,31 +162,31 @@ fun LifeCounterThreePlayerPreview() {
                     name = "Player 1",
                     lifeTotal = 20,
                     backgroundColor = Color.Red.copy(
-                        alpha = 0.3f
-                    )
+                        alpha = 0.3f,
+                    ),
                 ),
                 PlayerInfo(
                     name = "",
                     lifeTotal = 25,
                     Color.Blue.copy(
-                        alpha = 0.3f
-                    )
+                        alpha = 0.3f,
+                    ),
                 ),
                 PlayerInfo(
                     name = "Player 3",
                     lifeTotal = 40,
                     Color.Green.copy(
-                        alpha = 0.3f
-                    )
+                        alpha = 0.3f,
+                    ),
                 ),
-            )
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun LifeCounterFourPlayerPreview() {
+private fun LifeCounterFourPlayerPreview() {
     GwenTestTheme {
         LifeComponent(
             players = listOf(
@@ -191,7 +194,7 @@ fun LifeCounterFourPlayerPreview() {
                 PlayerInfo(name = "A secret", lifeTotal = 25),
                 PlayerInfo(name = "", lifeTotal = 40),
                 PlayerInfo(name = "", lifeTotal = 100),
-            )
+            ),
         )
     }
 }

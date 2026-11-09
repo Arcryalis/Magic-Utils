@@ -8,5 +8,4 @@ interface CardSetDataStore {
     suspend fun insertSets(cardSets: List<CardSetEntity>)
 
     fun getSets(): Flow<List<CardSetEntity>>
-
 }

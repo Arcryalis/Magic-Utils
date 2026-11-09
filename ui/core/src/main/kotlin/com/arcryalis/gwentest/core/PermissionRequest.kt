@@ -10,17 +10,17 @@ import androidx.core.app.ActivityCompat
 @Composable
 fun rememberPermissionRequest(
     permission: String,
-    onPermissionResult: (granted: Boolean, shouldShowRationale: Boolean) -> Unit
+    onPermissionResult: (granted: Boolean, shouldShowRationale: Boolean) -> Unit,
 ): () -> Unit {
     val activity = LocalActivity.current
     val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
+        ActivityResultContracts.RequestPermission(),
     ) { granted ->
         onPermissionResult(
             granted,
             activity?.let {
                 ActivityCompat.shouldShowRequestPermissionRationale(it, permission)
-            } ?: true
+            } ?: true,
         )
     }
 

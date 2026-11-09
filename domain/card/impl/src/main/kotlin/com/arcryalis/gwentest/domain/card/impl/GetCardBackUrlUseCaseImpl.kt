@@ -5,7 +5,7 @@ import com.arcryalis.gwentest.domain.card.GetCardBackUrlUseCase
 import javax.inject.Inject
 
 class GetCardBackUrlUseCaseImpl @Inject constructor(
-    private val cardRepo: CardRepository
+    private val cardRepo: CardRepository,
 ) : GetCardBackUrlUseCase {
     override operator fun invoke(): String = cardRepo.getCardBackUrl()
 }
