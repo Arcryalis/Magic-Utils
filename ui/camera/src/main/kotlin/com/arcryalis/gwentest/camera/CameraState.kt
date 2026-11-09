@@ -18,6 +18,22 @@ sealed interface CameraMode {
     data class Available(val isScanning: Boolean) : CameraMode
 }
 
+internal sealed interface CameraFeedMode {
+    data object Scanning : CameraFeedMode
+    data class Paused(val hasCardName: Boolean) : CameraFeedMode
+    data object PermissionRequired : CameraFeedMode
+}
+
+internal fun CameraState.Ready.toFeedMode(): CameraFeedMode? = when (val mode = camera) {
+    CameraMode.Manual -> null
+    CameraMode.PermissionRequired -> CameraFeedMode.PermissionRequired
+    is CameraMode.Available -> if (mode.isScanning) {
+        CameraFeedMode.Scanning
+    } else {
+        CameraFeedMode.Paused(hasCardName = cardName.isNotBlank())
+    }
+}
+
 sealed interface StoreLinkState {
     data object Idle : StoreLinkState
     data class Loading(val cardName: String) : StoreLinkState

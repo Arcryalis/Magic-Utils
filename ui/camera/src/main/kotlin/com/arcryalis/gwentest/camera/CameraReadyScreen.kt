@@ -66,7 +66,8 @@ fun CameraReadyScreen(
         )
     }
 
-    if (state.camera == CameraMode.Manual) {
+    val feedMode = state.toFeedMode()
+    if (feedMode == null) {
         Column(modifier = modifier) {
             CardNameInput(
                 state = state,
@@ -87,6 +88,7 @@ fun CameraReadyScreen(
     val cameraSection: @Composable (Modifier) -> Unit = { sectionModifier ->
         CameraSection(
             state = state,
+            feedMode = feedMode,
             modifier = sectionModifier,
             onInputChange = onInputChange,
             onInputFocused = onInputFocused,
@@ -115,6 +117,7 @@ fun CameraReadyScreen(
 @Composable
 private fun CameraSection(
     state: CameraState.Ready,
+    feedMode: CameraFeedMode,
     modifier: Modifier = Modifier,
     onInputChange: (String) -> Unit = {},
     onInputFocused: () -> Unit = {},
@@ -127,9 +130,7 @@ private fun CameraSection(
 ) {
     Column(modifier = modifier) {
         CameraFeedContent(
-            isScanning = (state.camera as? CameraMode.Available)?.isScanning == true,
-            hasCardName = state.cardName.isNotBlank(),
-            permissionRequired = state.camera == CameraMode.PermissionRequired,
+            mode = feedMode,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
