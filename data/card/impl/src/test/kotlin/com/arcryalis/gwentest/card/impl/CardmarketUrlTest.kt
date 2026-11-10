@@ -11,12 +11,12 @@ class CardmarketUrlTest {
         assertEquals(
             "https://www.cardmarket.com/en/Magic/Products?idProduct=818770",
             "https://www.cardmarket.com/en/Magic/Products?idProduct=818770&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall"
-                .toCardmarketProductUrl()
+                .toCardmarketProductUrl(),
         )
         assertEquals(
             "https://www.cardmarket.com/en/Magic/Products?idProduct=748533",
             "https://www.cardmarket.com/en/Magic/Products?idProduct=748533&referrer=scryfall&utm_campaign=card_prices&utm_medium=text&utm_source=scryfall"
-                .toCardmarketProductUrl()
+                .toCardmarketProductUrl(),
         )
     }
 
@@ -25,21 +25,21 @@ class CardmarketUrlTest {
         assertEquals(
             "https://www.cardmarket.com/en/Magic/Products?idProduct=818770",
             "https://www.cardmarket.com/en/Magic/Products?referrer=scryfall&idProduct=818770"
-                .toCardmarketProductUrl()
+                .toCardmarketProductUrl(),
         )
     }
 
     @Test
     fun whenNoIdProduct_thenNull() {
         assertNull(
-            "https://www.cardmarket.com/en/Magic/Products?referrer=scryfall".toCardmarketProductUrl()
+            "https://www.cardmarket.com/en/Magic/Products?referrer=scryfall".toCardmarketProductUrl(),
         )
     }
 
     @Test
     fun whenEmptyIdProduct_thenNull() {
         assertNull(
-            "https://www.cardmarket.com/en/Magic/Products?idProduct=&referrer=scryfall".toCardmarketProductUrl()
+            "https://www.cardmarket.com/en/Magic/Products?idProduct=&referrer=scryfall".toCardmarketProductUrl(),
         )
     }
 
@@ -51,14 +51,14 @@ class CardmarketUrlTest {
     @Test
     fun whenHttpLink_thenNull() {
         assertNull(
-            "http://www.cardmarket.com/en/Magic/Products?idProduct=818770".toCardmarketProductUrl()
+            "http://www.cardmarket.com/en/Magic/Products?idProduct=818770".toCardmarketProductUrl(),
         )
     }
 
     @Test
     fun whenMalformedLink_thenNull() {
         assertNull(
-            "https://www.cardmarket.com/en/Magic Products?idProduct=818770".toCardmarketProductUrl()
+            "https://www.cardmarket.com/en/Magic Products?idProduct=818770".toCardmarketProductUrl(),
         )
     }
 
@@ -70,10 +70,10 @@ class CardmarketUrlTest {
     @Test
     fun whenLookalikeHost_thenNull() {
         assertNull(
-            "https://cardmarket.com.evil.io/en/Magic/Products?idProduct=818770".toCardmarketProductUrl()
+            "https://cardmarket.com.evil.io/en/Magic/Products?idProduct=818770".toCardmarketProductUrl(),
         )
         assertNull(
-            "https://evilcardmarket.com/en/Magic/Products?idProduct=818770".toCardmarketProductUrl()
+            "https://evilcardmarket.com/en/Magic/Products?idProduct=818770".toCardmarketProductUrl(),
         )
     }
 
@@ -81,7 +81,7 @@ class CardmarketUrlTest {
     fun whenBareCardmarketHost_thenKept() {
         assertEquals(
             "https://cardmarket.com/en/Magic/Products?idProduct=818770",
-            "https://cardmarket.com/en/Magic/Products?idProduct=818770".toCardmarketProductUrl()
+            "https://cardmarket.com/en/Magic/Products?idProduct=818770".toCardmarketProductUrl(),
         )
     }
 
@@ -89,7 +89,7 @@ class CardmarketUrlTest {
     fun whenFragmentPresent_thenDropped() {
         assertEquals(
             "https://www.cardmarket.com/en/Magic/Products?idProduct=818770",
-            "https://www.cardmarket.com/en/Magic/Products?idProduct=818770#offers".toCardmarketProductUrl()
+            "https://www.cardmarket.com/en/Magic/Products?idProduct=818770#offers".toCardmarketProductUrl(),
         )
     }
 }

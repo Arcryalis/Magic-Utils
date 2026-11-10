@@ -1,7 +1,7 @@
 package com.arcryalis.gwentest.domain.card.impl
 
-import com.arcryalis.gwentest.data.card.TestCardInfo
 import com.arcryalis.gwentest.data.card.MockCardRepository
+import com.arcryalis.gwentest.data.card.TestCardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.domain.card.GetShuffledCardInfoUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,15 +16,15 @@ class GetShuffledCardInfoUseCaseImplTest {
     private lateinit var sut: GetShuffledCardInfoUseCase
 
     private fun setupSut(
-        cardsBySet: Map<String, List<CardInfo>>
+        cardsBySet: Map<String, List<CardInfo>>,
     ) {
         sut = GetShuffledCardInfoUseCaseImpl(
             MockCardRepository(
                 availableSets = emptyList(),
                 cardsBySet = cardsBySet,
                 cardsExistLocally = false,
-                downloadResult = false
-            )
+                downloadResult = false,
+            ),
         )
     }
 
@@ -37,7 +37,7 @@ class GetShuffledCardInfoUseCaseImplTest {
             cardsBySet = mapOf(
                 setId to cards,
                 "differentId" to listOf(TestCardInfo.info1),
-            )
+            ),
         )
 
         val result = sut(setId).first()

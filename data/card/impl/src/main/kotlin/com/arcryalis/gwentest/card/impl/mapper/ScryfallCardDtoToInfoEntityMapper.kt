@@ -1,7 +1,7 @@
 package com.arcryalis.gwentest.card.impl.mapper
 
-import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallDataDto
 import com.arcryalis.gwentest.data.local.api.entity.CardInfoEntity
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallDataDto
 
 private const val TYPE_ONGOING = "ongoing"
 
@@ -12,7 +12,7 @@ fun ScryfallDataDto.toInfoEntity(): CardInfoEntity = CardInfoEntity(
     smallImageUrl = imageUris?.small ?: "",
     largeImageUrl = imageUris?.large ?: "",
     oracleText = oracleText,
-    isOngoing = type.lowercase().contains(TYPE_ONGOING)
+    isOngoing = type.lowercase().contains(TYPE_ONGOING),
 )
 
 fun List<ScryfallDataDto>.toInfoEntity() = map { it.toInfoEntity() }

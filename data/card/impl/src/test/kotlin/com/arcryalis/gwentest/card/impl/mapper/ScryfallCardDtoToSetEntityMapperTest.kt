@@ -12,7 +12,7 @@ class ScryfallCardDtoToSetEntityMapperTest {
         val dto = TestScryfallDataDto.dto1
         val expectedEntity = CardSetEntity(
             id = dto.setId,
-            name = dto.setName
+            name = dto.setName,
         )
 
         val result = dto.toSetEntity()
@@ -28,22 +28,22 @@ class ScryfallCardDtoToSetEntityMapperTest {
             dto,
             dto.copy(
                 id = "cardId2",
-                name = "Card Name 2"
+                name = "Card Name 2",
             ),
             dto2,
             dto.copy(
                 id = "cardId3",
-                name = "Card Name 3"
-            )
+                name = "Card Name 3",
+            ),
         )
         val expectedEntities = listOf(
             CardSetEntity(
                 id = dto.setId,
-                name = dto.setName
+                name = dto.setName,
             ),
             CardSetEntity(
                 id = dto2.setId,
-                name = dto2.setName
+                name = dto2.setName,
             ),
         )
 

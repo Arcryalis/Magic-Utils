@@ -12,7 +12,7 @@ class CardSetEntityToModelMapperTest {
         val entity = TestCardSetEntity.set1
         val expectedModel = CardSet(
             id = entity.id,
-            name = entity.name
+            name = entity.name,
         )
 
         val result = entity.toModel()
@@ -25,16 +25,16 @@ class CardSetEntityToModelMapperTest {
         val firstEntity = TestCardSetEntity.set1
         val secondEntity = TestCardSetEntity.set2
 
-        val entities = listOf(firstEntity,secondEntity)
+        val entities = listOf(firstEntity, secondEntity)
         val expectedModel = listOf(
             CardSet(
                 id = firstEntity.id,
-                name = firstEntity.name
+                name = firstEntity.name,
             ),
             CardSet(
                 id = secondEntity.id,
-                name = secondEntity.name
-            )
+                name = secondEntity.name,
+            ),
         )
 
         val result = entities.toModel()

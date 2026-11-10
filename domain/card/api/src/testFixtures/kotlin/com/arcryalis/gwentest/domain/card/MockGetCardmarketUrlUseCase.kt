@@ -4,7 +4,7 @@ import kotlinx.coroutines.CompletableDeferred
 
 class MockGetCardmarketUrlUseCase(
     results: List<Result<String>> = emptyList(),
-    private val gate: CompletableDeferred<Unit>? = null
+    private val gate: CompletableDeferred<Unit>? = null,
 ) : GetCardmarketUrlUseCase {
     private val results = ArrayDeque(results)
 

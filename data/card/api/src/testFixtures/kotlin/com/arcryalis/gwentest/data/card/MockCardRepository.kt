@@ -27,11 +27,9 @@ class MockCardRepository(
 
     override fun getAvailableSets(): Flow<List<CardSet>> = flowOf(availableSets)
 
-    override fun getSet(setId: String): Flow<List<CardInfo>> =
-        flowOf(cardsBySet.getOrDefault(setId, emptyList()))
+    override fun getSet(setId: String): Flow<List<CardInfo>> = flowOf(cardsBySet.getOrDefault(setId, emptyList()))
 
-    override fun getAllCards(): Flow<List<CardInfo>> =
-        flowOf(cardsBySet.values.flatten())
+    override fun getAllCards(): Flow<List<CardInfo>> = flowOf(cardsBySet.values.flatten())
 
     override fun getCardBackUrl(): String = cardBackUrl
 

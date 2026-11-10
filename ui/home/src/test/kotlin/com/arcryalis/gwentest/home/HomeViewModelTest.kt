@@ -177,9 +177,9 @@ class HomeViewModelTest {
                     HomePlayerInfo("Player 2"),
                 ),
                 startingLife = 40,
-                setId = TestCardSet.set2.id
+                setId = TestCardSet.set2.id,
             ),
-            sut.buildGameSettings()
+            sut.buildGameSettings(),
         )
     }
 
@@ -194,9 +194,9 @@ class HomeViewModelTest {
             HomeGameSettings(
                 players = emptyList(),
                 startingLife = 20,
-                setId = TestCardSet.set1.id
+                setId = TestCardSet.set1.id,
             ),
-            sut.buildGameSettings()
+            sut.buildGameSettings(),
         )
     }
 
@@ -211,9 +211,9 @@ class HomeViewModelTest {
             HomeGameSettings(
                 players = listOf(HomePlayerInfo()),
                 startingLife = 20,
-                setId = null
+                setId = null,
             ),
-            sut.buildGameSettings()
+            sut.buildGameSettings(),
         )
     }
 }

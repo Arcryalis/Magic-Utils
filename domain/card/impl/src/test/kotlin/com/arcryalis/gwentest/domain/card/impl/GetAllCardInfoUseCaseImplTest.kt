@@ -16,15 +16,15 @@ class GetAllCardInfoUseCaseImplTest {
     private lateinit var sut: GetAllCardInfoUseCase
 
     private fun setupSut(
-        cardsBySet: Map<String, List<CardInfo>>
+        cardsBySet: Map<String, List<CardInfo>>,
     ) {
         sut = GetAllCardInfoUseCaseImpl(
             MockCardRepository(
                 availableSets = emptyList(),
                 cardsBySet = cardsBySet,
                 cardsExistLocally = false,
-                downloadResult = false
-            )
+                downloadResult = false,
+            ),
         )
     }
 
@@ -38,8 +38,8 @@ class GetAllCardInfoUseCaseImplTest {
         setupSut(
             cardsBySet = mapOf(
                 setId1 to cards1,
-                setId2 to cards2
-            )
+                setId2 to cards2,
+            ),
         )
 
         val result = sut().first()

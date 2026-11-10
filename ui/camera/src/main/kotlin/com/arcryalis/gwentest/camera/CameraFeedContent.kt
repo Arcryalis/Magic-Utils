@@ -49,7 +49,7 @@ internal fun CameraFeedContent(
     onCameraError: () -> Unit = {},
     onScanClick: () -> Unit = {},
     onPermissionRequestClick: () -> Unit = {},
-    onUseManualInputClick: () -> Unit = {}
+    onUseManualInputClick: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -76,34 +76,35 @@ internal fun CameraFeedContent(
             displayRotation = displayRotation,
             analyzer = analyzer,
             onSurfaceRequest = { surfaceRequest = it },
-            onCameraError = { currentOnCameraError() }
+            onCameraError = { currentOnCameraError() },
         )
     }
 
     Box(
         modifier = modifier
             .clipToBounds()
-            .onSizeChanged { viewfinderSize = it }
+            .onSizeChanged { viewfinderSize = it },
     ) {
         surfaceRequest?.let { request ->
             CameraXViewfinder(
                 surfaceRequest = request,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
         }
 
         when (mode) {
             CameraFeedMode.Scanning -> NameStripOverlay(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
 
             is CameraFeedMode.Paused,
-            CameraFeedMode.PermissionRequired -> PausedOverlay(
+            CameraFeedMode.PermissionRequired,
+            -> PausedOverlay(
                 mode = mode,
                 modifier = Modifier.fillMaxSize(),
                 onScanClick = onScanClick,
                 onPermissionRequestClick = onPermissionRequestClick,
-                onUseManualInputClick = onUseManualInputClick
+                onUseManualInputClick = onUseManualInputClick,
             )
         }
     }
@@ -140,13 +141,13 @@ private fun PausedOverlay(
     modifier: Modifier = Modifier,
     onScanClick: () -> Unit = {},
     onPermissionRequestClick: () -> Unit = {},
-    onUseManualInputClick: () -> Unit = {}
+    onUseManualInputClick: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
 
     Box(
         modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainerHighest),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         when (mode) {
             CameraFeedMode.PermissionRequired -> Button(onClick = onPermissionRequestClick) {
@@ -157,12 +158,12 @@ private fun PausedOverlay(
                 onClick = {
                     focusManager.clearFocus()
                     onScanClick()
-                }
+                },
             ) {
                 Text(
                     text = stringResource(
-                        if (mode.hasCardName) R.string.camera_rescan else R.string.camera_scan
-                    )
+                        if (mode.hasCardName) R.string.camera_rescan else R.string.camera_scan,
+                    ),
                 )
             }
 
@@ -171,12 +172,12 @@ private fun PausedOverlay(
 
         IconButton(
             onClick = onUseManualInputClick,
-            modifier = Modifier.align(Alignment.TopEnd)
+            modifier = Modifier.align(Alignment.TopEnd),
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = stringResource(R.string.camera_use_manual_input),
-                tint = MaterialTheme.colorScheme.onSurface
+                tint = MaterialTheme.colorScheme.onSurface,
             )
         }
     }
@@ -184,17 +185,17 @@ private fun PausedOverlay(
 
 @Composable
 private fun NameStripOverlay(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(NameStrip.WIDTH_FRACTION)
                 .fillMaxHeight(NameStrip.HEIGHT_FRACTION)
-                .border(2.dp, MaterialTheme.colorScheme.primary)
+                .border(2.dp, MaterialTheme.colorScheme.primary),
         )
     }
 }

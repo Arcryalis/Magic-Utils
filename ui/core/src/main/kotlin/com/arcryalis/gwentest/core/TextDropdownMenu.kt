@@ -27,14 +27,14 @@ fun <T> DropdownMenu(
     emptyLabel: String = stringResource(R.string.empty_dropdown_option),
     fieldLabel: (T) -> String? = { it?.toString() },
     leadingContent: (@Composable (T) -> Unit)? = null,
-    onItemSelected: (T) -> Unit = {}
+    onItemSelect: (T) -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        modifier = modifier
+        modifier = modifier,
     ) {
         OutlinedTextField(
             value = fieldLabel(selectedItem) ?: emptyLabel,
@@ -45,21 +45,21 @@ fun <T> DropdownMenu(
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
         )
 
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
         ) {
             items.forEach { item ->
                 DropdownItem(
                     label = fieldLabel(item) ?: emptyLabel,
                     leadingContent = leadingContent?.let { content -> { content(item) } },
-                    onItemSelected = {
-                        onItemSelected(item)
+                    onItemSelect = {
+                        onItemSelect(item)
                         expanded = false
-                    }
+                    },
                 )
             }
         }
@@ -70,18 +70,18 @@ fun <T> DropdownMenu(
 private fun DropdownItem(
     label: String,
     leadingContent: (@Composable () -> Unit)? = null,
-    onItemSelected: () -> Unit = {}
+    onItemSelect: () -> Unit = {},
 ) {
     DropdownMenuItem(
         text = {
             if (label.isNotEmpty()) {
                 Text(
                     text = label,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
                 )
             }
         },
         leadingIcon = leadingContent,
-        onClick = onItemSelected
+        onClick = onItemSelect,
     )
 }

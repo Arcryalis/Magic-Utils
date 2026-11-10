@@ -11,6 +11,7 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("com.android.library")
+                apply("gwentest.spotless")
             }
 
             extensions.configure<LibraryExtension> {

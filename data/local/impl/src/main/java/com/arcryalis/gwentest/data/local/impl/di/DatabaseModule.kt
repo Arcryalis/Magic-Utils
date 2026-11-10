@@ -16,9 +16,7 @@ class DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, "gwentest.db")
-            .fallbackToDestructiveMigration(dropAllTables = true)
-            .build()
-
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, "gwentest.db")
+        .fallbackToDestructiveMigration(dropAllTables = true)
+        .build()
 }

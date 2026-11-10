@@ -64,7 +64,7 @@ class CardRepositoryImplTest {
             cardSetStore = cardSetStore,
             dataSource = dataSource,
             imageCacher = imageCacher,
-            context = context
+            context = context,
         )
     }
 
@@ -89,11 +89,11 @@ class CardRepositoryImplTest {
     @Test
     fun givenSuccessfulResponse_whenDownloadSchemes_thenReturnsTrueAndPersistsSetsAndCards() = runTest {
         val dto = TestScryfallDataDto.dto1.copy(
-            type = "Type that includes ongoing"
+            type = "Type that includes ongoing",
         )
         val setEntity = CardSetEntity(
             id = dto.setId,
-            name = dto.setName
+            name = dto.setName,
         )
         val cardEntity = CardInfoEntity(
             id = dto.id,
@@ -102,14 +102,14 @@ class CardRepositoryImplTest {
             smallImageUrl = dto.imageUris!!.small,
             largeImageUrl = dto.imageUris!!.large,
             oracleText = dto.oracleText,
-            isOngoing = true
+            isOngoing = true,
         )
 
         responses[1] = RemoteResponse.Success(
             ScryfallPaginationDto(
                 hasMore = false,
-                data = listOf(dto)
-            )
+                data = listOf(dto),
+            ),
         )
 
         val result = sut.downloadSchemes()
@@ -118,7 +118,7 @@ class CardRepositoryImplTest {
         assertEquals(listOf(setEntity), storedSets)
         assertContentEquals(
             listOf(cardEntity),
-            storedCards.values.flatten()
+            storedCards.values.flatten(),
         )
     }
 
@@ -132,23 +132,23 @@ class CardRepositoryImplTest {
         val entity2 = TestScryfallDataDto.dto2.copy(
             imageUris = TestScryfallDataDto.dto2.imageUris!!.copy(
                 // keep small different
-                large = largeUrl
-            )
+                large = largeUrl,
+            ),
         )
         val smallUrl2 = entity2.imageUris!!.small
 
         responses[1] = RemoteResponse.Success(
             ScryfallPaginationDto(
                 hasMore = false,
-                data = listOf(TestScryfallDataDto.dto1, entity2)
-            )
+                data = listOf(TestScryfallDataDto.dto1, entity2),
+            ),
         )
 
         sut.downloadSchemes()
 
         assertContentEquals(
             listOf(cardBackUrl, smallUrl, largeUrl, smallUrl2),
-            imageCacher.requestedUrls
+            imageCacher.requestedUrls,
         )
     }
 
@@ -157,14 +157,14 @@ class CardRepositoryImplTest {
         responses[1] = RemoteResponse.Success(
             ScryfallPaginationDto(
                 hasMore = true,
-                data = listOf(TestScryfallDataDto.dto1)
-            )
+                data = listOf(TestScryfallDataDto.dto1),
+            ),
         )
         responses[2] = RemoteResponse.Success(
             ScryfallPaginationDto(
                 hasMore = false,
-                data = listOf(TestScryfallDataDto.dto2)
-            )
+                data = listOf(TestScryfallDataDto.dto2),
+            ),
         )
 
         val result = sut.downloadSchemes()
@@ -188,7 +188,7 @@ class CardRepositoryImplTest {
         val entity = TestCardSetEntity.set1
         val expectedSet = CardSet(
             id = entity.id,
-            name = entity.name
+            name = entity.name,
         )
 
         storedSets.add(TestCardSetEntity.set1)
@@ -216,9 +216,9 @@ class CardRepositoryImplTest {
             oracleText = entity.oracleText,
             images = CardInfoImageUrls(
                 small = entity.smallImageUrl,
-                large = entity.largeImageUrl
+                large = entity.largeImageUrl,
             ),
-            isOngoing = entity.isOngoing
+            isOngoing = entity.isOngoing,
         )
 
         val result = sut.getSet(setId).first()
@@ -248,18 +248,18 @@ class CardRepositoryImplTest {
             oracleText = entity1.oracleText,
             images = CardInfoImageUrls(
                 small = entity1.smallImageUrl,
-                large = entity1.largeImageUrl
+                large = entity1.largeImageUrl,
             ),
-            isOngoing = entity1.isOngoing
+            isOngoing = entity1.isOngoing,
         )
         val expected2 = CardInfo(
             name = entity2.name,
             oracleText = entity2.oracleText,
             images = CardInfoImageUrls(
                 small = entity2.smallImageUrl,
-                large = entity2.largeImageUrl
+                large = entity2.largeImageUrl,
             ),
-            isOngoing = entity2.isOngoing
+            isOngoing = entity2.isOngoing,
         )
 
         val result = sut.getAllCards().first()
@@ -308,14 +308,14 @@ class CardRepositoryImplTest {
     fun givenCardmarketUrl_whenGetCardmarketUrl_thenReturnsUrl() = runTest {
         val url = "https://www.cardmarket.com/en/Magic/Products?idProduct=891653&referrer=scryfall"
         dataSource.namedCardResponse = RemoteResponse.Success(
-            ScryfallNamedCardDto(purchaseUris = ScryfallPurchaseUrisDto(cardmarket = url))
+            ScryfallNamedCardDto(purchaseUris = ScryfallPurchaseUrisDto(cardmarket = url)),
         )
 
         val result = sut.getCardmarketUrl("Scheme One")
 
         assertEquals(
             "https://www.cardmarket.com/en/Magic/Products?idProduct=891653",
-            result.getOrNull()
+            result.getOrNull(),
         )
         assertEquals("Scheme One", dataSource.lastNamedCardQuery)
     }
@@ -324,8 +324,8 @@ class CardRepositoryImplTest {
     fun givenCardmarketUrlWithoutIdProduct_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
         dataSource.namedCardResponse = RemoteResponse.Success(
             ScryfallNamedCardDto(
-                purchaseUris = ScryfallPurchaseUrisDto(cardmarket = "https://www.cardmarket.com/en/Magic/Products?referrer=scryfall")
-            )
+                purchaseUris = ScryfallPurchaseUrisDto(cardmarket = "https://www.cardmarket.com/en/Magic/Products?referrer=scryfall"),
+            ),
         )
 
         val result = sut.getCardmarketUrl("Scheme One")
@@ -345,7 +345,7 @@ class CardRepositoryImplTest {
     @Test
     fun givenNoCardmarketUrl_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
         dataSource.namedCardResponse = RemoteResponse.Success(
-            ScryfallNamedCardDto(purchaseUris = ScryfallPurchaseUrisDto(cardmarket = null))
+            ScryfallNamedCardDto(purchaseUris = ScryfallPurchaseUrisDto(cardmarket = null)),
         )
 
         val result = sut.getCardmarketUrl("Scheme One")
@@ -357,8 +357,8 @@ class CardRepositoryImplTest {
     fun givenNonHttpsUrl_whenGetCardmarketUrl_thenReturnsFailure() = runTest {
         dataSource.namedCardResponse = RemoteResponse.Success(
             ScryfallNamedCardDto(
-                purchaseUris = ScryfallPurchaseUrisDto(cardmarket = "http://www.cardmarket.com/en/Magic/Products?idProduct=891653")
-            )
+                purchaseUris = ScryfallPurchaseUrisDto(cardmarket = "http://www.cardmarket.com/en/Magic/Products?idProduct=891653"),
+            ),
         )
 
         val result = sut.getCardmarketUrl("Scheme One")

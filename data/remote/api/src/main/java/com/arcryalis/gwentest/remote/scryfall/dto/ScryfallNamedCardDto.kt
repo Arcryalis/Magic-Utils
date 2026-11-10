@@ -6,10 +6,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ScryfallNamedCardDto(
     @SerialName("purchase_uris")
-    val purchaseUris: ScryfallPurchaseUrisDto? = null
+    val purchaseUris: ScryfallPurchaseUrisDto? = null,
 )
 
 @Serializable
 data class ScryfallPurchaseUrisDto(
-    val cardmarket: String? = null
+    val cardmarket: String? = null,
 )

@@ -5,7 +5,7 @@ import com.arcryalis.gwentest.domain.card.DownloadSchemesUseCase
 import javax.inject.Inject
 
 class DownloadSchemesUseCaseImpl @Inject constructor(
-    private val cardRepository: CardRepository
-): DownloadSchemesUseCase {
+    private val cardRepository: CardRepository,
+) : DownloadSchemesUseCase {
     override suspend fun invoke(): Boolean = cardRepository.downloadSchemes()
 }

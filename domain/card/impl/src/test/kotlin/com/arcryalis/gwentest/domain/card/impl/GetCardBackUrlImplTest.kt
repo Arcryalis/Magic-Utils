@@ -21,8 +21,8 @@ class GetCardBackUrlImplTest {
                 cardsBySet = emptyMap(),
                 cardsExistLocally = false,
                 downloadResult = false,
-                cardBackUrl = expectedUrl
-            )
+                cardBackUrl = expectedUrl,
+            ),
         )
 
         val result = sut()

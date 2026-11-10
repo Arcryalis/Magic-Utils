@@ -15,7 +15,7 @@ class CameraFeedModeTest {
     fun whenPermissionRequired_thenPermissionRequired() {
         assertEquals(
             CameraFeedMode.PermissionRequired,
-            readyState(CameraMode.PermissionRequired).toFeedMode()
+            readyState(CameraMode.PermissionRequired).toFeedMode(),
         )
     }
 
@@ -23,7 +23,7 @@ class CameraFeedModeTest {
     fun whenScanning_thenScanning() {
         assertEquals(
             CameraFeedMode.Scanning,
-            readyState(CameraMode.Available(isScanning = true), cardName = "Bolt").toFeedMode()
+            readyState(CameraMode.Available(isScanning = true), cardName = "Bolt").toFeedMode(),
         )
     }
 
@@ -31,7 +31,7 @@ class CameraFeedModeTest {
     fun whenNotScanningWithoutName_thenPausedWithoutName() {
         assertEquals(
             CameraFeedMode.Paused(hasCardName = false),
-            readyState(CameraMode.Available(isScanning = false)).toFeedMode()
+            readyState(CameraMode.Available(isScanning = false)).toFeedMode(),
         )
     }
 
@@ -39,7 +39,7 @@ class CameraFeedModeTest {
     fun whenNotScanningWithBlankName_thenPausedWithoutName() {
         assertEquals(
             CameraFeedMode.Paused(hasCardName = false),
-            readyState(CameraMode.Available(isScanning = false), cardName = "   ").toFeedMode()
+            readyState(CameraMode.Available(isScanning = false), cardName = "   ").toFeedMode(),
         )
     }
 
@@ -47,10 +47,9 @@ class CameraFeedModeTest {
     fun whenNotScanningWithName_thenPausedWithName() {
         assertEquals(
             CameraFeedMode.Paused(hasCardName = true),
-            readyState(CameraMode.Available(isScanning = false), cardName = "Bolt").toFeedMode()
+            readyState(CameraMode.Available(isScanning = false), cardName = "Bolt").toFeedMode(),
         )
     }
 
-    private fun readyState(camera: CameraMode, cardName: String = "") =
-        CameraState.Ready(camera = camera, cardName = cardName)
+    private fun readyState(camera: CameraMode, cardName: String = "") = CameraState.Ready(camera = camera, cardName = cardName)
 }

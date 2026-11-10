@@ -9,8 +9,8 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 class GetShuffledCardInfoUseCaseImpl @Inject constructor(
-    private val cardRepo: CardRepository
-): GetShuffledCardInfoUseCase {
+    private val cardRepo: CardRepository,
+) : GetShuffledCardInfoUseCase {
     override operator fun invoke(setId: String): Flow<List<CardInfo>> {
         // Seed fixed per invocation so database re-emissions don't reorder the deck mid-game
         val seed = Random.nextLong()

@@ -1,6 +1,5 @@
 package com.arcryalis.gwentest.game
 
-import com.arcryalis.gwentest.core.isPortrait
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,15 +22,15 @@ import com.arcryalis.gwentest.core.CardInfoGallery
 import com.arcryalis.gwentest.core.FullScreenDialog
 import com.arcryalis.gwentest.core.FullScreenDialogIcon
 import com.arcryalis.gwentest.core.LoadingScreen
+import com.arcryalis.gwentest.core.isPortrait
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardInfo
 import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 
-
 @Composable
 fun GameScreen(
     modifier: Modifier = Modifier,
-    viewModel: GameViewModel = hiltViewModel()
+    viewModel: GameViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsState()
 
@@ -40,14 +39,14 @@ fun GameScreen(
         modifier = modifier
             .fillMaxSize()
             .safeDrawingPadding(),
-        onPlayerUpClicked = viewModel::increasePlayerLife,
-        onPlayerDownClicked = viewModel::decreasePlayerLife,
-        onNextClicked = viewModel::revealNextCard,
-        onHistoryClicked = viewModel::showRevealedCardsGallery,
-        onListItemClicked = viewModel::showCardOnOverlay,
-        onOverlayCloseClicked = viewModel::hideOverlay,
-        onOverlayAddClicked = viewModel::addCardToExtras,
-        onOverlayRemoveClicked = viewModel::removeCardFromExtras
+        onPlayerUpClick = viewModel::increasePlayerLife,
+        onPlayerDownClick = viewModel::decreasePlayerLife,
+        onNextClick = viewModel::revealNextCard,
+        onHistoryClick = viewModel::showRevealedCardsGallery,
+        onListItemClick = viewModel::showCardOnOverlay,
+        onOverlayCloseClick = viewModel::hideOverlay,
+        onOverlayAddClick = viewModel::addCardToExtras,
+        onOverlayRemoveClick = viewModel::removeCardFromExtras,
     )
 }
 
@@ -55,50 +54,48 @@ fun GameScreen(
 fun GameScreen(
     state: GameState,
     modifier: Modifier = Modifier,
-    onPlayerUpClicked: (Int) -> Unit = {},
-    onPlayerDownClicked: (Int) -> Unit = {},
-    onNextClicked: () -> Unit = {},
-    onHistoryClicked: () -> Unit = {},
-    onListItemClicked: (CardInfo) -> Unit = {},
-    onOverlayCloseClicked: () -> Unit = {},
-    onOverlayAddClicked: (CardInfo) -> Unit = {},
-    onOverlayRemoveClicked: (CardInfo) -> Unit = {}
+    onPlayerUpClick: (Int) -> Unit = {},
+    onPlayerDownClick: (Int) -> Unit = {},
+    onNextClick: () -> Unit = {},
+    onHistoryClick: () -> Unit = {},
+    onListItemClick: (CardInfo) -> Unit = {},
+    onOverlayCloseClick: () -> Unit = {},
+    onOverlayAddClick: (CardInfo) -> Unit = {},
+    onOverlayRemoveClick: (CardInfo) -> Unit = {},
 ) {
-
     when (state) {
         is GameState.Loading -> LoadingScreen(
             text = stringResource(R.string.loading),
-            modifier = modifier
+            modifier = modifier,
         )
 
         is GameState.Ready -> GameReadyScreen(
             state = state,
             modifier = modifier,
-            onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked,
-            onNextClicked = onNextClicked,
-            onHistoryClicked = onHistoryClicked,
-            onListItemClicked = onListItemClicked,
-            onOverlayCloseClicked = onOverlayCloseClicked,
-            onOverlayAddClicked = onOverlayAddClicked,
-            onOverlayRemoveClicked = onOverlayRemoveClicked
+            onPlayerUpClick = onPlayerUpClick,
+            onPlayerDownClick = onPlayerDownClick,
+            onNextClick = onNextClick,
+            onHistoryClick = onHistoryClick,
+            onListItemClick = onListItemClick,
+            onOverlayCloseClick = onOverlayCloseClick,
+            onOverlayAddClick = onOverlayAddClick,
+            onOverlayRemoveClick = onOverlayRemoveClick,
         )
     }
 }
-
 
 @Composable
 private fun GameReadyScreen(
     state: GameState.Ready,
     modifier: Modifier = Modifier,
-    onPlayerUpClicked: (Int) -> Unit = {},
-    onPlayerDownClicked: (Int) -> Unit = {},
-    onNextClicked: () -> Unit = {},
-    onHistoryClicked: () -> Unit = {},
-    onListItemClicked: (CardInfo) -> Unit = {},
-    onOverlayCloseClicked: () -> Unit = {},
-    onOverlayAddClicked: (CardInfo) -> Unit = {},
-    onOverlayRemoveClicked: (CardInfo) -> Unit = {}
+    onPlayerUpClick: (Int) -> Unit = {},
+    onPlayerDownClick: (Int) -> Unit = {},
+    onNextClick: () -> Unit = {},
+    onHistoryClick: () -> Unit = {},
+    onListItemClick: (CardInfo) -> Unit = {},
+    onOverlayCloseClick: () -> Unit = {},
+    onOverlayAddClick: (CardInfo) -> Unit = {},
+    onOverlayRemoveClick: (CardInfo) -> Unit = {},
 ) {
     Box(modifier = modifier) {
         GameScreenContent(
@@ -107,21 +104,21 @@ private fun GameReadyScreen(
             modifier = Modifier
                 .align(Alignment.Center)
                 .fillMaxSize(),
-            onPlayerUpClicked = onPlayerUpClicked,
-            onPlayerDownClicked = onPlayerDownClicked,
-            onNextClicked = onNextClicked,
-            onHistoryClicked = onHistoryClicked,
-            onListItemClicked = onListItemClicked
+            onPlayerUpClick = onPlayerUpClick,
+            onPlayerDownClick = onPlayerDownClick,
+            onNextClick = onNextClick,
+            onHistoryClick = onHistoryClick,
+            onListItemClick = onListItemClick,
         )
 
         if (state.overlayState is OverlayState.Visible) {
             GameOverlayContent(
                 state = state.overlayState,
                 modifier = Modifier.fillMaxSize(),
-                onCloseClicked = onOverlayCloseClicked,
-                onAddClicked = onOverlayAddClicked,
-                onRemoveClicked = onOverlayRemoveClicked,
-                onGalleryCardClicked = onListItemClicked
+                onCloseClick = onOverlayCloseClick,
+                onAddClick = onOverlayAddClick,
+                onRemoveClick = onOverlayRemoveClick,
+                onGalleryCardClick = onListItemClick,
             )
         }
     }
@@ -132,23 +129,23 @@ private fun GameScreenContent(
     players: List<PlayerInfo>?,
     deckSettings: DeckSettings?,
     modifier: Modifier = Modifier,
-    onPlayerUpClicked: (Int) -> Unit = {},
-    onPlayerDownClicked: (Int) -> Unit = {},
-    onNextClicked: () -> Unit = {},
-    onHistoryClicked: () -> Unit = {},
-    onListItemClicked: (CardInfo) -> Unit = {}
+    onPlayerUpClick: (Int) -> Unit = {},
+    onPlayerDownClick: (Int) -> Unit = {},
+    onNextClick: () -> Unit = {},
+    onHistoryClick: () -> Unit = {},
+    onListItemClick: (CardInfo) -> Unit = {},
 ) {
     val isPortrait = isPortrait()
 
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) {
         if (!players.isNullOrEmpty()) {
             LifeComponent(
                 players = players,
                 modifier = Modifier.weight(if (isPortrait) 3f else 2f),
-                onPlayerUpClicked = onPlayerUpClicked,
-                onPlayerDownClicked = onPlayerDownClicked
+                onPlayerUpClick = onPlayerUpClick,
+                onPlayerDownClick = onPlayerDownClick,
             )
         }
 
@@ -158,9 +155,9 @@ private fun GameScreenContent(
                 mostRecentCard = deckSettings.revealedCards?.firstOrNull(),
                 extraCardList = deckSettings.extraCardList,
                 modifier = Modifier.weight(if (isPortrait) 1f else 2f),
-                onNextClicked = onNextClicked,
-                onHistoryClicked = onHistoryClicked,
-                onListItemClicked = onListItemClicked
+                onNextClick = onNextClick,
+                onHistoryClick = onHistoryClick,
+                onListItemClick = onListItemClick,
             )
         }
     }
@@ -170,61 +167,60 @@ private fun GameScreenContent(
 fun GameOverlayContent(
     state: OverlayState.Visible,
     modifier: Modifier = Modifier,
-    onCloseClicked: () -> Unit = {},
-    onAddClicked: (CardInfo) -> Unit = {},
-    onRemoveClicked: (CardInfo) -> Unit = {},
-    onGalleryCardClicked: (CardInfo) -> Unit = {}
+    onCloseClick: () -> Unit = {},
+    onAddClick: (CardInfo) -> Unit = {},
+    onRemoveClick: (CardInfo) -> Unit = {},
+    onGalleryCardClick: (CardInfo) -> Unit = {},
 ) {
     when (state) {
         is OverlayState.Visible.Individual -> FullScreenDialog(
             modifier = modifier,
-            onDismiss = onCloseClicked,
+            onDismiss = onCloseClick,
             headerEndContent = {
                 if (state.showRemove) {
                     FullScreenDialogIcon(
                         imageVector = Icons.Default.Close,
                         contentDescription = stringResource(com.arcryalis.gwentest.core.R.string.card_info_close),
                         tint = Color.Red,
-                        onClicked = { onRemoveClicked(state.info) }
+                        onClick = { onRemoveClick(state.info) },
                     )
                 } else {
                     FullScreenDialogIcon(
                         imageVector = Icons.Default.Add,
                         contentDescription = stringResource(com.arcryalis.gwentest.core.R.string.card_info_add),
-                        onClicked = { onAddClicked(state.info) }
+                        onClick = { onAddClick(state.info) },
                     )
                 }
-            }
+            },
         ) {
             CardInfoDialog(
                 card = state.info,
-                modifier = Modifier
+                modifier = Modifier,
             )
         }
 
         is OverlayState.Visible.Gallery -> FullScreenDialog(
             modifier = modifier,
-            onDismiss = onCloseClicked,
+            onDismiss = onCloseClick,
         ) {
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .fillMaxSize()
+                    .fillMaxSize(),
             ) {
                 CardInfoGallery(
                     cards = state.cards,
                     modifier = Modifier,
-                    onCardClicked = onGalleryCardClicked
+                    onCardClick = onGalleryCardClick,
                 )
             }
         }
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun GameScreenLifePreview() {
+private fun GameScreenLifePreview() {
     GwenTestTheme {
         GameScreen(
             state = GameState.Ready(
@@ -232,18 +228,18 @@ fun GameScreenLifePreview() {
                     PlayerInfo(name = "Player 1", lifeTotal = 20),
                     PlayerInfo(name = "Someone", lifeTotal = 25),
                     PlayerInfo(name = "", lifeTotal = 40),
-                    PlayerInfo(name = "Another", lifeTotal = 100)
+                    PlayerInfo(name = "Another", lifeTotal = 100),
                 ),
                 deckSettings = null,
-                overlayState = OverlayState.Hidden
-            )
+                overlayState = OverlayState.Hidden,
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GameScreenDeckPreview() {
+private fun GameScreenDeckPreview() {
     GwenTestTheme {
         GameScreen(
             state = GameState.Ready(
@@ -251,17 +247,17 @@ fun GameScreenDeckPreview() {
                 deckSettings = DeckSettings(
                     nextCardUrl = "some url",
                     revealedCards = null,
-                    extraCardList = emptyList()
+                    extraCardList = emptyList(),
                 ),
-                overlayState = OverlayState.Hidden
-            )
+                overlayState = OverlayState.Hidden,
+            ),
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GameScreenFullPreview() {
+private fun GameScreenFullPreview() {
     GwenTestTheme {
         GameScreen(
             state = GameState.Ready(
@@ -277,10 +273,10 @@ fun GameScreenFullPreview() {
                             oracleText = "o2.text",
                             images = CardInfoImageUrls(
                                 small = "https://cards.scryfall.io/display/front/3/c/3c05afe6-c92f-440d-b09a-cc23b15da495.webp?1783936123",
-                                large = "https://too-large.url"
+                                large = "https://too-large.url",
                             ),
                             isOngoing = true,
-                        )
+                        ),
                     ),
                     extraCardList = listOf(
                         CardInfo(
@@ -288,7 +284,7 @@ fun GameScreenFullPreview() {
                             oracleText = "o2.text",
                             images = CardInfoImageUrls(
                                 small = "https://cards.scryfall.io/display/front/3/c/3c05afe6-c92f-440d-b09a-cc23b15da495.webp?1783936123",
-                                large = "https://too-large.url"
+                                large = "https://too-large.url",
                             ),
                             isOngoing = true,
                         ),
@@ -297,14 +293,14 @@ fun GameScreenFullPreview() {
                             oracleText = "o2.text",
                             images = CardInfoImageUrls(
                                 small = "https://cards.scryfall.io/display/front/3/c/3c05afe6-c92f-440d-b09a-cc23b15da495.webp?1783936123",
-                                large = "https://too-large.url"
+                                large = "https://too-large.url",
                             ),
                             isOngoing = true,
-                        )
+                        ),
                     ),
                 ),
-                overlayState = OverlayState.Hidden
-            )
+                overlayState = OverlayState.Hidden,
+            ),
         )
     }
 }

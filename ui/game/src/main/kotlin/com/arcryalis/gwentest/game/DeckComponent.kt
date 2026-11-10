@@ -1,6 +1,5 @@
 package com.arcryalis.gwentest.game
 
-import com.arcryalis.gwentest.core.isPortrait
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -25,6 +24,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.arcryalis.gwentest.core.isPortrait
 import com.arcryalis.gwentest.data.card.model.CardInfo
 
 @Composable
@@ -33,13 +33,13 @@ fun DeckComponent(
     mostRecentCard: CardInfo?,
     extraCardList: List<CardInfo>,
     modifier: Modifier = Modifier,
-    onNextClicked: () -> Unit = {},
-    onHistoryClicked: () -> Unit = {},
-    onListItemClicked: (CardInfo) -> Unit = {}
+    onNextClick: () -> Unit = {},
+    onHistoryClick: () -> Unit = {},
+    onListItemClick: (CardInfo) -> Unit = {},
 ) {
     Row(
         modifier = modifier.padding(vertical = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         AsyncImage(
             model = nextImageUrl ?: "",
@@ -51,7 +51,7 @@ fun DeckComponent(
                 .weight(1f)
                 .align(Alignment.CenterVertically)
                 .fillMaxHeight()
-                .clickable(onClick = onNextClicked),
+                .clickable(onClick = onNextClick),
         )
 
         var lastSuccessPainter by remember { mutableStateOf<Painter?>(null) }
@@ -70,7 +70,7 @@ fun DeckComponent(
                 .weight(1f)
                 .align(Alignment.CenterVertically)
                 .fillMaxHeight()
-                .clickable(onClick = onHistoryClicked),
+                .clickable(onClick = onHistoryClick),
         )
 
         ExtraCardListCard(
@@ -78,7 +78,7 @@ fun DeckComponent(
             modifier = Modifier
                 .weight(2f)
                 .align(Alignment.CenterVertically),
-            onListItemClicked = onListItemClicked
+            onListItemClick = onListItemClick,
         )
     }
 }
@@ -87,29 +87,29 @@ fun DeckComponent(
 private fun ExtraCardListCard(
     cards: List<CardInfo>,
     modifier: Modifier = Modifier,
-    onListItemClicked: (CardInfo) -> Unit = {}
+    onListItemClick: (CardInfo) -> Unit = {},
 ) {
     val pagePeekFraction = if (isPortrait()) 1f / 20 else 1f / 12
 
     BoxWithConstraints(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) {
         val pagePeek = maxWidth * pagePeekFraction
 
         Card(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp)
+                .padding(8.dp),
         ) {
             if (cards.isNotEmpty()) {
                 val pagerState = rememberPagerState(
-                    pageCount = { cards.size }
+                    pageCount = { cards.size },
                 )
 
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = pagePeek)
+                    contentPadding = PaddingValues(horizontal = pagePeek),
                 ) { index ->
                     val card = cards[index]
                     AsyncImage(
@@ -120,7 +120,7 @@ private fun ExtraCardListCard(
                             .padding(8.dp)
                             .fillMaxSize()
                             .clip(RoundedCornerShape(4.dp))
-                            .clickable(onClick = { onListItemClicked(card) }),
+                            .clickable(onClick = { onListItemClick(card) }),
                     )
                 }
             }

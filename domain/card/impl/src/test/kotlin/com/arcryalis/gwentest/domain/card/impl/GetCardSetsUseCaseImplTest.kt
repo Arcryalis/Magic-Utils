@@ -16,15 +16,15 @@ class GetCardSetsUseCaseImplTest {
     private lateinit var sut: GetCardSetsUseCase
 
     private fun setupSut(
-        availableSets: List<CardSet>
+        availableSets: List<CardSet>,
     ) {
         sut = GetCardSetsUseCaseImpl(
             MockCardRepository(
                 availableSets = availableSets,
                 cardsBySet = emptyMap(),
                 cardsExistLocally = false,
-                downloadResult = false
-            )
+                downloadResult = false,
+            ),
         )
     }
 

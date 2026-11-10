@@ -15,16 +15,16 @@ interface ScryfallApi {
         @Query("unique") unique: String,
         @Query("order") order: String,
         @Query("include_extras") includeExtras: Boolean,
-        @Query("page") page: Int
+        @Query("page") page: Int,
     ): NetworkResponse<ScryfallPaginationDto, Unit>
 
     @GET("cards/autocomplete")
     suspend fun autocompleteCardNames(
-        @Query("q") query: String
+        @Query("q") query: String,
     ): NetworkResponse<ScryfallCatalogDto, Unit>
 
     @GET("cards/named")
     suspend fun getCardByExactName(
-        @Query("exact") name: String
+        @Query("exact") name: String,
     ): NetworkResponse<ScryfallNamedCardDto, Unit>
 }

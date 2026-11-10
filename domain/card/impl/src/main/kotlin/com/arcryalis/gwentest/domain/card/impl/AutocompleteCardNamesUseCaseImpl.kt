@@ -5,8 +5,7 @@ import com.arcryalis.gwentest.domain.card.AutocompleteCardNamesUseCase
 import javax.inject.Inject
 
 class AutocompleteCardNamesUseCaseImpl @Inject constructor(
-    private val cardRepository: CardRepository
+    private val cardRepository: CardRepository,
 ) : AutocompleteCardNamesUseCase {
-    override suspend fun invoke(query: String): Result<List<String>> =
-        cardRepository.autocompleteCardNames(query.trim())
+    override suspend fun invoke(query: String): Result<List<String>> = cardRepository.autocompleteCardNames(query.trim())
 }

@@ -21,12 +21,12 @@ import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 @Composable
 fun CardInfoDialog(
     card: CardInfo,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .padding(8.dp)
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
         AsyncImage(
             model = card.images.large,
@@ -35,12 +35,12 @@ fun CardInfoDialog(
             modifier = Modifier
                 .weight(1f)
                 .align(Alignment.CenterHorizontally)
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp),
         )
 
         HorizontalDivider(
             modifier = Modifier.padding(vertical = 8.dp),
-            thickness = 2.dp
+            thickness = 2.dp,
         )
 
         Text(
@@ -48,7 +48,7 @@ fun CardInfoDialog(
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier.align(Alignment.CenterHorizontally),
         )
 
         val oracleText = card.oracleText
@@ -59,16 +59,15 @@ fun CardInfoDialog(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(top = 4.dp)
-                    .align(Alignment.CenterHorizontally)
+                    .align(Alignment.CenterHorizontally),
             )
         }
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun CardInfoDialogPreview() {
+private fun CardInfoDialogPreview() {
     GwenTestTheme {
         CardInfoDialog(
             card = CardInfo(
@@ -76,11 +75,11 @@ fun CardInfoDialogPreview() {
                 oracleText = "Oracle Text",
                 images = CardInfoImageUrls(
                     small = "smallUrl",
-                    large = "largeUrl"
+                    large = "largeUrl",
                 ),
                 isOngoing = true,
             ),
-            modifier = Modifier
+            modifier = Modifier,
         )
     }
 }

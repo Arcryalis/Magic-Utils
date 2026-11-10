@@ -11,8 +11,8 @@ import javax.inject.Singleton
 
 @Singleton
 class CoilImageCacherImpl @Inject constructor(
-    @ApplicationContext private val context: Context
-): CoilImageCacher {
+    @ApplicationContext private val context: Context,
+) : CoilImageCacher {
     override fun queueImageCacheRequest(url: String) {
         val request = ImageRequest.Builder(context)
             .data(url)

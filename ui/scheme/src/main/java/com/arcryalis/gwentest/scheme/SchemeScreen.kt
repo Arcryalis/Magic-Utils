@@ -22,9 +22,9 @@ import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 
 @Composable
 fun SchemeScreen(
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SchemeViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit,
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
@@ -35,22 +35,23 @@ fun SchemeScreen(
         SchemeScreen(
             state = state.value,
             modifier = scaffoldModifier.fillMaxSize(),
-            onCardClicked = viewModel::onCardClicked,
-            onCloseOverlayClicked = viewModel::onCloseOverlayClicked
+            onCardClick = viewModel::onCardClicked,
+            onCloseOverlayClick = viewModel::onCloseOverlayClicked,
         )
     }
 }
+
 @Composable
 fun SchemeScreen(
     state: SchemeState,
     modifier: Modifier = Modifier,
-    onCardClicked: (CardInfo) -> Unit = {},
-    onCloseOverlayClicked: () -> Unit = {}
+    onCardClick: (CardInfo) -> Unit = {},
+    onCloseOverlayClick: () -> Unit = {},
 ) {
     when (state) {
         SchemeState.Loading -> LoadingScreen(
             text = stringResource(R.string.schemes_loading),
-            modifier = modifier
+            modifier = modifier,
         )
 
         is SchemeState.Ready -> {
@@ -58,8 +59,8 @@ fun SchemeScreen(
                 cardList = state.cards,
                 overlayCard = state.overlayCard,
                 modifier = modifier,
-                onCardClicked = onCardClicked,
-                onCloseOverlayClicked = onCloseOverlayClicked,
+                onCardClick = onCardClick,
+                onCloseOverlayClick = onCloseOverlayClick,
             )
         }
     }
@@ -70,22 +71,22 @@ private fun SchemeReadyScreen(
     cardList: List<CardInfo>,
     overlayCard: CardInfo?,
     modifier: Modifier = Modifier,
-    onCardClicked: (CardInfo) -> Unit = {},
-    onCloseOverlayClicked: () -> Unit = {}
+    onCardClick: (CardInfo) -> Unit = {},
+    onCloseOverlayClick: () -> Unit = {},
 ) {
     Box(
-        modifier = modifier
+        modifier = modifier,
     ) {
         CardInfoGallery(
             cards = cardList,
             modifier = Modifier.fillMaxSize(),
-            onCardClicked = onCardClicked,
+            onCardClick = onCardClick,
         )
 
         if (overlayCard != null) {
             FullScreenDialog(
                 modifier = Modifier,
-                onDismiss = onCloseOverlayClicked
+                onDismiss = onCloseOverlayClick,
             ) {
                 CardInfoDialog(
                     card = overlayCard,
@@ -98,18 +99,18 @@ private fun SchemeReadyScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun SchemeReadyScreenPreview() {
+private fun SchemeReadyScreenPreview() {
     GwenTestTheme {
         SchemeReadyScreen(
             cardList = emptyList(),
-            overlayCard = null
+            overlayCard = null,
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun SchemeReadyScreenWithOverlayPreview() {
+private fun SchemeReadyScreenWithOverlayPreview() {
     GwenTestTheme {
         SchemeReadyScreen(
             cardList = listOf(
@@ -118,7 +119,7 @@ fun SchemeReadyScreenWithOverlayPreview() {
                     oracleText = "o.text",
                     images = CardInfoImageUrls(
                         small = "https://small.url",
-                        large = "https://large.url"
+                        large = "https://large.url",
                     ),
                     isOngoing = false,
                 ),
@@ -127,20 +128,20 @@ fun SchemeReadyScreenWithOverlayPreview() {
                     oracleText = "o2.text",
                     images = CardInfoImageUrls(
                         small = "https://too-small.url",
-                        large = "https://too-large.url"
+                        large = "https://too-large.url",
                     ),
                     isOngoing = true,
-                )
+                ),
             ),
             overlayCard = CardInfo(
                 name = "Some name",
                 oracleText = "Oracle text that is very long and can cover multiple lines at once. \nSecond line",
                 images = CardInfoImageUrls(
                     small = "s",
-                    large = "l"
+                    large = "l",
                 ),
                 isOngoing = true,
-            )
+            ),
         )
     }
 }

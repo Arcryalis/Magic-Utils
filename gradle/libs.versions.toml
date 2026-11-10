@@ -20,6 +20,9 @@ coil = "2.7.0"
 robolectric = "4.17"
 camerax = "1.6.1"
 mlkitTextRecognition = "16.0.1"
+spotless = "8.11.0"
+ktlint = "1.8.0"
+composeRules = "0.6.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -62,6 +65,8 @@ androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", 
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
 androidx-camera-compose = { group = "androidx.camera", name = "camera-compose", version.ref = "camerax" }
 mlkit-text-recognition = { group = "com.google.mlkit", name = "text-recognition", version.ref = "mlkitTextRecognition" }
+spotless-gradlePlugin = { group = "com.diffplug.spotless", name = "spotless-plugin-gradle", version.ref = "spotless" }
+compose-rules-ktlint = { group = "io.nlopez.compose.rules", name = "ktlint", version.ref = "composeRules" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -81,3 +86,4 @@ gwentest-android-hilt = { id = "gwentest.android.hilt"}
 gwentest-kotlin-library = { id = "gwentest.kotlin.library"}
 gwentest-kotlin-hilt = { id = "gwentest.kotlin.hilt"}
 gwentest-room = { id = "gwentest.room"}
+gwentest-spotless = { id = "gwentest.spotless" }

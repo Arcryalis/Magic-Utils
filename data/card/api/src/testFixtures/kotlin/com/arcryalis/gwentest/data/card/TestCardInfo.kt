@@ -10,7 +10,7 @@ object TestCardInfo {
         oracleText = "o.text",
         images = CardInfoImageUrls(
             small = "https://small.url",
-            large = "https://large.url"
+            large = "https://large.url",
         ),
         isOngoing = false,
     )
@@ -20,7 +20,7 @@ object TestCardInfo {
         oracleText = "o2.text",
         images = CardInfoImageUrls(
             small = "https://too-small.url",
-            large = "https://too-large.url"
+            large = "https://too-large.url",
         ),
         isOngoing = true,
     )

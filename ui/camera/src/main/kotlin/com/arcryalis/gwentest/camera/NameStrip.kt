@@ -18,19 +18,18 @@ internal object NameStrip {
 
 private const val FRAME_TIMEOUT_MILLIS = 10_000L
 
-internal fun nameStripAnalyzer(onFrame: (Bitmap, () -> Unit) -> Unit) =
-    ImageAnalysis.Analyzer { imageProxy ->
-        processFrame(
-            timeoutMillis = FRAME_TIMEOUT_MILLIS,
-            extract = { imageProxy.use { it.toNameStripBitmap() } },
-            onFrame = onFrame
-        )
-    }
+internal fun nameStripAnalyzer(onFrame: (Bitmap, () -> Unit) -> Unit) = ImageAnalysis.Analyzer { imageProxy ->
+    processFrame(
+        timeoutMillis = FRAME_TIMEOUT_MILLIS,
+        extract = { imageProxy.use { it.toNameStripBitmap() } },
+        onFrame = onFrame,
+    )
+}
 
 internal fun <T : Any> processFrame(
     timeoutMillis: Long,
     extract: () -> T?,
-    onFrame: (T, () -> Unit) -> Unit
+    onFrame: (T, () -> Unit) -> Unit,
 ): Boolean {
     val frame = try {
         extract()
@@ -46,12 +45,11 @@ internal fun <T : Any> processFrame(
     return processed.await(timeoutMillis, TimeUnit.MILLISECONDS)
 }
 
-internal fun visibleRect(bitmapSize: IntSize, imageSize: IntSize, cropRect: IntRect): IntRect =
-    if (bitmapSize == imageSize) {
-        cropRect
-    } else {
-        IntRect(IntOffset.Zero, bitmapSize)
-    }
+internal fun visibleRect(bitmapSize: IntSize, imageSize: IntSize, cropRect: IntRect): IntRect = if (bitmapSize == imageSize) {
+    cropRect
+} else {
+    IntRect(IntOffset.Zero, bitmapSize)
+}
 
 internal fun nameStripRect(cropRect: IntRect, rotationDegrees: Int): IntRect? {
     if (cropRect.width <= 0 || cropRect.height <= 0) return null
@@ -69,9 +67,9 @@ internal fun nameStripRect(cropRect: IntRect, rotationDegrees: Int): IntRect? {
     return IntRect(
         offset = IntOffset(
             x = cropRect.left + (cropRect.width - width) / 2,
-            y = cropRect.top + (cropRect.height - height) / 2
+            y = cropRect.top + (cropRect.height - height) / 2,
         ),
-        size = IntSize(width, height)
+        size = IntSize(width, height),
     )
 }
 
@@ -81,7 +79,7 @@ private fun ImageProxy.toNameStripBitmap(): Bitmap? {
     val visible = visibleRect(
         bitmapSize = IntSize(source.width, source.height),
         imageSize = IntSize(width, height),
-        cropRect = IntRect(cropRect.left, cropRect.top, cropRect.right, cropRect.bottom)
+        cropRect = IntRect(cropRect.left, cropRect.top, cropRect.right, cropRect.bottom),
     )
     val strip = nameStripRect(visible, rotation)
     if (strip == null) {
@@ -97,7 +95,7 @@ private fun ImageProxy.toNameStripBitmap(): Bitmap? {
         strip.width,
         strip.height,
         matrix,
-        true
+        true,
     )
     if (result !== source) source.recycle()
     return result

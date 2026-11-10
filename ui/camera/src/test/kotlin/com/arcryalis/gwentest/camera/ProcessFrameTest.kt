@@ -15,7 +15,7 @@ class ProcessFrameTest {
         val processed = processFrame(
             timeoutMillis = LONG_TIMEOUT,
             extract = { error("bad frame") },
-            onFrame = ::recordAndComplete
+            onFrame = ::recordAndComplete,
         )
 
         assertFalse(processed)
@@ -27,7 +27,7 @@ class ProcessFrameTest {
         val processed = processFrame<String>(
             timeoutMillis = LONG_TIMEOUT,
             extract = { throw OutOfMemoryError() },
-            onFrame = ::recordAndComplete
+            onFrame = ::recordAndComplete,
         )
 
         assertFalse(processed)
@@ -39,7 +39,7 @@ class ProcessFrameTest {
         val processed = processFrame<String>(
             timeoutMillis = LONG_TIMEOUT,
             extract = { null },
-            onFrame = ::recordAndComplete
+            onFrame = ::recordAndComplete,
         )
 
         assertFalse(processed)
@@ -51,7 +51,7 @@ class ProcessFrameTest {
         val processed = processFrame(
             timeoutMillis = LONG_TIMEOUT,
             extract = { "frame" },
-            onFrame = ::recordAndComplete
+            onFrame = ::recordAndComplete,
         )
 
         assertTrue(processed)
@@ -63,7 +63,7 @@ class ProcessFrameTest {
         val processed = processFrame(
             timeoutMillis = LONG_TIMEOUT,
             extract = { "frame" },
-            onFrame = { _, onProcessed -> thread { onProcessed() } }
+            onFrame = { _, onProcessed -> thread { onProcessed() } },
         )
 
         assertTrue(processed)
@@ -74,7 +74,7 @@ class ProcessFrameTest {
         val processed = processFrame(
             timeoutMillis = SHORT_TIMEOUT,
             extract = { "frame" },
-            onFrame = { frame, _ -> receivedFrames += frame }
+            onFrame = { frame, _ -> receivedFrames += frame },
         )
 
         assertFalse(processed)

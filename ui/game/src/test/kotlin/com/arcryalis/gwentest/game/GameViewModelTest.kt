@@ -47,9 +47,9 @@ class GameViewModelTest {
             setId to listOf(
                 TestCardInfo.info1,
                 TestCardInfo.info2,
-            )
+            ),
         ),
-        cardBackUseCase: GetCardBackUrlUseCase? = null
+        cardBackUseCase: GetCardBackUrlUseCase? = null,
     ) {
         route = GameRoute(
             playerSettings = playerSettings,
@@ -72,7 +72,7 @@ class GameViewModelTest {
         setUpSut(
             cardBackUseCase = object : GetCardBackUrlUseCase {
                 override fun invoke(): String = throw IllegalStateException("boom")
-            }
+            },
         )
 
         val state = sut.state.value
@@ -86,8 +86,8 @@ class GameViewModelTest {
         setUpSut(
             playerSettings = listOf(
                 RoutePlayerInfo("Them", 30),
-                RoutePlayerInfo("Alternative", 40)
-            )
+                RoutePlayerInfo("Alternative", 40),
+            ),
         )
 
         val state = sut.state.value
@@ -123,7 +123,7 @@ class GameViewModelTest {
     @Test
     fun givenLifeAtMax_whenIncreasePlayerLife_thenLifeStaysAtMax() {
         setUpSut(
-            playerSettings = listOf(RoutePlayerInfo("Player 1", 999))
+            playerSettings = listOf(RoutePlayerInfo("Player 1", 999)),
         )
 
         sut.increasePlayerLife(0)
@@ -134,7 +134,7 @@ class GameViewModelTest {
     @Test
     fun givenLifeAtMin_whenDecreasePlayerLife_thenLifeStaysAtMin() {
         setUpSut(
-            playerSettings = listOf(RoutePlayerInfo("Player 1", -99))
+            playerSettings = listOf(RoutePlayerInfo("Player 1", -99)),
         )
 
         sut.decreasePlayerLife(0)

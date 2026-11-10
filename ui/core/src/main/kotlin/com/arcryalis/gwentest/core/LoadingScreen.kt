@@ -19,17 +19,17 @@ import com.arcryalis.gwentest.core.theme.GwenTestTheme
 @Composable
 fun LoadingScreen(
     text: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CircularProgressIndicator(
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(64.dp),
             )
 
             if (text != null) {
@@ -38,7 +38,7 @@ fun LoadingScreen(
                     modifier = Modifier
                         .padding(top = 16.dp)
                         .width(180.dp),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -47,10 +47,10 @@ fun LoadingScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun LoadingScreenPreview() {
+private fun LoadingScreenPreview() {
     GwenTestTheme {
         LoadingScreen(
-            text = "Important loading information"
+            text = "Important loading information",
         )
     }
 }

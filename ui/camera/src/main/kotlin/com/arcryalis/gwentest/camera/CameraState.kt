@@ -26,7 +26,9 @@ internal sealed interface CameraFeedMode {
 
 internal fun CameraState.Ready.toFeedMode(): CameraFeedMode? = when (val mode = camera) {
     CameraMode.Manual -> null
+
     CameraMode.PermissionRequired -> CameraFeedMode.PermissionRequired
+
     is CameraMode.Available -> if (mode.isScanning) {
         CameraFeedMode.Scanning
     } else {

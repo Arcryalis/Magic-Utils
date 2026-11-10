@@ -41,20 +41,22 @@ fun FullScreenDialog(
         onDismissRequest = { onDismiss() },
     ) {
         Card(
-            modifier = modifier.padding(vertical = if (isPortrait) {
-                80.dp
-            } else {
-                16.dp
-            }),
-            shape = RoundedCornerShape(8.dp)
+            modifier = modifier.padding(
+                vertical = if (isPortrait) {
+                    80.dp
+                } else {
+                    16.dp
+                },
+            ),
+            shape = RoundedCornerShape(8.dp),
         ) {
             Column(
-                modifier = Modifier.fillMaxSize()
-            ){
+                modifier = Modifier.fillMaxSize(),
+            ) {
                 DialogHeader(
                     modifier = Modifier,
-                    onCloseClicked = onDismiss,
-                    headerEndContent = headerEndContent
+                    onCloseClick = onDismiss,
+                    headerEndContent = headerEndContent,
                 )
 
                 content(Modifier)
@@ -63,21 +65,20 @@ fun FullScreenDialog(
     }
 }
 
-
 @Composable
 private fun DialogHeader(
     modifier: Modifier = Modifier,
-    onCloseClicked: () -> Unit = {},
+    onCloseClick: () -> Unit = {},
     headerEndContent: @Composable RowScope.(Modifier) -> Unit,
 ) {
     Row(modifier = modifier) {
         FullScreenDialogIcon(
             imageVector = Icons.AutoMirrored.Default.ArrowBack,
             contentDescription = stringResource(R.string.card_info_back),
-            onClicked = onCloseClicked
+            onClick = onCloseClick,
         )
 
-        Spacer(modifier.weight(1f))
+        Spacer(Modifier.weight(1f))
 
         headerEndContent(Modifier)
     }
@@ -89,11 +90,11 @@ fun FullScreenDialogIcon(
     contentDescription: String,
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current,
-    onClicked: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     IconButton(
-        onClick = onClicked,
-        modifier = modifier
+        onClick = onClick,
+        modifier = modifier,
     ) {
         Icon(
             imageVector = imageVector,

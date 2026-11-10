@@ -22,7 +22,7 @@ import com.arcryalis.gwentest.data.card.model.CardInfoImageUrls
 fun CardInfoGallery(
     cards: List<CardInfo>,
     modifier: Modifier = Modifier,
-    onCardClicked: (CardInfo) -> Unit = {},
+    onCardClick: (CardInfo) -> Unit = {},
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(96.dp),
@@ -39,7 +39,7 @@ fun CardInfoGallery(
                 alignment = Alignment.Center,
                 modifier = Modifier
                     .height(128.dp)
-                    .clickable(onClick = { onCardClicked(card) })
+                    .clickable(onClick = { onCardClick(card) }),
             )
         }
     }
@@ -47,7 +47,7 @@ fun CardInfoGallery(
 
 @Preview(showBackground = true)
 @Composable
-fun CardInfoGalleryPreview() {
+private fun CardInfoGalleryPreview() {
     GwenTestTheme {
         CardInfoGallery(
             cards = listOf(
@@ -56,7 +56,7 @@ fun CardInfoGalleryPreview() {
                     oracleText = "Oracle Text",
                     images = CardInfoImageUrls(
                         small = "smallUrl",
-                        large = "largeUrl"
+                        large = "largeUrl",
                     ),
                     isOngoing = true,
                 ),
@@ -65,7 +65,7 @@ fun CardInfoGalleryPreview() {
                     oracleText = "o.text",
                     images = CardInfoImageUrls(
                         small = "https://small.url",
-                        large = "https://large.url"
+                        large = "https://large.url",
                     ),
                     isOngoing = false,
                 ),
@@ -74,12 +74,12 @@ fun CardInfoGalleryPreview() {
                     oracleText = "3rd text",
                     images = CardInfoImageUrls(
                         small = "small3Url",
-                        large = "large3Url"
+                        large = "large3Url",
                     ),
                     isOngoing = false,
-                )
+                ),
             ),
-            modifier = Modifier
+            modifier = Modifier,
         )
     }
 }

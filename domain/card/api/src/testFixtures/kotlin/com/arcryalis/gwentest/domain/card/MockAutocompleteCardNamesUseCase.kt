@@ -4,7 +4,7 @@ import kotlinx.coroutines.CompletableDeferred
 
 class MockAutocompleteCardNamesUseCase(
     results: List<Result<List<String>>> = emptyList(),
-    private val gate: CompletableDeferred<Unit>? = null
+    private val gate: CompletableDeferred<Unit>? = null,
 ) : AutocompleteCardNamesUseCase {
     private val results = ArrayDeque(results)
 

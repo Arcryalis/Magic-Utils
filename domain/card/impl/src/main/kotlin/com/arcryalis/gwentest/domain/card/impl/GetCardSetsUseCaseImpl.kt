@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetCardSetsUseCaseImpl @Inject constructor(
-    private val cardRepo: CardRepository
-): GetCardSetsUseCase {
+    private val cardRepo: CardRepository,
+) : GetCardSetsUseCase {
     override fun invoke(): Flow<List<CardSet>> = cardRepo.getAvailableSets()
 }

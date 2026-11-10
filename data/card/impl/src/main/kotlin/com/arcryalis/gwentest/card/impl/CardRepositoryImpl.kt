@@ -1,9 +1,6 @@
 package com.arcryalis.gwentest.card.impl
 
 import android.content.Context
-import com.arcryalis.gwentest.remote.RemoteResponse
-import com.arcryalis.gwentest.remote.scryfall.ScryfallDataSource
-import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallDataDto
 import com.arcryalis.gwentest.card.impl.mapper.toDistinctSetEntity
 import com.arcryalis.gwentest.card.impl.mapper.toInfoEntity
 import com.arcryalis.gwentest.card.impl.mapper.toModel
@@ -14,6 +11,9 @@ import com.arcryalis.gwentest.data.card.model.CardSet
 import com.arcryalis.gwentest.data.local.api.CardInfoDataStore
 import com.arcryalis.gwentest.data.local.api.CardSetDataStore
 import com.arcryalis.gwentest.network.CoilImageCacher
+import com.arcryalis.gwentest.remote.RemoteResponse
+import com.arcryalis.gwentest.remote.scryfall.ScryfallDataSource
+import com.arcryalis.gwentest.remote.scryfall.dto.ScryfallDataDto
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -24,7 +24,7 @@ class CardRepositoryImpl @Inject constructor(
     private val cardSetStore: CardSetDataStore,
     private val dataSource: ScryfallDataSource,
     private val imageCacher: CoilImageCacher,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) : CardRepository {
 
     override fun doCardsExistLocally(): Flow<Boolean> = cardInfoStore.doCardsExistLocally()
@@ -61,36 +61,31 @@ class CardRepositoryImpl @Inject constructor(
             entities.toModel()
         }
 
-    override fun getSet(setId: String): Flow<List<CardInfo>> {
-        return cardInfoStore.getCardSet(setId).map { entities ->
-            entities.toModel()
-        }
+    override fun getSet(setId: String): Flow<List<CardInfo>> = cardInfoStore.getCardSet(setId).map { entities ->
+        entities.toModel()
     }
 
-    override fun getAllCards(): Flow<List<CardInfo>> {
-        return cardInfoStore.getAllCards().map { entities ->
-            entities.toModel()
-        }
+    override fun getAllCards(): Flow<List<CardInfo>> = cardInfoStore.getAllCards().map { entities ->
+        entities.toModel()
     }
 
     override fun getCardBackUrl(): String = context.getString(R.string.card_back_url)
 
-    override suspend fun autocompleteCardNames(query: String): Result<List<String>> =
-        when (val response = dataSource.autocompleteCardNames(query)) {
-            is RemoteResponse.Success -> Result.success(response.data.data)
-            is RemoteResponse.Error -> Result.failure(Exception(response.message))
+    override suspend fun autocompleteCardNames(query: String): Result<List<String>> = when (val response = dataSource.autocompleteCardNames(query)) {
+        is RemoteResponse.Success -> Result.success(response.data.data)
+        is RemoteResponse.Error -> Result.failure(Exception(response.message))
+    }
+
+    override suspend fun getCardmarketUrl(cardName: String): Result<String> = when (val response = dataSource.getCardByExactName(cardName)) {
+        is RemoteResponse.Success -> {
+            val url = response.data.purchaseUris?.cardmarket?.toCardmarketProductUrl()
+            if (url != null) {
+                Result.success(url)
+            } else {
+                Result.failure(Exception("No Cardmarket url"))
+            }
         }
 
-    override suspend fun getCardmarketUrl(cardName: String): Result<String> =
-        when (val response = dataSource.getCardByExactName(cardName)) {
-            is RemoteResponse.Success -> {
-                val url = response.data.purchaseUris?.cardmarket?.toCardmarketProductUrl()
-                if (url != null) {
-                    Result.success(url)
-                } else {
-                    Result.failure(Exception("No Cardmarket url"))
-                }
-            }
-            is RemoteResponse.Error -> Result.failure(Exception(response.message))
-        }
+        is RemoteResponse.Error -> Result.failure(Exception(response.message))
+    }
 }

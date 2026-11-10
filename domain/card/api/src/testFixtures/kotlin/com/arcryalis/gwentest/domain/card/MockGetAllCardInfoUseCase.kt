@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 class MockGetAllCardInfoUseCase(
-    private val cardInfo: List<CardInfo>
-): GetAllCardInfoUseCase {
+    private val cardInfo: List<CardInfo>,
+) : GetAllCardInfoUseCase {
 
     override fun invoke(): Flow<List<CardInfo>> = flowOf(cardInfo)
 }

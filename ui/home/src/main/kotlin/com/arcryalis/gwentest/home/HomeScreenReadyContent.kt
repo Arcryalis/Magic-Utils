@@ -50,14 +50,14 @@ fun HomeScreenReadyContent(
     availableSetsState: HomeItemState<CardSet?>,
     availablePlayerColors: List<Int?>,
     modifier: Modifier = Modifier,
-    onSetSelected: (CardSet?) -> Unit = {},
-    onLifeTotalSelected: (Int) -> Unit = {},
+    onSetSelect: (CardSet?) -> Unit = {},
+    onLifeTotalSelect: (Int) -> Unit = {},
     onNavigateToSchemeScreen: () -> Unit = {},
     onDownloadSchemesClick: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {},
     onPlayerNameChange: (Int, String) -> Unit = { _, _ -> },
-    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> }
+    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> },
 ) {
     val playerColors = availablePlayerColors.map { colorRes ->
         colorRes?.let { colorResource(it) } ?: Color.Unspecified
@@ -67,28 +67,28 @@ fun HomeScreenReadyContent(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(vertical = 16.dp)
+        contentPadding = PaddingValues(vertical = 16.dp),
     ) {
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = stringResource(R.string.select_players_label),
                     fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
                 )
 
                 IconButton(
                     onClick = onAddPlayer,
                     enabled = players.size < 4,
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(36.dp),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(R.string.add_player)
+                        contentDescription = stringResource(R.string.add_player),
                     )
                 }
             }
@@ -98,7 +98,7 @@ fun HomeScreenReadyContent(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 val label = stringResource(R.string.player_name_label, index + 1)
 
@@ -108,11 +108,11 @@ fun HomeScreenReadyContent(
                     label = {
                         Text(
                             text = label,
-                            modifier = Modifier.alpha(if (playerInfo.name.isEmpty()) 0.5f else 1f)
+                            modifier = Modifier.alpha(if (playerInfo.name.isEmpty()) 0.5f else 1f),
                         )
                     },
                     singleLine = true,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
 
                 DropdownMenu(
@@ -124,20 +124,20 @@ fun HomeScreenReadyContent(
                         .align(Alignment.CenterVertically),
                     fieldLabel = { "" },
                     leadingContent = { color -> ColorCircle(color = color) },
-                    onItemSelected = { newColor -> onPlayerColorChange(index, newColor) }
+                    onItemSelect = { newColor -> onPlayerColorChange(index, newColor) },
                 )
 
                 IconButton(
                     onClick = { onRemovePlayer(index) },
-                    modifier = Modifier.width(36.dp)
+                    modifier = Modifier.width(36.dp),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = stringResource(
                             R.string.remove_player,
-                            playerInfo.name.ifEmpty { label }
+                            playerInfo.name.ifEmpty { label },
                         ),
-                        tint = Color.Red
+                        tint = Color.Red,
                     )
                 }
             }
@@ -150,7 +150,7 @@ fun HomeScreenReadyContent(
                     selectedItem = startingLifeState.selectedItem,
                     titleLabel = stringResource(R.string.select_life_label),
                     modifier = Modifier.fillMaxWidth(),
-                    onItemSelected = onLifeTotalSelected
+                    onItemSelect = onLifeTotalSelect,
                 )
             }
         }
@@ -164,34 +164,33 @@ fun HomeScreenReadyContent(
                 text = stringResource(R.string.select_archenemy_label),
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         }
 
         item {
             HomeCardSetSelector(
                 availableSetsState = availableSetsState,
-                onSetSelected = onSetSelected,
+                onSetSelect = onSetSelect,
                 onDownloadSchemesClick = onDownloadSchemesClick,
-                onNavigateToSchemeScreen = onNavigateToSchemeScreen
+                onNavigateToSchemeScreen = onNavigateToSchemeScreen,
             )
         }
     }
 }
 
-
 @Composable
 private fun HomeCardSetSelector(
     availableSetsState: HomeItemState<CardSet?>,
     modifier: Modifier = Modifier,
-    onSetSelected: (CardSet?) -> Unit = {},
+    onSetSelect: (CardSet?) -> Unit = {},
     onDownloadSchemesClick: () -> Unit = {},
-    onNavigateToSchemeScreen: () -> Unit = {}
+    onNavigateToSchemeScreen: () -> Unit = {},
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         DropdownMenu(
             items = availableSetsState.items,
@@ -201,11 +200,11 @@ private fun HomeCardSetSelector(
             fieldLabel = { set ->
                 set?.let { "${it.name} (${it.id.uppercase()} )" }
             },
-            onItemSelected = onSetSelected
+            onItemSelect = onSetSelect,
         )
 
         Box(
-            modifier = Modifier.width(36.dp)
+            modifier = Modifier.width(36.dp),
         ) {
             when (availableSetsState.buttonState) {
                 HomeItemButtonState.NotLoaded -> HomeItemStateIcon(
@@ -215,19 +214,19 @@ private fun HomeCardSetSelector(
                 )
 
                 HomeItemButtonState.Loading -> CircularProgressIndicator(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 )
 
                 HomeItemButtonState.Available -> HomeItemStateIcon(
                     imageVector = Icons.AutoMirrored.Default.ArrowForward,
                     contentDescription = stringResource(R.string.navigate_schemes),
-                    onClick = onNavigateToSchemeScreen
+                    onClick = onNavigateToSchemeScreen,
                 )
 
                 HomeItemButtonState.Error -> HomeItemStateIcon(
                     imageVector = Icons.Default.Warning,
                     contentDescription = stringResource(R.string.download_schemes_error),
-                    onClick = onDownloadSchemesClick
+                    onClick = onDownloadSchemesClick,
                 )
 
                 HomeItemButtonState.NoButton -> Unit
@@ -246,12 +245,12 @@ private fun HomeItemStateIcon(
 ) {
     IconButton(
         onClick = onClick,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Icon(
             imageVector = imageVector,
             contentDescription = contentDescription,
-            tint = tint
+            tint = tint,
         )
     }
 }
@@ -260,21 +259,21 @@ private fun HomeItemStateIcon(
 private fun ColorCircle(
     color: Color,
     modifier: Modifier = Modifier,
-    size: Dp = 20.dp
+    size: Dp = 20.dp,
 ) {
     Box(
         modifier = modifier
             .size(size)
             .background(
                 color = if (color == Color.Unspecified) Color.Transparent else color,
-                shape = CircleShape
+                shape = CircleShape,
             )
             .then(
                 if (color == Color.Unspecified) {
                     Modifier.border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
                 } else {
                     Modifier.border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), CircleShape)
-                }
-            )
+                },
+            ),
     )
 }

@@ -19,9 +19,8 @@ class RecogniseTextUseCaseImpl @Inject internal constructor(
     private val recognizer: TextRecognizer,
 ) : RecogniseTextUseCase {
 
-    override suspend fun invoke(image: Bitmap): Result<String> =
-        runCatching { recognise(image) }
-            .onFailure { if (it is CancellationException) throw it }
+    override suspend fun invoke(image: Bitmap): Result<String> = runCatching { recognise(image) }
+        .onFailure { if (it is CancellationException) throw it }
 
     private suspend fun recognise(image: Bitmap): String {
         val source = if (isHardware(image)) {
@@ -41,8 +40,7 @@ class RecogniseTextUseCaseImpl @Inject internal constructor(
         }
     }
 
-    private fun isHardware(image: Bitmap): Boolean =
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && image.config == Bitmap.Config.HARDWARE
+    private fun isHardware(image: Bitmap): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && image.config == Bitmap.Config.HARDWARE
 }
 
 private suspend fun Task<Text>.await(): Text = suspendCancellableCoroutine { continuation ->

@@ -4,10 +4,10 @@ data class CardInfo(
     val name: String,
     val oracleText: String?,
     val images: CardInfoImageUrls,
-    val isOngoing: Boolean
+    val isOngoing: Boolean,
 )
 
 data class CardInfoImageUrls(
     val small: String,
-    val large: String
+    val large: String,
 )
