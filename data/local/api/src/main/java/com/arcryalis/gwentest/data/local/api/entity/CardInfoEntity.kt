@@ -2,6 +2,7 @@ package com.arcryalis.gwentest.data.local.api.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -13,7 +14,8 @@ import androidx.room.PrimaryKey
             childColumns = ["setId"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index("setId")]
 )
 data class CardInfoEntity(
     @PrimaryKey val id: String,

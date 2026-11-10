@@ -1,0 +1,49 @@
+package com.arcryalis.gwentest.domain.card.impl
+
+import com.arcryalis.gwentest.data.card.MockCardRepository
+import com.arcryalis.gwentest.data.card.TestCardInfo
+import com.arcryalis.gwentest.data.card.model.CardInfo
+import com.arcryalis.gwentest.domain.card.GetAllCardInfoUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
+import org.junit.Test
+import kotlin.test.assertEquals
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class GetAllCardInfoUseCaseImplTest {
+
+    private lateinit var sut: GetAllCardInfoUseCase
+
+    private fun setupSut(
+        cardsBySet: Map<String, List<CardInfo>>
+    ) {
+        sut = GetAllCardInfoUseCaseImpl(
+            MockCardRepository(
+                availableSets = emptyList(),
+                cardsBySet = cardsBySet,
+                cardsExistLocally = false,
+                downloadResult = false
+            )
+        )
+    }
+
+    @Test
+    fun givenStoredCards_whenInvoked_thenReturnsAllCards() = runTest {
+        val setId1 = "set1"
+        val setId2 = "set2"
+        val cards1 = listOf(TestCardInfo.info1)
+        val cards2 = listOf(TestCardInfo.info2)
+
+        setupSut(
+            cardsBySet = mapOf(
+                setId1 to cards1,
+                setId2 to cards2
+            )
+        )
+
+        val result = sut().first()
+
+        assertEquals(listOf(TestCardInfo.info1, TestCardInfo.info2), result)
+    }
+}

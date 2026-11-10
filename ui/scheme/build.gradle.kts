@@ -13,11 +13,13 @@ dependencies {
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.navigation3.runtime)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.material.icons.core)
-    
+    api(libs.androidx.navigation3.runtime)
+    implementation(libs.kotlinx.serialization.json)
+
     implementation(projects.ui.core)
     implementation(projects.domain.card.api)
     implementation(projects.data.card.api)

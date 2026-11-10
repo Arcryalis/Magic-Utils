@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcryalis.gwentest.core.CardInfoDialog
 import com.arcryalis.gwentest.core.CardInfoGallery
 import com.arcryalis.gwentest.core.FullScreenDialog
@@ -26,7 +26,7 @@ fun SchemeScreen(
     viewModel: SchemeViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
 ) {
-    val state = viewModel.state.collectAsState()
+    val state = viewModel.state.collectAsStateWithLifecycle()
 
     NavigationScaffold(
         modifier = modifier,
@@ -53,8 +53,6 @@ fun SchemeScreen(
             modifier = modifier
         )
 
-        SchemeState.Error -> SchemeErrorScreen(modifier)
-
         is SchemeState.Ready -> {
             SchemeReadyScreen(
                 cardList = state.cards,
@@ -64,20 +62,6 @@ fun SchemeScreen(
                 onCloseOverlayClicked = onCloseOverlayClicked,
             )
         }
-    }
-}
-
-@Composable
-fun SchemeErrorScreen(
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        Text(
-            text = stringResource(R.string.schemes_error),
-            textAlign = TextAlign.Center
-        )
     }
 }
 
@@ -94,7 +78,7 @@ private fun SchemeReadyScreen(
     ) {
         CardInfoGallery(
             cards = cardList,
-            modifier = modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             onCardClicked = onCardClicked,
         )
 

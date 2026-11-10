@@ -35,9 +35,12 @@ include(":ui:core")
 include(":ui:home")
 include(":ui:scheme")
 include(":ui:game")
+include(":ui:camera")
 
 include(":domain:card:api")
 include(":domain:card:impl")
+include(":domain:ocr:api")
+include(":domain:ocr:impl")
 
 include(":data:card:api")
 include(":data:card:impl")

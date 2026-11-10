@@ -3,16 +3,22 @@ package com.arcryalis.gwentest.home
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -20,9 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arcryalis.gwentest.core.LoadingScreen
-import com.arcryalis.gwentest.core.navigation.GameRoute
-import com.arcryalis.gwentest.core.navigation.RoutePlayerInfo
+import com.arcryalis.gwentest.core.R as CoreR
 import com.arcryalis.gwentest.core.theme.GwenTestTheme
 import com.arcryalis.gwentest.data.card.model.CardSet
 
@@ -31,15 +37,19 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToSchemeScreen: () -> Unit = {},
-    onNavigateToGameScreen: (GameRoute) -> Unit = { _ -> },
+    onNavigateToCameraScreen: () -> Unit = {},
+    onNavigateToGameScreen: (HomeGameSettings) -> Unit = { _ -> },
 ) {
-    val state = viewModel.state.collectAsState()
+    val state = viewModel.state.collectAsStateWithLifecycle()
 
     HomeScreen(
         state = state.value,
         modifier = modifier.fillMaxSize(),
-        onNavigateToGameScreen = onNavigateToGameScreen,
+        onStartGameClick = {
+            viewModel.buildGameSettings()?.let(onNavigateToGameScreen)
+        },
         onNavigateToSchemeScreen = onNavigateToSchemeScreen,
+        onNavigateToCameraScreen = onNavigateToCameraScreen,
         onSetSelected = viewModel::onSelectSet,
         onLifeTotalSelected = viewModel::onSelectLifeTotal,
         onRefreshClick = viewModel::onRefresh,
@@ -47,6 +57,7 @@ fun HomeScreen(
         onAddPlayer = viewModel::addPlayer,
         onRemovePlayer = viewModel::removePlayer,
         onPlayerNameChange = viewModel::updatePlayerName,
+        onPlayerColorChange = viewModel::updatePlayerColor
     )
 }
 
@@ -54,8 +65,9 @@ fun HomeScreen(
 fun HomeScreen(
     state: HomeState,
     modifier: Modifier = Modifier,
-    onNavigateToGameScreen: (GameRoute) -> Unit = { _ -> },
+    onStartGameClick: () -> Unit = {},
     onNavigateToSchemeScreen: () -> Unit = {},
+    onNavigateToCameraScreen: () -> Unit = {},
     onSetSelected: (CardSet?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
     onRefreshClick: () -> Unit = {},
@@ -63,6 +75,7 @@ fun HomeScreen(
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {},
     onPlayerNameChange: (Int, String) -> Unit = { _, _ -> },
+    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> }
 ) {
     when (state) {
         is HomeState.Initial -> LoadingScreen(
@@ -75,16 +88,20 @@ fun HomeScreen(
             startingLifeState = state.startingLife,
             availableSetsState = state.sets,
             isRefreshing = state.isRefreshing,
+            canStartGame = state.canStartGame,
+            availablePlayerColors = state.playerColorOptions,
             modifier = modifier,
-            onSubmit = onNavigateToGameScreen,
+            onSubmit = onStartGameClick,
             onSetSelected = onSetSelected,
             onLifeTotalSelected = onLifeTotalSelected,
             onNavigateToSchemeScreen = onNavigateToSchemeScreen,
+            onNavigateToCameraScreen = onNavigateToCameraScreen,
             onRefresh = onRefreshClick,
             onDownloadSchemesClick = onDownloadSchemesClick,
             onAddPlayer = onAddPlayer,
             onRemovePlayer = onRemovePlayer,
-            onPlayerNameChange = onPlayerNameChange
+            onPlayerNameChange = onPlayerNameChange,
+            onPlayerColorChange = onPlayerColorChange
         )
     }
 }
@@ -92,54 +109,64 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeReadyScreen(
-    players: List<String>,
+    players: List<HomePlayerInfo>,
     startingLifeState: HomeItemState<Int>,
     availableSetsState: HomeItemState<CardSet?>,
     isRefreshing: Boolean,
+    canStartGame: Boolean,
+    availablePlayerColors: List<Int?>,
     modifier: Modifier = Modifier,
-    onSubmit: (GameRoute) -> Unit = { _ -> },
+    onSubmit: () -> Unit = {},
     onSetSelected: (CardSet?) -> Unit = {},
     onLifeTotalSelected: (Int) -> Unit = {},
     onNavigateToSchemeScreen: () -> Unit = {},
+    onNavigateToCameraScreen: () -> Unit = {},
     onRefresh: () -> Unit = {},
     onDownloadSchemesClick: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
     onRemovePlayer: (Int) -> Unit = {},
-    onPlayerNameChange: (Int, String) -> Unit = { _, _ -> }
+    onPlayerNameChange: (Int, String) -> Unit = { _, _ -> },
+    onPlayerColorChange: (Int, Color) -> Unit = { _, _ -> }
 ) {
     Scaffold(
-        modifier = modifier,
+        topBar = {
+            HomeTopBarContent(
+                onCameraClick = onNavigateToCameraScreen
+            )
+        },
         bottomBar = {
             HomeReadyFooterContent(
-                players = players,
-                startingLifeState = startingLifeState,
-                availableSetsState = availableSetsState,
-                modifier = Modifier.padding(horizontal = 32.dp),
+                enabled = canStartGame,
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .padding(20.dp),
                 onSubmitClicked = onSubmit
             )
-        }
+        },
+        modifier = modifier.fillMaxSize()
     ) { innerPadding ->
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .padding(horizontal = 20.dp),
         ) {
             HomeScreenReadyContent(
                 players = players,
                 startingLifeState = startingLifeState,
                 availableSetsState = availableSetsState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 32.dp),
+                availablePlayerColors = availablePlayerColors,
+                modifier = Modifier.fillMaxSize(),
                 onSetSelected = onSetSelected,
                 onLifeTotalSelected = onLifeTotalSelected,
                 onNavigateToSchemeScreen = onNavigateToSchemeScreen,
                 onDownloadSchemesClick = onDownloadSchemesClick,
                 onAddPlayer = onAddPlayer,
                 onRemovePlayer = onRemovePlayer,
-                onPlayerNameChange = onPlayerNameChange
+                onPlayerNameChange = onPlayerNameChange,
+                onPlayerColorChange = onPlayerColorChange
             )
         }
     }
@@ -147,19 +174,15 @@ private fun HomeReadyScreen(
 
 @Composable
 fun HomeReadyFooterContent(
-    players: List<String>,
-    startingLifeState: HomeItemState<Int>,
-    availableSetsState: HomeItemState<CardSet?>,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
-    onSubmitClicked: (GameRoute) -> Unit = { _ -> }
+    onSubmitClicked: () -> Unit = {}
 ) {
     Column(modifier = modifier) {
         HorizontalDivider(modifier = Modifier)
 
         HomeSubmitButton(
-            players = players,
-            selectedStartingLife = startingLifeState.selectedItem,
-            selectedSet = availableSetsState.selectedItem,
+            enabled = enabled,
             modifier = Modifier
                 .padding(vertical = 16.dp)
                 .fillMaxWidth(),
@@ -170,32 +193,14 @@ fun HomeReadyFooterContent(
 
 @Composable
 private fun HomeSubmitButton(
-    players: List<String>,
-    selectedStartingLife: Int,
-    selectedSet: CardSet?,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
-    onSubmitClicked: (GameRoute) -> Unit = { _ -> }
+    onSubmitClicked: () -> Unit = {}
 ) {
     Button(
-        onClick = {
-            onSubmitClicked(
-                GameRoute(
-                    playerSettings = if (players.isNotEmpty()) {
-                        players.map {
-                            RoutePlayerInfo(
-                                name = it,
-                                lifeTotal = selectedStartingLife
-                            )
-                        }
-                    } else {
-                        null
-                    },
-                    setId = selectedSet?.id
-                )
-            )
-        },
+        onClick = onSubmitClicked,
         modifier = modifier,
-        enabled = players.isNotEmpty() || selectedSet != null
+        enabled = enabled
     ) {
         Text(
             text = stringResource(R.string.select_set_button),
@@ -207,12 +212,42 @@ private fun HomeSubmitButton(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeTopBarContent(
+    modifier: Modifier = Modifier,
+    onCameraClick: () -> Unit = {}
+) {
+    TopAppBar(
+        title = {
+            // No title
+        },
+        actions = {
+            IconButton(
+                onClick = onCameraClick,
+                modifier = Modifier.padding(end = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PhotoCamera,
+                    contentDescription = stringResource(R.string.open_camera)
+                )
+            }
+        },
+        modifier = modifier
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun HomeReadyScreenPreview() {
     GwenTestTheme {
         HomeReadyScreen(
-            players = listOf("Player 1", "Player 2"),
+            players = listOf(
+                HomePlayerInfo("Player 1", Color.Red),
+                HomePlayerInfo("", Color.Unspecified),
+                HomePlayerInfo("Another player with a long name", Color.Blue)
+            ),
+            availablePlayerColors = listOf(null, CoreR.color.player_color_red, CoreR.color.player_color_blue, CoreR.color.player_color_green),
             startingLifeState = HomeItemState(
                 items = listOf(20, 40, 60),
                 selectedItem = 20
@@ -226,7 +261,8 @@ fun HomeReadyScreenPreview() {
                 ),
                 selectedItem = CardSet("dci", "DCI Promos")
             ),
-            isRefreshing = false
+            isRefreshing = false,
+            canStartGame = true
         )
     }
 }
@@ -237,6 +273,7 @@ fun HomeReadyScreenNoPlayersPreview() {
     GwenTestTheme {
         HomeReadyScreen(
             players = emptyList(),
+            availablePlayerColors = listOf(null, CoreR.color.player_color_red, CoreR.color.player_color_blue, CoreR.color.player_color_green),
             startingLifeState = HomeItemState(
                 items = listOf(20, 40, 60),
                 selectedItem = 40
@@ -250,7 +287,8 @@ fun HomeReadyScreenNoPlayersPreview() {
                 ),
                 selectedItem = CardSet("dci", "DCI Promos")
             ),
-            isRefreshing = false
+            isRefreshing = false,
+            canStartGame = true
         )
     }
 }

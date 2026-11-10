@@ -11,7 +11,15 @@ class MockCardRepository(
     private var cardsExistLocally: Boolean,
     private var downloadResult: Boolean,
     private val cardBackUrl: String = "https://example.com/card_back.png",
+    var autocompleteResult: Result<List<String>> = Result.success(emptyList()),
+    var cardmarketUrlResult: Result<String> = Result.failure(IllegalStateException()),
 ) : CardRepository {
+
+    var lastAutocompleteQuery: String? = null
+        private set
+
+    var lastCardmarketQuery: String? = null
+        private set
 
     override fun doCardsExistLocally(): Flow<Boolean> = flowOf(cardsExistLocally)
 
@@ -25,5 +33,15 @@ class MockCardRepository(
     override fun getAllCards(): Flow<List<CardInfo>> =
         flowOf(cardsBySet.values.flatten())
 
-    override suspend fun getCardBackUrl(): String = cardBackUrl
+    override fun getCardBackUrl(): String = cardBackUrl
+
+    override suspend fun autocompleteCardNames(query: String): Result<List<String>> {
+        lastAutocompleteQuery = query
+        return autocompleteResult
+    }
+
+    override suspend fun getCardmarketUrl(cardName: String): Result<String> {
+        lastCardmarketQuery = cardName
+        return cardmarketUrlResult
+    }
 }

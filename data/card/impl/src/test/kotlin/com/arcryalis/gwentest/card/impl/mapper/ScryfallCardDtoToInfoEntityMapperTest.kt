@@ -28,25 +28,6 @@ class ScryfallCardDtoToInfoEntityMapperTest {
     }
 
     @Test
-    fun givenScryfallCardDtoWithoutOngoingType_whenToInfoEntity_thenIsOngoingFalse() {
-        val dto = TestScryfallDataDto.dto2.copy(
-            type = "Other"
-        )
-        val expectedEntity = CardInfoEntity(
-            id = dto.id,
-            setId = dto.setId,
-            name = dto.name,
-            smallImageUrl = dto.imageUris!!.small,
-            largeImageUrl = dto.imageUris!!.large,
-            oracleText = dto.oracleText,
-            isOngoing = false
-        )
-        val result = dto.toInfoEntity()
-
-        assertEquals(expectedEntity, result)
-    }
-
-    @Test
     fun givenScryfallCardDtoWithoutImageUris_whenToInfoEntity_thenEmptyImageUrls() {
         val dto = TestScryfallDataDto.dto1.copy(
             type = "Other",

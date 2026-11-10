@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class CardSetDataStoreImpl @Inject constructor(
     private val cardSetDao: CardSetDao
 ): CardSetDataStore {
-    override suspend fun insertSets(cardSets: List<CardSetEntity>) = cardSetDao.insertCardSets(cardSets)
+    override suspend fun insertSets(cardSets: List<CardSetEntity>) = cardSetDao.insertSets(cardSets)
 
     override fun getSets(): Flow<List<CardSetEntity>> = cardSetDao.getSets()
 

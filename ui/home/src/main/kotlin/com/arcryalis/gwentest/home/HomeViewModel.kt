@@ -1,7 +1,9 @@
 package com.arcryalis.gwentest.home
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.arcryalis.gwentest.core.R as CoreR
 import com.arcryalis.gwentest.data.card.model.CardSet
 import com.arcryalis.gwentest.domain.card.DownloadSchemesUseCase
 import com.arcryalis.gwentest.domain.card.GetCardSetsUseCase
@@ -24,14 +26,24 @@ class HomeViewModel @Inject constructor(
     companion object {
         private const val MAX_PLAYERS = 4
         private val LIFE_TOTAL_OPTIONS = listOf(20, 40, 60)
+        private const val MAX_PLAYER_NAME_LENGTH = 16
+        // Color resources defined in ui:core. null means "no color".
+        private val PLAYER_COLOR_OPTIONS: List<Int?> = listOf(
+            null,
+            CoreR.color.player_color_gray,
+            CoreR.color.player_color_red,
+            CoreR.color.player_color_blue,
+            CoreR.color.player_color_green,
+            CoreR.color.player_color_magenta,
+        )
     }
 
     private val selectedSet = MutableStateFlow<CardSet?>(null)
     private val cardSetsLoading = MutableStateFlow(false)
     private val cardSetsError = MutableStateFlow(false)
-    private val playersList = MutableStateFlow<List<String>>(emptyList())
+    private val playersList = MutableStateFlow<List<HomePlayerInfo>>(emptyList())
 
-    val availableSetState = combine(
+    private val availableSetState = combine(
         getCardSetsUseCase(),
         selectedSet,
         cardSetsLoading,
@@ -53,29 +65,45 @@ class HomeViewModel @Inject constructor(
     }
 
     private val selectedLifeTotal = MutableStateFlow(20)
-    val lifeTotalState = selectedLifeTotal.map {
+    private val lifeTotalState = selectedLifeTotal.map {
         HomeItemState(
             items = LIFE_TOTAL_OPTIONS,
             selectedItem = it
         )
     }
 
-    val isAnyLoading = cardSetsLoading.map { it }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
     val state = combine(
-        isAnyLoading,
+        cardSetsLoading,
         availableSetState,
         playersList,
         lifeTotalState
     ) { loading, setState, players, lifeState ->
         HomeState.Ready(
-            sets = setState,
             players = players,
+            playerColorOptions = PLAYER_COLOR_OPTIONS,
             startingLife = lifeState,
-            isRefreshing = loading
+            sets = setState,
+            isRefreshing = loading,
+            canStartGame = canStartGame(players, setState.selectedItem)
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeState.Initial)
+
+    private fun canStartGame(players: List<HomePlayerInfo>, set: CardSet?): Boolean =
+        players.isNotEmpty() || set != null
+
+    fun buildGameSettings(): HomeGameSettings? {
+        val players = playersList.value
+        val set = selectedSet.value
+        return if (canStartGame(players, set)) {
+            HomeGameSettings(
+                players = players,
+                startingLife = selectedLifeTotal.value,
+                setId = set?.id
+            )
+        } else {
+            null
+        }
+    }
 
     fun onSelectSet(set: CardSet?) {
         selectedSet.value = set
@@ -91,7 +119,7 @@ class HomeViewModel @Inject constructor(
                 playersList.value
                     .toMutableList()
                     .apply {
-                        this.add("")
+                        this.add(HomePlayerInfo())
                     }.toList()
             }
         }
@@ -110,12 +138,24 @@ class HomeViewModel @Inject constructor(
     }
 
     fun updatePlayerName(index: Int, name: String) {
+        if (index in playersList.value.indices && name.length <= MAX_PLAYER_NAME_LENGTH) {
+            playersList.update {
+                playersList.value
+                    .toMutableList()
+                    .apply {
+                        this[index] = this[index].copy(name = name)
+                    }.toList()
+            }
+        }
+    }
+
+    fun updatePlayerColor(index: Int, color: Color) {
         if (index in playersList.value.indices) {
             playersList.update {
                 playersList.value
                     .toMutableList()
                     .apply {
-                        this[index] = name
+                        this[index] = this[index].copy(color = color)
                     }.toList()
             }
         }
@@ -136,7 +176,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onRefresh() {
-        if (!isAnyLoading.value) {
+        if (!cardSetsLoading.value) {
             viewModelScope.launch { fetchSchemes() }
         }
     }

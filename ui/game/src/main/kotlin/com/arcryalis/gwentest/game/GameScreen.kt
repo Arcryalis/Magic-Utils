@@ -1,10 +1,11 @@
 package com.arcryalis.gwentest.game
 
-import android.content.res.Configuration
+import com.arcryalis.gwentest.core.isPortrait
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -13,7 +14,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,7 +37,9 @@ fun GameScreen(
 
     GameScreen(
         state = state.value,
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .safeDrawingPadding(),
         onPlayerUpClicked = viewModel::increasePlayerLife,
         onPlayerDownClicked = viewModel::decreasePlayerLife,
         onNextClicked = viewModel::revealNextCard,
@@ -136,7 +138,7 @@ private fun GameScreenContent(
     onHistoryClicked: () -> Unit = {},
     onListItemClicked: (CardInfo) -> Unit = {}
 ) {
-    val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
+    val isPortrait = isPortrait()
 
     Column(
         modifier = modifier.fillMaxSize()

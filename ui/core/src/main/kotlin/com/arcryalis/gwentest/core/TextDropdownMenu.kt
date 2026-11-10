@@ -22,10 +22,11 @@ import androidx.compose.ui.unit.sp
 fun <T> DropdownMenu(
     items: List<T>,
     selectedItem: T,
-    titleLabel: String,
     modifier: Modifier = Modifier,
+    titleLabel: String? = null,
     emptyLabel: String = stringResource(R.string.empty_dropdown_option),
     fieldLabel: (T) -> String? = { it?.toString() },
+    leadingContent: (@Composable (T) -> Unit)? = null,
     onItemSelected: (T) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -39,9 +40,10 @@ fun <T> DropdownMenu(
             value = fieldLabel(selectedItem) ?: emptyLabel,
             onValueChange = {},
             readOnly = true,
-            label = { Text(titleLabel) },
+            label = titleLabel?.let { { Text(it) } },
+            leadingIcon = leadingContent?.let { content -> { content(selectedItem) } },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
         )
@@ -52,7 +54,8 @@ fun <T> DropdownMenu(
         ) {
             items.forEach { item ->
                 DropdownItem(
-                    item = fieldLabel(item) ?: emptyLabel,
+                    label = fieldLabel(item) ?: emptyLabel,
+                    leadingContent = leadingContent?.let { content -> { content(item) } },
                     onItemSelected = {
                         onItemSelected(item)
                         expanded = false
@@ -64,18 +67,21 @@ fun <T> DropdownMenu(
 }
 
 @Composable
-private fun <T> DropdownItem(
-    item: T?,
+private fun DropdownItem(
+    label: String,
+    leadingContent: (@Composable () -> Unit)? = null,
     onItemSelected: () -> Unit = {}
 ) {
     DropdownMenuItem(
         text = {
-            Text(
-                text = item.toString(),
-                fontSize = 16.sp
-            )
+            if (label.isNotEmpty()) {
+                Text(
+                    text = label,
+                    fontSize = 16.sp
+                )
+            }
         },
+        leadingIcon = leadingContent,
         onClick = onItemSelected
     )
-
 }

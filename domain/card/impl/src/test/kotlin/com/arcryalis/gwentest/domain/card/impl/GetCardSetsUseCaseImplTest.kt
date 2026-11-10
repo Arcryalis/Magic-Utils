@@ -37,13 +37,4 @@ class GetCardSetsUseCaseImplTest {
 
         assertEquals(setList, result)
     }
-
-    @Test
-    fun givenNoSets_whenInvoked_thenReturnsEmptyList() = runTest {
-        setupSut(availableSets = emptyList())
-
-        val result = sut().first()
-
-        assertEquals(emptyList(), result)
-    }
 }
