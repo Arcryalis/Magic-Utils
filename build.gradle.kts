@@ -21,3 +21,23 @@ tasks.register("allUnitTests") {
         },
     )
 }
+
+tasks.register("lintCheck") {
+    group = "verification"
+    description = "Runs all lint and format checks in every module."
+    dependsOn(
+        allprojects.mapNotNull { project ->
+            project.tasks.findByName("spotlessCheck")
+        },
+    )
+}
+
+tasks.register("lintApply") {
+    group = "formatting"
+    description = "Applies formatting fixes in every module."
+    dependsOn(
+        allprojects.mapNotNull { project ->
+            project.tasks.findByName("spotlessApply")
+        },
+    )
+}
