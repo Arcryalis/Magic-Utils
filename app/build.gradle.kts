@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "com.arcryalis.gwentest"
         versionCode = 3
-        versionName = "1.2"
+        versionName = "v1.2"
     }
 
     val keystorePath = System.getenv("SIGNING_KEY_STORE_PATH")
