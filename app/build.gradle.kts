@@ -15,6 +15,25 @@ android {
         versionCode = 3
         versionName = "1.2"
     }
+
+    val keystorePath = System.getenv("SIGNING_KEY_STORE_PATH")
+
+    signingConfigs {
+        if (keystorePath != null) {
+            create("release") {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfigs.findByName("release")?.let { signingConfig = it }
+        }
+    }
 }
 
 dependencies {
